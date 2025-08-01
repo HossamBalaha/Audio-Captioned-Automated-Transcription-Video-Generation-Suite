@@ -1,0 +1,9 @@
+.idea
+.idea/*
+__pycache__
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+Jobs/*
+Assets/Audio/*
+Assets/Videos/*

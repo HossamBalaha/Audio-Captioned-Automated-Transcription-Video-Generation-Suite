@@ -1,0 +1,130 @@
+api:
+  maxJobs: 1
+  maxTextLength: 2500
+  port: 5000
+  version: v1
+audio:
+  allowedExtensions:
+  - .wav
+  - .mp3
+  - .ogg
+  - .flac
+  default: ./Assets/Audios
+colors:
+- red
+- green
+- blue
+- magenta
+- black
+- lightgray
+- orange
+- purple
+- pink
+- brown
+- gray
+- lightblue
+- darkgreen
+ffmpeg:
+  applyNormalization: true
+  audioBitrate: 256k
+  audioCodec: libmp3lame
+  audioFormat: mp3
+  captionFont: ./Assets/Fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf
+  captionFontSize: 6.8%
+  captionPosition: middle
+  captionPositionOffset: 15%
+  captionSymbols:
+  - .
+  - ','
+  - ;
+  - '-'
+  - _
+  - ''''
+  - '"'
+  captionTextBorderColor: blue
+  captionTextBorderColorHighlighted: random
+  captionTextBorderWidth: 2
+  captionTextBorderWidthHighlighted: 13%
+  captionTextColor: white
+  captionTextColorHighlighted: white
+  captionsPerLine: 5
+  channels: 2
+  contradictingSymbols:
+  - '!'
+  - '?'
+  - .
+  - ','
+  - ;
+  - ':'
+  - '-'
+  - _
+  - (
+  - )
+  - '['
+  - ']'
+  - '{'
+  - '}'
+  - ''''
+  - '"'
+  - "\u2026"
+  - "\u2014"
+  - "\u2013"
+  - ':'
+  - '!'
+  - '?'
+  - "\u2026"
+  - "\u2014"
+  - "\u2013"
+  - (
+  - )
+  - '['
+  - ']'
+  - '{'
+  - '}'
+  - ''''
+  - '"'
+  - ':'
+  - ;
+  - ','
+  - '-'
+  - _
+  defaultCaptionFontSizeHighlighted: 6.8%
+  defaultCaptionPosition: middle
+  defaultCaptionPositionOffset: 15%
+  defaultCaptionTextBorderColor: blue
+  defaultCaptionTextBorderColorHighlighted: random
+  defaultCaptionTextBorderWidth: 2
+  defaultCaptionTextBorderWidthHighlighted: 13%
+  defaultCaptionTextColor: white
+  defaultCaptionTextColorHighlighted: white
+  defaultFont: ./Assets/Fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf
+  defaultFontSize: 6.8%
+  fps: 30
+  isSilentThreshold: 0.01
+  normalizationFilter: loudnorm
+  pixelFormat: yuv420p
+  sampleRate: 44100
+  videoBitrate: 5000k
+  videoCodec: libx264
+  videoFormat: mp4
+storePath: ./Jobs
+tts:
+  language: en-us
+  sampleRate: 24000
+  speechRate: 1.0
+  voice: af_nova
+verbose: true
+video:
+  allowedExtensions:
+  - .mp4
+  - .avi
+  - .mov
+  - .mkv
+  default: ./Assets/Videos
+  fps: 30
+  height: 2160
+  maxLengthPerVideo: 5
+  width: 3840
+whisper:
+  language: en
+  modelName: turbo
