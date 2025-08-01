@@ -439,8 +439,6 @@ curl -X DELETE http://localhost:5000/api/v1/jobs/<returned_job_id>
 
 If you want to support the development: https://coff.ee/hossammbalaha
 
-<a href="https://www.buymeacoffee.com/hossammbalaha"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=hossammbalaha&button_colour=FFDD00&font_colour=000000&font_family=Comic&outline_colour=000000&coffee_colour=ffffff" /></a>
-
 ## 📄 Copyright and License
 
 > No part of this series may be reproduced, distributed, or transmitted in any form or by any means, including
