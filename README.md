@@ -381,13 +381,14 @@ correct command for your system.
 ### Step 6: Configure the Environment
 
 1. Edit `configs.yaml` with your preferred settings:
-    - Set `storePath` to your desired job storage location.
-    - Configure `api.port` (default: 5000).
-    - Adjust `tts.language` and `tts.voice` as needed.
-    - Set appropriate Whisper model (`whisper.modelName`).
-    - Configure video resolution and settings.
+   - Set `storePath` to your desired job storage location.
+   - Configure `api.port` (default: 5000).
+   - Adjust `tts.language` and `tts.voice` as needed.
+   - Set appropriate Whisper model (`whisper.modelName`).
+   - Configure video resolution and settings.
 
 2. Add background videos to the directory specified by `video.default` (default: `./Assets/Videos`)
+   - You can get high-quality 4K videos from various sources like Pexels, Pixabay, or your own recordings.
 
 3. Ensure all required directories exist:
     - `mkdir -p Jobs`
