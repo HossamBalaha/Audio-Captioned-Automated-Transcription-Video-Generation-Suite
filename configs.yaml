@@ -1,6 +1,6 @@
 api:
   maxJobs: 1
-  maxTextLength: 2500
+  maxTextLength: 6500
   maxTimeout: 10
   port: 5000
   version: v1

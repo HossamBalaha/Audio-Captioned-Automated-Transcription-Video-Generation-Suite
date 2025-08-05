@@ -40,6 +40,15 @@
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    function escapeHtml(unsafe) {
+      return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;"); // or &#x27;
+    }
+
     $("#jobsContainer").html('<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
     $.get("/api/v1/jobs", function (data) {
@@ -64,7 +73,7 @@
                                 </small>
                             </p>
                             <div class="btn-group w-100" role="group">
-                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${job.jobId}" data-text="${job.text}">
+                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${job.jobId}" data-text="${escapeHtml(job.text)}">
                                     <i class="bi bi-eye"></i> View
                                 </button>
                                 ${job.status === 'completed' ?
@@ -72,7 +81,7 @@
                                     <i class="bi bi-download"></i> Download
                                 </a>` : ''}
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${job.jobId}">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash"></i> Delete
                                 </button>
                             </div>
                         </div>
