@@ -6,7 +6,7 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 4th, 2025
+# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -19,7 +19,7 @@ shutup.please()  # This function call suppresses unnecessary warnings.
 from flask import Flask, request, jsonify, send_file, render_template
 from werkzeug.exceptions import NotFound, BadRequest
 import os, yaml, asyncio, hashlib, json, threading, time, logging
-from Helpers import *
+from WebHelpers import *
 from VideoCreatorHelper import VideoCreatorHelper
 from TextToSpeechHelper import TextToSpeechHelper
 

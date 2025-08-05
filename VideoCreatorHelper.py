@@ -6,7 +6,7 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
+# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -19,6 +19,7 @@ shutup.please()  # This function call suppresses unnecessary warnings.
 import ffmpeg, os, time, random, yaml, hashlib, asyncio
 from WhisperTranscribeHelper import WhisperTranscribeHelper
 from TextToSpeechHelper import TextToSpeechHelper
+from TextHelper import CleanText
 from FFMPEGHelper import *
 
 with open("configs.yaml", "r") as configFile:
@@ -126,6 +127,12 @@ class VideoCreatorHelper(object):
     os.makedirs(storageFolder, exist_ok=True)  # Ensure the storage folder exists.
     workingPath = os.path.join(storageFolder, uniqueHashID)  # Create a working path for the job.
     os.makedirs(workingPath, exist_ok=True)  # Ensure the working path exists.
+
+    # Escaping text for safe processing.
+    if (VERBOSE):
+      print(f"Escaping text for processing: {text}")
+    # Escape special characters in the text for safe processing.
+    text = CleanText(text)
 
     # Get the transcription with timing.
     dataList = self.Text2Audio2TextTiming(

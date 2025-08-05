@@ -6,13 +6,14 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
+# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
 import ffmpeg, subprocess, tempfile, yaml, os, random, asyncio, re
-from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+from TextHelper import EscapeText
 
 with open("configs.yaml", "r") as configFile:
   configs = yaml.safe_load(configFile)
@@ -931,10 +932,12 @@ class FFMPEGHelper(object):
 
       # Generate drawtext filters for each word.
       for i, wordInfo in enumerate(words):
-        # Escape single quotes and convert to uppercase.
+        # # Escape single quotes and convert to uppercase.
         word = wordInfo["word"].upper()
-        word = word.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
-        word = re.escape(word)  # Escape special characters for ffmpeg.
+        word = EscapeText(word)
+        # word = word.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"').replace("—", "; ")
+        # # Escape special characters for ffmpeg.
+        # word = re.escape(word)
 
         # Round start and end times to 2 decimal places.
         start = np.round(wordInfo["start"], 1)
