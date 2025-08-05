@@ -6,9 +6,10 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
+# Last Modification Date: Aug 4th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
+
 # Suppress warnings from torch and other libraries to keep the output clean.
 import shutup
 
@@ -107,6 +108,25 @@ class TextToSpeechHelper(object):
   def GetAvailableVoices(self):
     """Returns a list of available voice files."""
     return self.voiceFiles  # Return the list of available voice files.
+
+  def GetAvailableVoicesByLanguage(self):
+    """Returns a dictionary of available voices categorized by language."""
+
+    # Create a dictionary to hold voices categorized by language.
+    voicesByLanguage = {
+      "American English Female voices (11 voices)": self.voiceFiles[:11],  # First 11 voices.
+      "American English Male voices (9 voices)."  : self.voiceFiles[11:20],  # Next 9 voices.
+      "British English Female voices (4 voices)." : self.voiceFiles[20:24],  # Next 4 voices.
+      "British English Male voices (4 voices)."   : self.voiceFiles[24:28],  # Next 4 voices.
+      "Japanese voices (5 voices)."               : self.voiceFiles[28:33],  # Next 5 voices.
+      "Mandarin Chinese voices (8 voices)."       : self.voiceFiles[33:41],  # Next 8 voices.
+      "Spanish voices (3 voices)."                : self.voiceFiles[41:44],  # Next 3 voices.
+      "French voices (1 voice)."                  : self.voiceFiles[44:45],  # Next 1 voice.
+      "Hindi voices (4 voices)."                  : self.voiceFiles[45:49],  # Next 4 voices.
+      "Italian voices (2 voices)."                : self.voiceFiles[49:51],  # Next 2 voices.
+      "Brazilian Portuguese voices (3 voices)."   : self.voiceFiles[51:54]  # Last 3 voices.
+    }
+    return voicesByLanguage  # Return the categorized voices dictionary.
 
   def GetLanguageCode(self, langCode):
     """Returns the full name of the language corresponding to the given language code."""

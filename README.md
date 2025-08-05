@@ -4,6 +4,10 @@
 **GitHub:** [github.com/hossam-balaha](https://github.com/hossam-balaha)  
 **Support the Channel:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
 
+<div style="text-align: center;">
+<img src="/static/images/Logo.png" alt="Logo" width="500" align="center" style="align: center;">
+</div>
+
 ---
 
 ## 📄 Overview
@@ -32,11 +36,21 @@ enable scalable, automated video production for content creators and developers.
 │   │   └── ef863.._Final.mp4  # Final video output
 │   ├── e3r4e../               # Another job directory
 │   └── ...                    # More job directories
-└── Assets/                    # Static assets (images, background videos, etc.)
-    ├── Videos/                # Default background videos for video generation
-    ├── Audios/                # Default audio files for testing the modules
-    └── Fonts/                 # Default fonts for captions
-    
+├── Assets/                    # Static assets (images, background videos, etc.)
+│   ├── Videos/                # Default background videos for video generation
+│   ├── Audios/                # Default audio files for testing the modules
+│   └── Fonts/                 # Default fonts for captions
+├── templates/                 # HTML templates for Flask webpage UIs
+│   ├── base.html              # Base template for all pages
+│   └── index.html             # Main webpage template
+├── static/                    # Static files for Flask (CSS, JS, images)
+│   ├── css/                   # CSS files for styling
+│   │   └── styles.css          # Main stylesheet
+│   ├── js/                    # JavaScript files for interactivity
+│   │   └── scripts.js          # Main script file
+│   ├── images/                # Images used in the UI
+│   │   └── logo.png           # Project logo
+└── └── favicon.ico            # Favicon for the webpage
 ```
 
 ### configs.yaml
@@ -217,6 +231,10 @@ Lists available TTS languages.
   }
   ```
 
+- **Status Codes**:
+    - `200 OK`: All jobs deleted successfully.
+    - `400 Bad Request`: Invalid request parameters.
+
 #### GET `/api/v1/voices`
 
 Lists available TTS voices for the current language.
@@ -381,14 +399,14 @@ correct command for your system.
 ### Step 6: Configure the Environment
 
 1. Edit `configs.yaml` with your preferred settings:
-   - Set `storePath` to your desired job storage location.
-   - Configure `api.port` (default: 5000).
-   - Adjust `tts.language` and `tts.voice` as needed.
-   - Set appropriate Whisper model (`whisper.modelName`).
-   - Configure video resolution and settings.
+    - Set `storePath` to your desired job storage location.
+    - Configure `api.port` (default: 5000).
+    - Adjust `tts.language` and `tts.voice` as needed.
+    - Set appropriate Whisper model (`whisper.modelName`).
+    - Configure video resolution and settings.
 
 2. Add background videos to the directory specified by `video.default` (default: `./Assets/Videos`)
-   - You can get high-quality 4K videos from various sources like Pexels, Pixabay, or your own recordings.
+    - You can get high-quality 4K videos from various sources like Pexels, Pixabay, or your own recordings.
 
 3. Ensure all required directories exist:
     - `mkdir -p Jobs`

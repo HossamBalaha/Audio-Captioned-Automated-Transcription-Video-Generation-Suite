@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Create a New Job</h3>
+        </div>
+        <div class="card-body">
+          <form id="ttsForm">
+            <div class="mb-3">
+              <label for="text" class="form-label">Text to Convert</label>
+              <textarea class="form-control" id="text" rows="5"></textarea>
+              <div class="form-text">Enter the text you want to convert.</div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <p>
+                  Select the suitable voice according to the language you selected. For example,
+                  if you selected American English, you should select an American English voice.
+                  You will find the groups highlighted in the voice selection dropdown.
+                </p>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="language" class="form-label">Language</label>
+                  <select class="form-select" id="language"></select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="voice" class="form-label">Voice</label>
+                  <select class="form-select" id="voice"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-play-circle"></i> Create Job
+              </button>
+            </div>
+          </form>
+
+          <div id="result" class="mt-4 d-none">
+            <div class="alert alert-success">
+              <h5 class="text-center">Job Created Successfully!</h5>
+              <p class="text-center">Job ID: <strong id="jobId"></strong></p>
+              <div class="text-center">
+                <a href="/jobs" class="btn btn-success">View Jobs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      let allVoices = null;
+      let allLanguages = null;
+
+      function disableForm(disabled) {
+        $("#ttsForm :input").prop("disabled", disabled).toggleClass("disabled", disabled);
+        {#console.log("Form disabled:", disabled);#}
+      }
+
+      function checkVoicesAndLanguages() {
+        let voicesLoaded = $("#voice option").length > 0;
+        let languagesLoaded = $("#language option").length > 0;
+        return voicesLoaded && languagesLoaded;
+      }
+
+      disableForm(true);
+
+      $.get("/api/v1/voices?type=dict", function (data) {
+        const voiceSelect = $("#voice");
+        Object.keys(data["voices"]).forEach(voiceList => {
+          // Add separator for each voice list.
+          voiceSelect.append(`<optgroup label="${voiceList}"></optgroup>`);
+          data["voices"][voiceList].forEach(voice => {
+            // Add each voice as an option.
+            let voiceName = voice;
+            voiceName = voiceName.replace(/_/g, " ");
+            voiceName = voiceName.charAt(3).toUpperCase() + voiceName.slice(4);
+            voiceSelect.find(`optgroup[label="${voiceList}"]`).append(`<option value="${voice}">${voiceName}</option>`);
+          });
+        });
+        allVoices = data["voices"];
+        if (checkVoicesAndLanguages()) {
+          disableForm(false);
+        }
+      });
+
+      $.get("/api/v1/languages", function (data) {
+        const languageSelect = $("#language");
+        // Loop on the dictionary keys.
+        Object.keys(data["languages"]).forEach(lang => {
+          languageSelect.append(`<option value="${lang}">${data["languages"][lang]}</option>`);
+        });
+        allLanguages = data["languages"];
+        // Check if the voices and languages are loaded.
+        if (checkVoicesAndLanguages()) {
+          disableForm(false);
+        }
+      });
+
+
+      // Handle form submission.
+      $("#ttsForm").submit(function (e) {
+        e.preventDefault();
+
+        // Disable the form to prevent multiple submissions.
+        disableForm(true);
+        // Validate the form.
+        if (!$("#text").val().trim()) {
+          // SweetAlert for empty text.
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Text field cannot be empty.",
+            confirmButtonText: "OK"
+          });
+          disableForm(false);
+          return;
+        }
+        if (!$("#language").val()) {
+          // SweetAlert for empty language.
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Please select a language.",
+            confirmButtonText: "OK"
+          });
+          disableForm(false);
+          return;
+        }
+        if (!$("#voice").val()) {
+          // SweetAlert for empty voice.
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Please select a voice.",
+            confirmButtonText: "OK"
+          });
+          disableForm(false);
+          return;
+        }
+
+        const data = {
+          text: $("#text").val(),
+          language: $("#language").val(),
+          voice: $("#voice").val()
+        };
+
+        $("#result").addClass("d-none");
+
+        $.ajax({
+          url: "/api/v1/jobs",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function (response) {
+            $("#jobId").text(response.jobId);
+            $("#result").removeClass("d-none");
+            $("#ttsForm")[0].reset();
+          },
+          error: function (xhr) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: xhr.responseJSON ? xhr.responseJSON.error : "An error occurred while creating the job.",
+              confirmButtonText: "OK"
+            });
+            console.error("Error creating job:", xhr);
+          }
+        });
+      });
+    })
+    ;
+  </script>
+{% endblock %}

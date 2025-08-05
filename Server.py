@@ -6,7 +6,7 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
+# Last Modification Date: Aug 4th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -17,6 +17,7 @@ shutup.please()  # This function call suppresses unnecessary warnings.
 
 # Import necessary libraries for the Flask server, file handling, and processing.
 from flask import Flask, request, jsonify, send_file
+from flask import render_template
 import os, yaml, asyncio, hashlib, json, threading, time
 from VideoCreatorHelper import VideoCreatorHelper
 from TextToSpeechHelper import TextToSpeechHelper
@@ -30,19 +31,43 @@ PORT = configs.get("port", 5000)
 MAX_JOBS = configs["api"].get("maxJobs", 1)
 STORE_PATH = configs.get("storePath", "./Jobs")
 
-# Create the Flask application instance.
-app = Flask(__name__)
-
 # Define the directory where job data will be stored.
 os.makedirs(STORE_PATH, exist_ok=True)
 
 # Initialize the video creator helper.
-videoCreator = VideoCreatorHelper()
+videoCreator = None
 
 # Store job statuses in a dictionary for quick access.
 # In a production environment, a database would be more appropriate.
 JOB_STATUSES = {}
 
+# Create the Flask application instance.
+app = Flask(__name__)
+
+# Set the secret key for the Flask app to enable session management.
+app.secret_key = configs.get("secret", "default_secret_key")
+
+
+# Routes for web UI.
+@app.route("/")
+def index():
+  return render_template("index.html")
+
+
+@app.route("/jobs")
+def jobsPage():
+  return render_template("jobs.html")
+
+
+# @app.before_request
+# def before_request():
+#   """Function to run before each request to set up necessary configurations."""
+#   # Set the response headers to allow cross-origin requests.
+#   if (VERBOSE):
+#     print("Setting CORS headers for the request.")
+#   request.headers["Access-Control-Allow-Origin"] = "*"
+#   request.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+#   request.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
 
 # Define a route to get the status of the server.
 @app.route(f"/api/v1/status", methods=["GET"])
@@ -72,7 +97,6 @@ def getServerReady():
 @app.route(f"/api/v1/languages", methods=["GET"])
 def getAvailableLanguages():
   """Return a list of available languages for text-to-speech processing."""
-  # Get the list of available languages from the configuration.
   languages = TextToSpeechHelper().GetAvailableLanguages()
 
   # Return the list of languages as a JSON response.
@@ -83,10 +107,51 @@ def getAvailableLanguages():
 def getAvailableVoices():
   """Return a list of available voices for text-to-speech processing."""
   # Get the list of available voices from the configuration.
-  voices = TextToSpeechHelper().GetAvailableVoices()
+  # Get an attribute from the query.
+  typeKey = request.args.get("type", "list").lower()
+  if (typeKey not in ["list", "dict"]):
+    return jsonify({"error": "Invalid type parameter, must be 'list' or 'dict'"}), 400
+  # Get the list of available languages from the configuration.
+  if (typeKey == "dict"):
+    voices = TextToSpeechHelper().GetAvailableVoicesByLanguage()
+  else:
+    voices = TextToSpeechHelper().GetAvailableVoices()
 
   # Return the list of voices as a JSON response.
   return jsonify({"voices": voices}), 200
+
+
+@app.route(f"/api/v1/jobs", methods=["GET"])
+def getAllJobs():
+  """Return a list of all jobs with their statuses."""
+  global JOB_STATUSES
+
+  # Prepare a list to hold job details.
+  jobsList = []
+
+  # Iterate through the job statuses and collect details.
+  for jobId, status in JOB_STATUSES.items():
+    jobDir = os.path.join(STORE_PATH, jobId)
+    jobFilePath = os.path.join(jobDir, "job.json")
+    if (os.path.exists(jobFilePath)):
+      try:
+        with open(jobFilePath, "r") as f:
+          jobData = json.load(f)
+        jobsList.append({
+          "jobId"    : jobId,
+          "status"   : status,
+          "text"     : jobData.get("text", ""),
+          "language" : jobData.get("language", configs["tts"]["language"]),
+          "voice"    : jobData.get("voice", configs["tts"]["voice"]),
+          "createdAt": jobData.get("createdAt", "N/A"),
+          "isCompleted": (status == "completed"),
+        })
+      except Exception as e:
+        if (VERBOSE):
+          print(f"Error reading job {jobId}: {str(e)}")
+
+  # Return the list of jobs as a JSON response.
+  return jsonify({"jobs": jobsList}), 200
 
 
 # Define a route to post a job.
@@ -273,7 +338,7 @@ def deleteAllProcessedVideos():
 # Function to process the job in a separate thread.
 def ProcessJob(jobId):
   """Process the job: convert text to speech, add captions, and generate video."""
-  global JOB_STATUSES
+  global JOB_STATUSES, videoCreator
 
   # Get the job directory path for file operations.
   jobDir = os.path.join(STORE_PATH, jobId)
@@ -294,6 +359,10 @@ def ProcessJob(jobId):
     if (VERBOSE):
       print(f"Processing job {jobId} with language: {language}, voice: {voice}")
       print(f"Text: {text[:50]}...")
+
+    if (not videoCreator):
+      # Initialize the video creator helper if not already done.
+      videoCreator = VideoCreatorHelper()
 
     # Generate a video from the provided text.
     isGenerated, videoID = videoCreator.GenerateVideo(
@@ -350,34 +419,37 @@ def UpdateJobStatus(jobId, status):
 
 # Run the Flask application.
 if __name__ == "__main__":
-  # Load the previously saved job statuses if they exist.
-  jobsList = os.listdir(STORE_PATH)
-  for jobId in jobsList:
-    jobFilePath = os.path.join(STORE_PATH, jobId, "job.json")
-    if (os.path.exists(jobFilePath)):
-      try:
-        with open(jobFilePath, "r") as f:
-          jobData = json.load(f)
-        JOB_STATUSES[jobId] = jobData.get("status", "unknown")
-        jobStatus = JOB_STATUSES[jobId]
-        if ((jobStatus == "queued") or (jobStatus == "processing")):
-          # Convert it to "failed" if it was processing when the server started.
-          JOB_STATUSES[jobId] = "failed"
-          UpdateJobStatus(jobId, "failed")
-      except Exception as e:
-        if (VERBOSE):
-          print(f"Error loading job {jobId}: {str(e)}")
-    else:
-      JOB_STATUSES[jobId] = "unknown"
+  with app.app_context():
+    # Load the previously saved job statuses if they exist.
+    jobsList = os.listdir(STORE_PATH)
+    # Check if it is a directory and filter out any non-directory entries.
+    jobsList = [jobId for jobId in jobsList if os.path.isdir(os.path.join(STORE_PATH, jobId))]
+    for jobId in jobsList:
+      jobFilePath = os.path.join(STORE_PATH, jobId, "job.json")
+      if (os.path.exists(jobFilePath)):
+        try:
+          with open(jobFilePath, "r") as f:
+            jobData = json.load(f)
+          JOB_STATUSES[jobId] = jobData.get("status", "unknown")
+          jobStatus = JOB_STATUSES[jobId]
+          if ((jobStatus == "queued") or (jobStatus == "processing")):
+            # Convert it to "failed" if it was processing when the server started.
+            JOB_STATUSES[jobId] = "failed"
+            UpdateJobStatus(jobId, "failed")
+        except Exception as e:
+          if (VERBOSE):
+            print(f"Error loading job {jobId}: {str(e)}")
+      else:
+        JOB_STATUSES[jobId] = "unknown"
 
-  for jobId, status in JOB_STATUSES.items():
-    if (VERBOSE):
-      print(f"Loaded job {jobId} with status: {status}")
+    for jobId, status in JOB_STATUSES.items():
+      if (VERBOSE):
+        print(f"Loaded job {jobId} with status: {status}")
 
-  app.run(
-    host="0.0.0.0",  # Listen on all interfaces.
-    port=PORT,  # Use the port specified in the configuration.
-    debug=VERBOSE,  # Enable debug mode if verbose is set.
-    # threaded=True,  # Allow multiple requests to be handled simultaneously.
-    # use_reloader=False,  # Disable the reloader to avoid issues with threading.
-  )
+    app.run(
+      host="0.0.0.0",  # Listen on all interfaces.
+      port=PORT,  # Use the port specified in the configuration.
+      debug=VERBOSE,  # Enable debug mode if verbose is set.
+      # threaded=True,  # Allow multiple requests to be handled simultaneously.
+      # use_reloader=False,  # Disable the reloader to avoid issues with threading.
+    )
