@@ -4,8 +4,8 @@
 **GitHub:** [github.com/hossam-balaha](https://github.com/hossam-balaha)  
 **Support the Channel:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
 
-<div style="text-align: center;">
-<img src="/static/images/Logo.png" alt="Logo" width="500" align="center" style="align: center;">
+<div style="text-align: center !important;">
+<img src="/static/images/Logo.png" alt="Logo" width="500" align="center" style="text-align: center !important; align: center;">
 </div>
 
 ---
