@@ -20,13 +20,13 @@ configs = {
     "port"         : 5000,  # Port on which the server will run.
     "maxJobs"      : 1,  # Maximum number of jobs that can be processed concurrently.
     "maxTextLength": 6500,  # Maximum length of text for processing.
-    "maxTimeout"   : 10,  # Maximum timeout for job processing in seconds.
+    "maxTimeout"   : 10,  # Maximum timeout for job proc  essing in seconds.
   },
   "tts"      : {
     "language"  : "en-us",  # Default language for TTS.
     "voice"     : "af_nova",  # Default voice for TTS.
     "sampleRate": 24000,  # Default sample rate for TTS.
-    "speechRate": 0.775,  # Default speech rate for TTS.
+    "speechRate": 0.8,  # Default speech rate for TTS.
   },
   "whisper"  : {
     # Models: https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages
