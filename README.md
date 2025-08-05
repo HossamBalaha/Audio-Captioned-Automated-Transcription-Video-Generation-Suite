@@ -46,9 +46,9 @@ enable scalable, automated video production for content creators and developers.
 │   └── index.html             # Main webpage template
 ├── static/                    # Static files for Flask (CSS, JS, images)
 │   ├── css/                   # CSS files for styling
-│   │   └── styles.css          # Main stylesheet
+│   │   └── styles.css         # Main stylesheet
 │   ├── js/                    # JavaScript files for interactivity
-│   │   └── scripts.js          # Main script file
+│   │   └── scripts.js         # Main script file
 │   ├── images/                # Images used in the UI
 │   │   └── logo.png           # Project logo
 └── └── favicon.ico            # Favicon for the webpage
