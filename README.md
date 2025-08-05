@@ -1,6 +1,7 @@
 # Audio-Captioned Automated Transcription & Video Generation Suite
 
 **Author:** Hossam Magdy Balaha  
+**CV:** [hossambalaha.github.io](https://hossambalaha.github.io/)
 **GitHub:** [github.com/hossam-balaha](https://github.com/hossam-balaha)  
 **Support the Channel:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
 
