@@ -134,6 +134,17 @@ class VideoCreatorHelper(object):
     # Escape special characters in the text for safe processing.
     text = CleanText(text)
 
+    if (VERBOSE):
+      print(f"Processed text: {text}")
+      print(f"Working path: {workingPath}")
+      print(f"Unique Hash ID: {uniqueHashID}")
+      print(f"Language: {language}, Voice: {voice}")
+
+    if (not text or len(text.strip()) == 0):
+      if (VERBOSE):
+        print("No text provided for transcription after cleaning. Exiting.")
+      return False, None
+
     # Get the transcription with timing.
     dataList = self.Text2Audio2TextTiming(
       text,

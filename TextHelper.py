@@ -38,8 +38,13 @@ def CleanText(text):
   # Replace tabs with spaces.
   text = text.replace("\t", " ")
 
-  # Replace the many spaces with a single space.
-  text = re.sub(r'\s+', " ", text).strip()
+  # Replace the many spaces (but not new lines) with a single space.
+  text = re.sub(r'[ ]{2,}', ' ', text)
+
+  # Remove all special characters except for alphanumeric characters, spaces, new lines and basic punctuation.
+  # Keep ony .,!? from the basic punctuation.
+  # Don't remove new lines.
+  text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
 
   return text
 
@@ -48,38 +53,74 @@ def EscapeText(text):
   """
   Escape special characters in the text for use in FFMPEG commands.
   """
+
   if (not isinstance(text, str)):
     return text  # Return as-is if not a string.
 
   # Escape for FFMPEG command usage.
   text = (
     text
-    .replace('"', '\\"')  # Escape double quotes.
-    .replace("'", "\\'")  # Escape single quotes.
-    .replace("$", "\\$")  # Escape dollar sign.
-    .replace("&", "\\&")  # Escape ampersand.
-    .replace("|", "\\|")  # Escape pipe.
-    .replace(";", "\\;")  # Escape semicolon.
-    .replace("<", "\\<")  # Escape less than.
-    .replace(">", "\\>")  # Escape greater than.
-    .replace("(", "\\(")  # Escape left parenthesis.
-    .replace(")", "\\)")  # Escape right parenthesis.
-    .replace("[", "\\[")  # Escape left square bracket.
-    .replace("]", "\\]")  # Escape right square bracket.
-    .replace("{", "\\{")  # Escape left curly brace.
-    .replace("}", "\\}")  # Escape right curly brace.
-    .replace("*", "\\*")  # Escape asterisk.
-    .replace("?", "\\?")  # Escape question mark.
-    .replace("~", "\\~")  # Escape tilde.
-    .replace("\n", " ")  # Replace new lines with spaces.
-  )
+    .replace("\\", "\\\\")
+    .replace("?", "\\?")
+    .replace("!", "\\!")
+    .replace(":", "\\:")
+    .replace(";", "\\;")
+    .replace("'", "\\'")
+    .replace('"', '\\"')
+    .replace("(", "\\(")
+    .replace(")", "\\)")
+    .replace("[", "\\[")
+    .replace("]", "\\]")
+    .replace("{", "\\{")
+    .replace("}", "\\}")
+    .replace("<", "\\<")
+    .replace(">", "\\>")
+    .replace("$", "\\$")
+    .replace("&", "\\&")
+    .replace("|", "\\|")
+    .replace("*", "\\*")
+    .replace("~", "\\~")
+    .replace(",", "\\,")
+    .replace(".", "\\.")
+  ).strip()
 
   return text
 
 
 if __name__ == "__main__":
   # Example usage.
-  sampleText = '"This is a sample text with special characters: $&|;<>()[{}]*?~\nNew line and \t tab."'
+  # sampleText = '"This is a sample text with special characters: $&|;<>()[{}]*?~\nNew line and \t tab."'
+  # sampleText = '''Don't "Welcome" ! hadn’t? everyone—patients hello;'''.upper()
+  sampleText = '''
+  Select the [suitable] voice according to the language you selected. 
+  For example, if you selected (American English), you should select an American English voice!
+  You will find the groups           highlighted in the voice selection dropdown?
+  !@#$%^&*}{POIUYTREWQ":LKJHGFDSA?><MNBVCXZ\
+  '''
+  sampleText = '''
+  In a quiet hospital nestled in the heart of a busy city,
+  a young doctor named Maya sat at her desk, staring at a stack of patient files.
+  The fluorescent lights buzzed faintly overhead,
+  casting a sterile glow on the room around her.
+  She sighed, rubbing her temples as she flipped through page after page.
+  
+  Maya had always dreamed of being a healer,
+  someone who could make a difference in people’s lives.
+  But lately, the weight of the job felt overwhelming.
+  Every day brought new challenges:
+  patients with complex symptoms,
+  diagnoses that took too long to confirm,
+  and sometimes—when time ran out—heartbreaking outcomes.
+  
+  Across town, in a sleek tech lab filled with glowing screens and humming servers,
+  a programmer named Sam was working late into the night.
+  He leaned back in his chair, sipping cold coffee from a chipped mug,
+  thinking about how his work might one day save lives.
+  Sam wasn’t a doctor, but he knew technology could change medicine forever.
+  
+  What neither Maya nor Sam realized was that their paths were about to cross—
+  in ways neither of them could have imagined.
+  '''
   cleanedText = CleanText(sampleText)
   escapedText = EscapeText(cleanedText)
   print("Original Text:\n", sampleText)

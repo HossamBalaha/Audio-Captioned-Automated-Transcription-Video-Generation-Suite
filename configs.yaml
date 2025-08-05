@@ -50,45 +50,6 @@ ffmpeg:
   captionTextColorHighlighted: white
   captionsPerLine: 5
   channels: 2
-  contradictingSymbols:
-  - '!'
-  - '?'
-  - .
-  - ','
-  - ;
-  - ':'
-  - '-'
-  - _
-  - (
-  - )
-  - '['
-  - ']'
-  - '{'
-  - '}'
-  - ''''
-  - '"'
-  - "\u2026"
-  - "\u2014"
-  - "\u2013"
-  - ':'
-  - '!'
-  - '?'
-  - "\u2026"
-  - "\u2014"
-  - "\u2013"
-  - (
-  - )
-  - '['
-  - ']'
-  - '{'
-  - '}'
-  - ''''
-  - '"'
-  - ':'
-  - ;
-  - ','
-  - '-'
-  - _
   defaultCaptionFontSizeHighlighted: 6.8%
   defaultCaptionPosition: middle
   defaultCaptionPositionOffset: 15%
@@ -112,7 +73,7 @@ storePath: ./Jobs
 tts:
   language: en-us
   sampleRate: 24000
-  speechRate: 1.0
+  speechRate: 0.8
   voice: af_nova
 verbose: true
 video:

@@ -6,7 +6,7 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
+# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -26,10 +26,10 @@ configs = {
     "language"  : "en-us",  # Default language for TTS.
     "voice"     : "af_nova",  # Default voice for TTS.
     "sampleRate": 24000,  # Default sample rate for TTS.
-    "speechRate": 1.0,  # Default speech rate for TTS.
+    "speechRate": 0.775,  # Default speech rate for TTS.
   },
   "whisper"  : {
-    # Models: whttps://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages
+    # Models: https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages
     "modelName": "turbo",  # Default model name for Whisper.
     "language" : "en"  # Default language for transcription.
   },
@@ -54,7 +54,9 @@ configs = {
     # Default video bitrate for encoding. 5000k is a common choice for high-quality video.
     "videoBitrate"                            : "5000k",
     "videoFormat"                             : "mp4",  # Default video format for encoding.
-    "pixelFormat"                             : "yuv420p",  # Default pixel format for video encoding.
+    # Default pixel format for video encoding.
+    # yuv420p is a common pixel format for video encoding.
+    "pixelFormat"                             : "yuv420p",
     # Default audio codec for video processing.
     # "pcm_s16le" for WAV, "libvorbis" for OGG. "libmp3lame" for MP3.
     "audioCodec"                              : "libmp3lame",
@@ -102,10 +104,10 @@ configs = {
 
     # Default symbols that contradict with the FFmpeg captioning system.
     # These symbols will be escaped.
-    "contradictingSymbols"                    : [
-      "!", "?", ".", ",", ";", ":", "-", "_", "(", ")", "[", "]", "{", "}", "'", "\"", "…", "—", "–",
-      ":", "!", "?", "…", "—", "–", "(", ")", "[", "]", "{", "}", "'", "\"", ":", ";", ",", "-", "_",
-    ]
+    # "contradictingSymbols"                    : [
+    #   "!", "?", ".", ",", ";", ":", "-", "_", "(", ")", "[", "]", "{", "}", "'", "\"", "…", "—", "–",
+    #   ":", "!", "?", "…", "—", "–", "(", ")", "[", "]", "{", "}", "'", "\"", ":", ";", ",", "-", "_",
+    # ]
   },
   "colors"   : [
     "red", "green", "blue", "magenta", "black", "lightgray",
