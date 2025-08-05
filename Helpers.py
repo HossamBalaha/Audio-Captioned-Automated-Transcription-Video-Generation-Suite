@@ -47,14 +47,14 @@ class JobStatusHistory(object):
 class QueueWatcher(threading.Thread):
   """A thread to monitor the job queue and process jobs as they are added."""
 
-  def __init__(self, func, maxJobs=1):
+  def __init__(self, func, maxJobs=1, maxTimeout=10):
     super().__init__()
     self.maxJobs = maxJobs
     self.func = func
     self.jobHistoryObj = JobStatusHistory()
     self.running = True
     self.daemon = False
-    self.timout = 10  # Default timeout for job processing.
+    self.timout = maxTimeout
     self.counter = 0  # Counter to track the number of jobs processed.
 
   def run(self):

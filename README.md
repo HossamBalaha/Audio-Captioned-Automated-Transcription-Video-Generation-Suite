@@ -42,6 +42,7 @@ enable scalable, automated video production for content creators and developers.
 │   └── Fonts/                 # Default fonts for captions
 ├── templates/                 # HTML templates for Flask webpage UIs
 │   ├── base.html              # Base template for all pages
+│   ├── jobs.html              # Job management page template
 │   └── index.html             # Main webpage template
 ├── static/                    # Static files for Flask (CSS, JS, images)
 │   ├── css/                   # CSS files for styling

@@ -114,6 +114,7 @@ VERBOSE = configs.get("verbose", False)
 PORT = configs.get("port", 5000)
 MAX_JOBS = configs["api"].get("maxJobs", 1)
 STORE_PATH = configs.get("storePath", "./Jobs")
+MAX_TIMEOUT = configs["api"].get("maxTimeout", 10)
 
 # Define the directory where job data will be stored.
 os.makedirs(STORE_PATH, exist_ok=True)
@@ -123,7 +124,7 @@ videoCreator = None
 
 # Initialize the queue watcher thread to monitor job statuses.
 # Start the queue watcher thread to monitor job statuses.
-QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
+QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
 # Global dictionary to track job statuses.
 JOB_HISTORY_OBJ = QUEUE_WATCHER.jobHistoryObj
 
@@ -273,7 +274,7 @@ def postJob():
   os.makedirs(jobDir, exist_ok=True)
 
   if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
-    QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
+    QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
     QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
 
   # Save the initial job status as "queued".
@@ -453,10 +454,6 @@ if __name__ == "__main__":
           # Convert it to "failed" if it was processing when the server started.
           JOB_HISTORY_OBJ.updateStatus(jobId, "queued")
           UpdateJobStatus(jobId, "queued")
-          # # Restart the queue watcher if not already running.
-          # if (not QUEUE_WATCHER.is_alive()):
-          #   QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
-          #   QUEUE_WATCHER.start()
       except Exception as e:
         if (VERBOSE):
           print(f"Error loading job {jobId}: {str(e)}")
