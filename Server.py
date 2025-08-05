@@ -16,11 +16,95 @@ import shutup
 shutup.please()  # This function call suppresses unnecessary warnings.
 
 # Import necessary libraries for the Flask server, file handling, and processing.
-from flask import Flask, request, jsonify, send_file
-from flask import render_template
-import os, yaml, asyncio, hashlib, json, threading, time
+from flask import Flask, request, jsonify, send_file, render_template
+from werkzeug.exceptions import NotFound, BadRequest
+import os, yaml, asyncio, hashlib, json, threading, time, logging
+from Helpers import *
 from VideoCreatorHelper import VideoCreatorHelper
 from TextToSpeechHelper import TextToSpeechHelper
+
+
+# Function to process the job in a separate thread.
+def ProcessJob(jobId):
+  """Process the job: convert text to speech, add captions, and generate video."""
+  global JOB_HISTORY_OBJ, videoCreator
+
+  # Get the job directory path for file operations.
+  jobDir = os.path.join(STORE_PATH, jobId)
+
+  # Update the job status to "processing".
+  JOB_HISTORY_OBJ.updateStatus(jobId, "processing")
+  UpdateJobStatus(jobId, "processing")
+
+  try:
+    # Read the job data from the JSON file.
+    with open(os.path.join(jobDir, "job.json"), "r") as f:
+      jobData = json.load(f)
+
+    # Get the texts and videos from the job data.
+    text = jobData["text"]
+    voice = jobData.get("voice", configs["tts"]["voice"])
+    language = jobData.get("language", configs["tts"]["language"])
+    if (VERBOSE):
+      print(f"Processing job {jobId} with language: {language}, voice: {voice}")
+      print(f"Text: {text[:50]}...")
+
+    if (not videoCreator):
+      # Initialize the video creator helper if not already done.
+      videoCreator = VideoCreatorHelper()
+
+    # Generate a video from the provided text.
+    isGenerated, videoID = videoCreator.GenerateVideo(
+      text.strip(),
+      language=language,
+      voice=voice,
+      uniqueHashID=jobId
+    )
+
+    if (not isGenerated):
+      JOB_HISTORY_OBJ.updateStatus(jobId, "failed")
+      UpdateJobStatus(jobId, "failed")
+      return jsonify({"error": "Failed to generate video"}), 500
+
+    # If the video was generated successfully, update the job status.
+    if (VERBOSE):
+      print(f"Video generated successfully for job {jobId} with ID: {videoID}")
+    JOB_HISTORY_OBJ.updateStatus(jobId, "completed")
+    UpdateJobStatus(jobId, "completed")
+
+
+  except Exception as e:
+    # If an error occurs, update the job status to "failed".
+    if (VERBOSE):
+      print(f"Error processing job {jobId}: {str(e)}")
+    JOB_HISTORY_OBJ.updateStatus(jobId, "failed")
+    UpdateJobStatus(jobId, "failed")
+    return jsonify({"error": f"Failed to process job {jobId}: {str(e)}"}), 500
+
+
+# Function to update the job status in the JSON file.
+def UpdateJobStatus(jobId, status):
+  """Update the job status in the job's JSON file to maintain persistence."""
+  jobDir = os.path.join(STORE_PATH, jobId)
+  jobFilePath = os.path.join(jobDir, "job.json")
+
+  # Read the existing job data.
+  try:
+    with open(jobFilePath, "r") as f:
+      jobData = json.load(f)
+  except FileNotFoundError:
+    return
+
+  # Update the status in the job data.
+  jobData["status"] = status
+
+  # Write the updated job data back to the JSON file.
+  with open(jobFilePath, "w") as f:
+    json.dump(jobData, f)
+
+  if (VERBOSE):
+    print(f"Job {jobId} status updated to: {status}")
+
 
 with open("configs.yaml", "r") as configFile:
   configs = yaml.safe_load(configFile)
@@ -37,9 +121,15 @@ os.makedirs(STORE_PATH, exist_ok=True)
 # Initialize the video creator helper.
 videoCreator = None
 
-# Store job statuses in a dictionary for quick access.
-# In a production environment, a database would be more appropriate.
-JOB_STATUSES = {}
+# Initialize the queue watcher thread to monitor job statuses.
+# Start the queue watcher thread to monitor job statuses.
+QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
+# Global dictionary to track job statuses.
+JOB_HISTORY_OBJ = QUEUE_WATCHER.jobHistoryObj
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create the Flask application instance.
 app = Flask(__name__)
@@ -59,16 +149,6 @@ def jobsPage():
   return render_template("jobs.html")
 
 
-# @app.before_request
-# def before_request():
-#   """Function to run before each request to set up necessary configurations."""
-#   # Set the response headers to allow cross-origin requests.
-#   if (VERBOSE):
-#     print("Setting CORS headers for the request.")
-#   request.headers["Access-Control-Allow-Origin"] = "*"
-#   request.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-#   request.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-
 # Define a route to get the status of the server.
 @app.route(f"/api/v1/status", methods=["GET"])
 def getServerStatus():
@@ -81,17 +161,17 @@ def getServerStatus():
 @app.route(f"/api/v1/ready", methods=["GET"])
 def getServerReady():
   """Check if the server is ready to accept new jobs by verifying job queue capacity."""
-  global JOB_STATUSES
+  global JOB_HISTORY_OBJ
 
   # Count the number of queued jobs to determine server availability.
-  noOfQuestedJobs = len([status for status in JOB_STATUSES.values() if (status == "queued")])
+  noOfQuestedJobs = len([status for status in JOB_HISTORY_OBJ.values() if (status == "queued")])
   isBusy = noOfQuestedJobs >= MAX_JOBS
   if (not isBusy):
     # Return success response when server can accept new jobs.
     return jsonify({"ready": True}), 200
   else:
     # Return not ready response with job count when server is at capacity.
-    return jsonify({"ready": False, "jobsInProgress": len(JOB_STATUSES)}), 503
+    return jsonify({"ready": False, "jobsInProgress": len(JOB_HISTORY_OBJ)}), 503
 
 
 @app.route(f"/api/v1/languages", methods=["GET"])
@@ -124,13 +204,13 @@ def getAvailableVoices():
 @app.route(f"/api/v1/jobs", methods=["GET"])
 def getAllJobs():
   """Return a list of all jobs with their statuses."""
-  global JOB_STATUSES
+  global JOB_HISTORY_OBJ
 
   # Prepare a list to hold job details.
   jobsList = []
 
   # Iterate through the job statuses and collect details.
-  for jobId, status in JOB_STATUSES.items():
+  for jobId, status in JOB_HISTORY_OBJ.items():
     jobDir = os.path.join(STORE_PATH, jobId)
     jobFilePath = os.path.join(jobDir, "job.json")
     if (os.path.exists(jobFilePath)):
@@ -138,12 +218,12 @@ def getAllJobs():
         with open(jobFilePath, "r") as f:
           jobData = json.load(f)
         jobsList.append({
-          "jobId"    : jobId,
-          "status"   : status,
-          "text"     : jobData.get("text", ""),
-          "language" : jobData.get("language", configs["tts"]["language"]),
-          "voice"    : jobData.get("voice", configs["tts"]["voice"]),
-          "createdAt": jobData.get("createdAt", "N/A"),
+          "jobId"      : jobId,
+          "status"     : status,
+          "text"       : jobData.get("text", ""),
+          "language"   : jobData.get("language", configs["tts"]["language"]),
+          "voice"      : jobData.get("voice", configs["tts"]["voice"]),
+          "createdAt"  : jobData.get("createdAt", "N/A"),
           "isCompleted": (status == "completed"),
         })
       except Exception as e:
@@ -158,7 +238,7 @@ def getAllJobs():
 @app.route(f"/api/v1/jobs", methods=["POST"])
 def postJob():
   """Create a new job for speech processing and return a unique ID for tracking."""
-  global JOB_STATUSES
+  global QUEUE_WATCHER, JOB_HISTORY_OBJ
 
   # Check if the request contains JSON data.
   if (not request.is_json):
@@ -177,12 +257,6 @@ def postJob():
   if (len(text) > maxTextLength):
     return jsonify({"error": f"Text exceeds maximum length of {maxTextLength} characters"}), 400
 
-  # Check if the server is ready to accept new jobs.
-  noOfQuestedJobs = len([status for status in JOB_STATUSES.values() if (status == "queued")])
-  isBusy = noOfQuestedJobs >= MAX_JOBS
-  if (isBusy):
-    return jsonify({"error": "Server is busy, please try again later"}), 503
-
   # If the server is ready, proceed to create a new job.
   if (VERBOSE):
     print(f"Creating a new job with text: {text[:50]}...")  # Log the first 50 characters of the text.
@@ -198,8 +272,12 @@ def postJob():
   jobDir = os.path.join(STORE_PATH, jobId)
   os.makedirs(jobDir, exist_ok=True)
 
+  if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
+    QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
+    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
+
   # Save the initial job status as "queued".
-  JOB_STATUSES[jobId] = "queued"
+  JOB_HISTORY_OBJ.updateStatus(jobId, "queued")
 
   # Save the job details to a JSON file.
   jobData = {
@@ -213,9 +291,11 @@ def postJob():
   with open(os.path.join(jobDir, "job.json"), "w") as f:
     json.dump(jobData, f)
 
-  # Start the processing in a separate thread to avoid blocking the request.
-  thread = threading.Thread(target=ProcessJob, args=(jobId,))
-  thread.start()
+  if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
+    QUEUE_WATCHER.start()
+  else:
+    if (VERBOSE):
+      print("Queue watcher is already running or not initialized.")
 
   # Return the unique job ID with HTTP 202 Accepted status.
   return jsonify({"jobId": jobId}), 202
@@ -225,14 +305,14 @@ def postJob():
 @app.route(f"/api/v1/jobs/<jobId>", methods=["GET"])
 def getJobStatus(jobId):
   """Return the status of a specific job identified by its unique job ID."""
-  global JOB_STATUSES
+  global JOB_HISTORY_OBJ
 
   # Check if the job exists in the global status tracking dictionary.
-  if (jobId not in JOB_STATUSES):
+  if (jobId not in JOB_HISTORY_OBJ.keys()):
     return jsonify({"error": "Job not found"}), 404
 
   # Get the current status of the job.
-  status = JOB_STATUSES.get(jobId, "unknown")
+  status = JOB_HISTORY_OBJ.get(jobId, "unknown")
 
   # Read the job data from the JSON file.
   jobDir = os.path.join(STORE_PATH, jobId)
@@ -254,40 +334,55 @@ def getJobStatus(jobId):
 
 
 # Define a route to get the processed video.
-@app.route(f"/api/v1/jobs/<jobId>/result", methods=["GET"])
+@app.route("/api/v1/jobs/<jobId>/result", methods=["GET"])
 def getProcessedVideo(jobId):
-  """Return the processed video file for a completed job."""
-  global JOB_STATUSES
-
+  """
+  Return the processed video file for a completed job.
+  """
   # Check if the job exists in the global status tracking dictionary.
-  if (jobId not in JOB_STATUSES):
+  if (jobId not in JOB_HISTORY_OBJ.keys()):
+    logger.warning(f"Job {jobId} not found in the jobs.")
     return jsonify({"error": "Job not found"}), 404
 
   # Get the job directory path for file operations.
   jobDir = os.path.join(STORE_PATH, jobId)
 
   # Read the job data from the JSON file.
+  jobDataPath = os.path.join(jobDir, "job.json")
   try:
-    with open(os.path.join(jobDir, "job.json"), "r") as f:
+    with open(jobDataPath, "r") as f:
       jobData = json.load(f)
   except FileNotFoundError:
+    logger.error(f"Job data file not found for job {jobId}: {jobDataPath}")
     return jsonify({"error": "Job data not found"}), 404
+  except json.JSONDecodeError:
+    logger.error(f"Invalid JSON in job data file for job {jobId}: {jobDataPath}")
+    return jsonify({"error": "Invalid job data format"}), 500
 
   # Check if the job is completed before attempting to return the video.
-  if (jobData["status"] != "completed"):
+  if (jobData.get("status") != "completed"):
+    logger.warning(f"Job {jobId} is not completed yet.")
     return jsonify({"error": "Job not completed yet"}), 400
 
   # Get the path to the processed video.
-  videoFormat = configs["ffmpeg"].get("videoFormat", "mp4")
+  videoFormat = configs["ffmpeg"].get("videoFormat", "mp4")  # Default to "mp4"
   outputVideoPath = os.path.join(jobDir, f"{jobId}_Final.{videoFormat}")
 
   # Check if the video file exists.
   if (not os.path.exists(outputVideoPath)):
-    if (VERBOSE):
-      print(f"Processed video not found for job {jobId} at path: {outputVideoPath}")
+    logger.error(f"Processed video not found for job {jobId}: {outputVideoPath}")
     return jsonify({"error": "Processed video not found"}), 404
 
+  # Ensure the file is readable and not empty.
+  if (not os.access(outputVideoPath, os.R_OK)):
+    logger.error(f"Processed video file is not readable for job {jobId}: {outputVideoPath}")
+    return jsonify({"error": "Processed video file is not accessible"}), 500
+  if (os.path.getsize(outputVideoPath) == 0):
+    logger.error(f"Processed video file is empty for job {jobId}: {outputVideoPath}")
+    return jsonify({"error": "Processed video file is empty"}), 500
+
   # Return the video file as an attachment for download.
+  logger.info(f"Returning processed video for job {jobId}: {outputVideoPath}")
   return send_file(outputVideoPath, as_attachment=True), 200
 
 
@@ -295,10 +390,10 @@ def getProcessedVideo(jobId):
 @app.route(f"/api/v1/jobs/<jobId>", methods=["DELETE"])
 def deleteProcessedVideo(jobId):
   """Delete the processed video and associated data for a specific job."""
-  global JOB_STATUSES
+  global JOB_HISTORY_OBJ
 
   # Check if the job exists in the global status tracking dictionary.
-  if jobId not in JOB_STATUSES:
+  if (jobId not in JOB_HISTORY_OBJ.keys()):
     return jsonify({"error": "Job not found"}), 404
 
   # Get the job directory path for file operations.
@@ -310,8 +405,8 @@ def deleteProcessedVideo(jobId):
     shutil.rmtree(jobDir)
 
   # Remove the job from the status dictionary.
-  if (jobId in JOB_STATUSES):
-    del JOB_STATUSES[jobId]
+  if (jobId in JOB_HISTORY_OBJ.keys()):
+    JOB_HISTORY_OBJ.delete(jobId)
 
   # Return a success message.
   return jsonify({"message": "Job data deleted successfully"}), 200
@@ -321,135 +416,65 @@ def deleteProcessedVideo(jobId):
 @app.route(f"/api/v1/jobs/", methods=["DELETE"])
 def deleteAllProcessedVideos():
   """Delete all processed videos and associated data for all jobs."""
-  global JOB_STATUSES
+  global JOB_HISTORY_OBJ
 
   # Remove all job directories and their contents.
   if (os.path.exists(STORE_PATH)):
     import shutil
-    shutil.rmtree(STORE_PATH)
+    # Remove the inner folders only.
+    for item in os.listdir(STORE_PATH):
+      itemPath = os.path.join(STORE_PATH, item)
+      if (os.path.isdir(itemPath)):
+        shutil.rmtree(itemPath)
 
   # Clear the job statuses dictionary.
-  JOB_STATUSES.clear()
+  JOB_HISTORY_OBJ.clear()
 
   # Return a success message.
   return jsonify({"message": "All job data deleted successfully"}), 200
 
 
-# Function to process the job in a separate thread.
-def ProcessJob(jobId):
-  """Process the job: convert text to speech, add captions, and generate video."""
-  global JOB_STATUSES, videoCreator
-
-  # Get the job directory path for file operations.
-  jobDir = os.path.join(STORE_PATH, jobId)
-
-  # Update the job status to "processing".
-  JOB_STATUSES[jobId] = "processing"
-  UpdateJobStatus(jobId, "processing")
-
-  try:
-    # Read the job data from the JSON file.
-    with open(os.path.join(jobDir, "job.json"), "r") as f:
-      jobData = json.load(f)
-
-    # Get the texts and videos from the job data.
-    text = jobData["text"]
-    voice = jobData.get("voice", configs["tts"]["voice"])
-    language = jobData.get("language", configs["tts"]["language"])
-    if (VERBOSE):
-      print(f"Processing job {jobId} with language: {language}, voice: {voice}")
-      print(f"Text: {text[:50]}...")
-
-    if (not videoCreator):
-      # Initialize the video creator helper if not already done.
-      videoCreator = VideoCreatorHelper()
-
-    # Generate a video from the provided text.
-    isGenerated, videoID = videoCreator.GenerateVideo(
-      text.strip(),
-      language=language,
-      voice=voice,
-      uniqueHashID=jobId
-    )
-
-    if (not isGenerated):
-      JOB_STATUSES[jobId] = "failed"
-      UpdateJobStatus(jobId, "failed")
-      return jsonify({"error": "Failed to generate video"}), 500
-
-    # If the video was generated successfully, update the job status.
-    if (VERBOSE):
-      print(f"Video generated successfully for job {jobId} with ID: {videoID}")
-    JOB_STATUSES[jobId] = "completed"
-    UpdateJobStatus(jobId, "completed")
-
-
-  except Exception as e:
-    # If an error occurs, update the job status to "failed".
-    if (VERBOSE):
-      print(f"Error processing job {jobId}: {str(e)}")
-    JOB_STATUSES[jobId] = "failed"
-    UpdateJobStatus(jobId, "failed")
-    return jsonify({"error": f"Failed to process job {jobId}: {str(e)}"}), 500
-
-
-# Function to update the job status in the JSON file.
-def UpdateJobStatus(jobId, status):
-  """Update the job status in the job's JSON file to maintain persistence."""
-  jobDir = os.path.join(STORE_PATH, jobId)
-  jobFilePath = os.path.join(jobDir, "job.json")
-
-  # Read the existing job data.
-  try:
-    with open(jobFilePath, "r") as f:
-      jobData = json.load(f)
-  except FileNotFoundError:
-    return
-
-  # Update the status in the job data.
-  jobData["status"] = status
-
-  # Write the updated job data back to the JSON file.
-  with open(jobFilePath, "w") as f:
-    json.dump(jobData, f)
-
-  if (VERBOSE):
-    print(f"Job {jobId} status updated to: {status}")
-
-
 # Run the Flask application.
 if __name__ == "__main__":
-  with app.app_context():
-    # Load the previously saved job statuses if they exist.
-    jobsList = os.listdir(STORE_PATH)
-    # Check if it is a directory and filter out any non-directory entries.
-    jobsList = [jobId for jobId in jobsList if os.path.isdir(os.path.join(STORE_PATH, jobId))]
-    for jobId in jobsList:
-      jobFilePath = os.path.join(STORE_PATH, jobId, "job.json")
-      if (os.path.exists(jobFilePath)):
-        try:
-          with open(jobFilePath, "r") as f:
-            jobData = json.load(f)
-          JOB_STATUSES[jobId] = jobData.get("status", "unknown")
-          jobStatus = JOB_STATUSES[jobId]
-          if ((jobStatus == "queued") or (jobStatus == "processing")):
-            # Convert it to "failed" if it was processing when the server started.
-            JOB_STATUSES[jobId] = "failed"
-            UpdateJobStatus(jobId, "failed")
-        except Exception as e:
-          if (VERBOSE):
-            print(f"Error loading job {jobId}: {str(e)}")
-      else:
-        JOB_STATUSES[jobId] = "unknown"
+  # with app.app_context():
+  # Load the previously saved job statuses if they exist.
+  jobsList = os.listdir(STORE_PATH)
+  # Check if it is a directory and filter out any non-directory entries.
+  jobsList = [jobId for jobId in jobsList if os.path.isdir(os.path.join(STORE_PATH, jobId))]
+  for jobId in jobsList:
+    jobFilePath = os.path.join(STORE_PATH, jobId, "job.json")
+    if (os.path.exists(jobFilePath)):
+      try:
+        with open(jobFilePath, "r") as f:
+          jobData = json.load(f)
+        JOB_HISTORY_OBJ.updateStatus(jobId, jobData.get("status", "unknown"))
+        jobStatus = JOB_HISTORY_OBJ.get(jobId, "unknown")
+        if ((jobStatus == "queued") or (jobStatus == "processing")):
+          # Convert it to "failed" if it was processing when the server started.
+          JOB_HISTORY_OBJ.updateStatus(jobId, "queued")
+          UpdateJobStatus(jobId, "queued")
+          # # Restart the queue watcher if not already running.
+          # if (not QUEUE_WATCHER.is_alive()):
+          #   QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS)
+          #   QUEUE_WATCHER.start()
+      except Exception as e:
+        if (VERBOSE):
+          print(f"Error loading job {jobId}: {str(e)}")
+    else:
+      JOB_HISTORY_OBJ.updateStatus(jobId, "unknown")
 
-    for jobId, status in JOB_STATUSES.items():
-      if (VERBOSE):
-        print(f"Loaded job {jobId} with status: {status}")
+  if (VERBOSE):
+    print(f"Loaded {len(JOB_HISTORY_OBJ)} jobs from the store path: {STORE_PATH}")
+    for jobId, status in JOB_HISTORY_OBJ.items():
+      print(f"Loaded job {jobId} with status: {status}")
 
-    app.run(
-      host="0.0.0.0",  # Listen on all interfaces.
-      port=PORT,  # Use the port specified in the configuration.
-      debug=VERBOSE,  # Enable debug mode if verbose is set.
-      # threaded=True,  # Allow multiple requests to be handled simultaneously.
-      # use_reloader=False,  # Disable the reloader to avoid issues with threading.
-    )
+  QUEUE_WATCHER.start()  # Start the queue watcher thread to monitor job statuses.
+
+  # Start the Flask application.
+  app.run(
+    host="0.0.0.0",  # Listen on all interfaces.
+    port=PORT,  # Use the port specified in the configuration.
+    debug=VERBOSE,  # Enable debug mode if verbose is set.
+    # threaded=True,  # Allow multiple requests to be handled simultaneously.
+    # use_reloader=False,  # Disable the reloader to avoid issues with threading.
+  )
