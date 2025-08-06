@@ -85,7 +85,7 @@ video:
   default: ./Assets/Videos
   fps: 30
   height: 2160
-  maxLengthPerVideo: 5
+  maxLengthPerVideo: 10
   width: 3840
 whisper:
   language: en

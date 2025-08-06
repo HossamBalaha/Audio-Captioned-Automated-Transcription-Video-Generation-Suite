@@ -256,7 +256,7 @@ class FFMPEGHelper(object):
       "-af", configs["ffmpeg"].get("normalizationFilter", "loudnorm"),  # Apply normalization filter.
       "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set the sample rate.
       "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set the number of audio channels.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output normalized audio file.
     ]
@@ -294,7 +294,7 @@ class FFMPEGHelper(object):
       "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set the number of audio channels.
       "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec for silent audio.
       "-f", configs["ffmpeg"].get("audioFormat", "mp3"),  # Set the audio format.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output audio file path.
     ]
@@ -334,7 +334,7 @@ class FFMPEGHelper(object):
       "-ss", str(start),  # Start time in seconds for the audio portion.
       "-to", str(end),  # End time in seconds for the audio portion.
       "-acodec", "copy",  # Copy the audio codec without re-encoding.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output audio file.
     ]
@@ -378,7 +378,7 @@ class FFMPEGHelper(object):
       "-vcodec", configs["ffmpeg"].get("videoCodec", "libx264"),  # Set the video codec.
       "-pix_fmt", configs["ffmpeg"].get("pixelFormat", "yuv420p"),  # Set the pixel format.
       "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output video file.
     ]
@@ -425,7 +425,7 @@ class FFMPEGHelper(object):
       "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec.
       "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set audio sample rate for consistency.
       "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set audio channels to stereo.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output video file.
     ]
@@ -478,7 +478,7 @@ class FFMPEGHelper(object):
       "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec.
       "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set audio sample rate for consistency.
       "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set audio channels to stereo.
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output video file.
     ]
@@ -523,7 +523,7 @@ class FFMPEGHelper(object):
         "-safe", "0",  # Allow unsafe file paths.
         "-i", fileListPath,  # Input file list.
         "-c", "copy",  # Copy streams without re-encoding for speed.
-        # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+        "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
         "-y",  # Overwrite output file without asking.
         outputFilePath  # Output audio file.
       ]
@@ -587,7 +587,7 @@ class FFMPEGHelper(object):
         "-vcodec", configs["ffmpeg"].get("videoCodec", "libx264"),  # Set the video codec.
         "-pix_fmt", configs["ffmpeg"].get("pixelFormat", "yuv420p"),  # Set the pixel format.
         "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec.
-        # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+        "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
         "-y",
         outputFilePath
       ]
@@ -701,7 +701,7 @@ class FFMPEGHelper(object):
           "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set audio sample rate for consistency.
           "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set audio channels to stereo.
           "-pix_fmt", configs["ffmpeg"].get("pixelFormat", "yuv420p"),  # Set the pixel format.
-          # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+          "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
           "-y",  # Overwrite output file without asking.
           outputFilePath
         ]
@@ -747,7 +747,7 @@ class FFMPEGHelper(object):
       "-map", "1:a:0",  # Take audio from second input (index 1, audio stream 0).
       # Stop when the shortest stream ends. Other option is to use -t to specify duration. For example, -t 10 to limit the output to 10 seconds.
       "-shortest",
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output merged video file.
     ]
@@ -1014,7 +1014,7 @@ class FFMPEGHelper(object):
       # "-segment_format", videoFormat,  # Segment format.
       # "-reset_timestamps", "1",  # Reset timestamps for each segment.
       # "-segment_start_number", "0",  # Start from 0
-      # "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
+      "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",
       outputFilePath
       # .replace(f".{videoFormat}", f"_%03d.{videoFormat}")  # Output video file with segment numbering.

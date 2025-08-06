@@ -31,6 +31,7 @@ enable scalable, automated video production for content creators and developers.
 ├── TextToSpeechHelper.py      # TTS integration using Kokoro
 ├── WhisperTranscribeHelper.py # Whisper-based transcription
 ├── VideoCreatorHelper.py      # Core video assembly logic
+├── TextHelper.py              # Cleaning and escaping text
 ├── Jobs/                      # Directory for job input/output files
 │   ├── ef863../               # Example of a job directory
 │   │   ├── job.json           # Job metadata
@@ -241,6 +242,9 @@ Lists available TTS languages.
 
 Lists available TTS voices for the current language.
 
+- **Request Header**:
+    - `type`: The type of the output whether its list or dictionary. It can be `list` or `dict`.
+
 - **Response** (JSON):
   ```json
   {
@@ -269,6 +273,7 @@ Submits a new job for video generation.
     - `text`: The text to convert into a video.
     - `language`: (Optional) TTS language code (default: "en-us").
     - `voice`: (Optional) TTS voice ID (default: "af_nova").
+    - `speechRate`: (Optional) TTS speech rate (default: 1.0).
 
 - **Response** (JSON):
   ```json

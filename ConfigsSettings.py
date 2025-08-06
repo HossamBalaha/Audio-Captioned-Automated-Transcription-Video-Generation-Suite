@@ -39,7 +39,7 @@ configs = {
     "width"            : 3840,  # Default video width.
     "height"           : 2160,  # Default video height.
     "fps"              : 30,  # Default frames per second for the video.
-    "maxLengthPerVideo": 5,  # Maximum length of each video in seconds.
+    "maxLengthPerVideo": 10,  # Maximum length of each video in seconds.
     "allowedExtensions": [".mp4", ".avi", ".mov", ".mkv"]  # Allowed video file extensions.
   },
   "audio"    : {
