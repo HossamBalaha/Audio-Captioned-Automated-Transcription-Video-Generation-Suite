@@ -391,6 +391,7 @@ You can adjust the `torch` and `torchaudio` versions in `requirements.txt` to ma
 For example, for CUDA 11.8:
 
 ```
+--extra-index-url https://download.pytorch.org/whl/cu118
 torch==2.7.1+cu118
 torchaudio==2.7.1+cu118
 ```

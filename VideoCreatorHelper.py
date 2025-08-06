@@ -50,6 +50,7 @@ class VideoCreatorHelper(object):
     uniqueHashID=None,
     language=None,
     voice=None,
+    speechRate=None,
   ):
     """Convert text to audio and then transcribe it to get timing information."""
 
@@ -69,6 +70,7 @@ class VideoCreatorHelper(object):
       uniqueHashID=uniqueHashID,
       language=language,
       voice=voice,
+      speechRate=speechRate,
     )
 
     # Iterate over the generated audio data.
@@ -111,6 +113,7 @@ class VideoCreatorHelper(object):
     text,
     language=None,
     voice=None,
+    speechRate=None,
     uniqueHashID=None
   ):
     """Generate a video from the audio and transcription data."""
@@ -138,7 +141,7 @@ class VideoCreatorHelper(object):
       print(f"Processed text: {text}")
       print(f"Working path: {workingPath}")
       print(f"Unique Hash ID: {uniqueHashID}")
-      print(f"Language: {language}, Voice: {voice}")
+      print(f"Language: {language}, Voice: {voice}, Speech Rate: {speechRate}")
 
     if (not text or len(text.strip()) == 0):
       if (VERBOSE):
@@ -152,6 +155,7 @@ class VideoCreatorHelper(object):
       uniqueHashID=uniqueHashID,
       language=language,
       voice=voice,
+      speechRate=speechRate,
     )
     # Merge the transcribed audios into one.
     if (not dataList or (len(dataList) == 0)):

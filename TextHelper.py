@@ -42,9 +42,8 @@ def CleanText(text):
   text = re.sub(r'[ ]{2,}', ' ', text)
 
   # Remove all special characters except for alphanumeric characters, spaces, new lines and basic punctuation.
-  # Keep ony .,!? from the basic punctuation.
   # Don't remove new lines.
-  text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+  text = re.sub(r'[^a-zA-Z0-9\s\.]', '', text)
 
   return text
 
@@ -89,15 +88,15 @@ def EscapeText(text):
 
 if __name__ == "__main__":
   # Example usage.
-  # sampleText = '"This is a sample text with special characters: $&|;<>()[{}]*?~\nNew line and \t tab."'
-  # sampleText = '''Don't "Welcome" ! hadn’t? everyone—patients hello;'''.upper()
-  sampleText = '''
+  sampleText1 = '"This is a sample text with special characters: $&|;<>()[{}]*?~\nNew line and \t tab."'
+  sampleText2 = '''Don't "Welcome" ! hadn’t? everyone—patients hello;'''.upper()
+  sampleText3 = '''
   Select the [suitable] voice according to the language you selected. 
   For example, if you selected (American English), you should select an American English voice!
   You will find the groups           highlighted in the voice selection dropdown?
   !@#$%^&*}{POIUYTREWQ":LKJHGFDSA?><MNBVCXZ\
   '''
-  sampleText = '''
+  sampleText4 = '''
   In a quiet hospital nestled in the heart of a busy city,
   a young doctor named Maya sat at her desk, staring at a stack of patient files.
   The fluorescent lights buzzed faintly overhead,
@@ -121,8 +120,9 @@ if __name__ == "__main__":
   What neither Maya nor Sam realized was that their paths were about to cross—
   in ways neither of them could have imagined.
   '''
-  cleanedText = CleanText(sampleText)
+  cleanedText = CleanText(sampleText3)
+  print("Original Text:\n", sampleText3)
+
   escapedText = EscapeText(cleanedText)
-  print("Original Text:\n", sampleText)
   print("Cleaned Text:\n", cleanedText)
   print("Escaped Text:\n", escapedText)

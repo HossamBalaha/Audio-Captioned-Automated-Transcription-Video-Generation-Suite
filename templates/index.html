@@ -1,187 +1,240 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-md-8 mx-auto">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Create a New Job</h3>
+<div class="row mb-5">
+  <div class="col-md-12 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Create a New Job</h3>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-warning">
+          <strong>Warning:</strong>
+          Please notice that any punctuation marks in the text will be ignored and cleaned up
+          before processing.
         </div>
-        <div class="card-body">
-          <form id="ttsForm">
-            <div class="mb-3">
-              <label for="text" class="form-label">Text to Convert</label>
-              <textarea class="form-control" id="text" rows="5"></textarea>
-              <div class="form-text">Enter the text you want to convert.</div>
-            </div>
+        <div class="alert alert-info">
+          <strong>Note:</strong>
+          Please notice that you can add pauses in the text by adding triple dots (...) where you want the pause.
+          The length of the pause will depend on the voice you selected.
+          You can also add line breaks to create a pause.
+          <br><br>For example:<br>
+          <code class="bg-light p-2 d-block mt-2">
+            This is the first sentence...<br>
+            This is the second sentence......<br>
+            This is the third sentence.
+          </code>
+        </div>
+        <form id="ttsForm">
+          <div class="mb-3">
+            <label for="text" class="form-label">Text to Convert</label>
+            <div class="form-text mb-2 mt-0">Enter the text you want to convert.</div>
+            <textarea class="form-control" id="text" rows="5"></textarea>
+            <hr class="mb-0 pb-0">
+          </div>
 
-            <div class="row">
-              <div class="col-12">
-                <p>
-                  Select the suitable voice according to the language you selected. For example,
-                  if you selected American English, you should select an American English voice.
-                  You will find the groups highlighted in the voice selection dropdown.
-                </p>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="language" class="form-label">Language</label>
-                  <select class="form-select" id="language"></select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="voice" class="form-label">Voice</label>
-                  <select class="form-select" id="voice"></select>
-                </div>
+          <div class="row">
+            <div class="col-12">
+              <p>
+                Select the suitable voice according to the language you selected. For example,
+                if you selected American English, you should select an American English voice.
+                You will find the groups highlighted in the voice selection dropdown.
+              </p>
+            </div>
+            <div class="col-md">
+              <div class="mb-3">
+                <label for="language" class="form-label">Language</label>
+                <select class="form-select" id="language"></select>
               </div>
             </div>
+            <div class="col-md">
+              <div class="mb-3">
+                <label for="voice" class="form-label">Voice</label>
+                <select class="form-select" id="voice"></select>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="mb-3">
+                <label for="speechRate" class="form-label">Audio Speech Rate (0.5x to 2x)</label>
+                <input type="range" class="form-range" id="speechRate" min="0.5" max="2" step="0.025" value="0.8">
+                <label id="speechRateValue" class="form-text">Current Rate: 1x</label>
+              </div>
+            </div>
+          </div>
 
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-play-circle"></i> Create Job
+            </button>
+          </div>
+        </form>
+
+        <div id="result" class="mt-4 d-none">
+          <div class="alert alert-success">
+            <h5 class="text-center">Job Created Successfully!</h5>
+            <p class="text-center">Job ID: <strong id="jobId"></strong></p>
             <div class="text-center">
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-play-circle"></i> Create Job
-              </button>
-            </div>
-          </form>
-
-          <div id="result" class="mt-4 d-none">
-            <div class="alert alert-success">
-              <h5 class="text-center">Job Created Successfully!</h5>
-              <p class="text-center">Job ID: <strong id="jobId"></strong></p>
-              <div class="text-center">
-                <a href="/jobs" class="btn btn-success">View Jobs</a>
-              </div>
+              <a href="/jobs" class="btn btn-success">View Jobs</a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    $(document).ready(function () {
-      let allVoices = null;
-      let allLanguages = null;
+<script>
+  $(document).ready(function () {
+    let allVoices = null;
+    let allLanguages = null;
 
-      function disableForm(disabled) {
-        $("#ttsForm :input").prop("disabled", disabled).toggleClass("disabled", disabled);
-        {#console.log("Form disabled:", disabled);#}
+    function disableForm(disabled) {
+      $("#ttsForm :input").prop("disabled", disabled).toggleClass("disabled", disabled);
+      {
+        // console.log("Form disabled:", disabled);
       }
+    }
 
-      function checkVoicesAndLanguages() {
-        let voicesLoaded = $("#voice option").length > 0;
-        let languagesLoaded = $("#language option").length > 0;
-        return voicesLoaded && languagesLoaded;
+    function checkVoicesAndLanguages() {
+      let voicesLoaded = $("#voice option").length > 0;
+      let languagesLoaded = $("#language option").length > 0;
+      return voicesLoaded && languagesLoaded;
+    }
+
+    disableForm(true);
+
+    // Update speech rate value display.
+    $("#speechRate").on("input change", function () {
+      $("#speechRateValue").text(`Current Rate: ${$(this).val()}x`);
+    });
+    $("#speechRateValue").text(`Current Rate: ${$("#speechRate").val()}x`);
+
+
+    $.get("/api/v1/voices?type=dict", function (data) {
+      const voiceSelect = $("#voice");
+      Object.keys(data["voices"]).forEach(voiceList => {
+        // Add separator for each voice list.
+        voiceSelect.append(`<optgroup label="${voiceList}"></optgroup>`);
+        data["voices"][voiceList].forEach(voice => {
+          // Add each voice as an option.
+          let voiceName = voice;
+          voiceName = voiceName.replace(/_/g, " ");
+          voiceName = voiceName.charAt(3).toUpperCase() + voiceName.slice(4);
+          voiceSelect.find(`optgroup[label="${voiceList}"]`).append(`<option value="${voice}">${voiceName}</option>`);
+        });
+      });
+      allVoices = data["voices"];
+      if (checkVoicesAndLanguages()) {
+        disableForm(false);
       }
+    });
 
+    $.get("/api/v1/languages", function (data) {
+      const languageSelect = $("#language");
+      // Loop on the dictionary keys.
+      Object.keys(data["languages"]).forEach(lang => {
+        languageSelect.append(`<option value="${lang}">${data["languages"][lang]}</option>`);
+      });
+      allLanguages = data["languages"];
+      // Check if the voices and languages are loaded.
+      if (checkVoicesAndLanguages()) {
+        disableForm(false);
+      }
+    });
+
+
+    // Handle form submission.
+    $("#ttsForm").submit(function (e) {
+      e.preventDefault();
+
+      // Disable the form to prevent multiple submissions.
       disableForm(true);
-
-      $.get("/api/v1/voices?type=dict", function (data) {
-        const voiceSelect = $("#voice");
-        Object.keys(data["voices"]).forEach(voiceList => {
-          // Add separator for each voice list.
-          voiceSelect.append(`<optgroup label="${voiceList}"></optgroup>`);
-          data["voices"][voiceList].forEach(voice => {
-            // Add each voice as an option.
-            let voiceName = voice;
-            voiceName = voiceName.replace(/_/g, " ");
-            voiceName = voiceName.charAt(3).toUpperCase() + voiceName.slice(4);
-            voiceSelect.find(`optgroup[label="${voiceList}"]`).append(`<option value="${voice}">${voiceName}</option>`);
-          });
+      // Validate the form.
+      if (!$("#text").val().trim()) {
+        // SweetAlert for empty text.
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Text field cannot be empty.",
+          confirmButtonText: "OK"
         });
-        allVoices = data["voices"];
-        if (checkVoicesAndLanguages()) {
-          disableForm(false);
-        }
-      });
-
-      $.get("/api/v1/languages", function (data) {
-        const languageSelect = $("#language");
-        // Loop on the dictionary keys.
-        Object.keys(data["languages"]).forEach(lang => {
-          languageSelect.append(`<option value="${lang}">${data["languages"][lang]}</option>`);
+        disableForm(false);
+        return;
+      }
+      if (!$("#language").val()) {
+        // SweetAlert for empty language.
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please select a language.",
+          confirmButtonText: "OK"
         });
-        allLanguages = data["languages"];
-        // Check if the voices and languages are loaded.
-        if (checkVoicesAndLanguages()) {
-          disableForm(false);
-        }
-      });
+        disableForm(false);
+        return;
+      }
+      if (!$("#voice").val()) {
+        // SweetAlert for empty voice.
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please select a voice.",
+          confirmButtonText: "OK"
+        });
+        disableForm(false);
+        return;
+      }
+      if (!$("#speechRate").val() || isNaN($("#speechRate").val()) || $("#speechRate").val() < 0.5 || $("#speechRate").val() > 2) {
+        // SweetAlert for invalid speech rate.
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please select a valid speech rate between 0.5x and 2x.",
+          confirmButtonText: "OK"
+        });
+        disableForm(false);
+        return;
+      }
 
+      const data = {
+        text: $("#text").val(),
+        language: $("#language").val(),
+        voice: $("#voice").val(),
+        speechRate: parseFloat($("#speechRate").val())
+      };
 
-      // Handle form submission.
-      $("#ttsForm").submit(function (e) {
-        e.preventDefault();
+      $("#result").addClass("d-none");
 
-        // Disable the form to prevent multiple submissions.
-        disableForm(true);
-        // Validate the form.
-        if (!$("#text").val().trim()) {
-          // SweetAlert for empty text.
+      $.ajax({
+        url: "/api/v1/jobs",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+          $("#jobId").text(response.jobId);
+          $("#result").removeClass("d-none");
+          $("#ttsForm")[0].reset();
           Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Text field cannot be empty.",
+            icon: "success",
+            title: "Job Created",
+            text: `Job ID: ${response.jobId}`,
             confirmButtonText: "OK"
           });
           disableForm(false);
-          return;
-        }
-        if (!$("#language").val()) {
-          // SweetAlert for empty language.
+          console.log("Job created successfully:", response);
+        },
+        error: function (xhr) {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Please select a language.",
+            text: xhr.responseJSON ? xhr.responseJSON.error : "An error occurred while creating the job.",
             confirmButtonText: "OK"
           });
-          disableForm(false);
-          return;
+          console.error("Error creating job:", xhr);
         }
-        if (!$("#voice").val()) {
-          // SweetAlert for empty voice.
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Please select a voice.",
-            confirmButtonText: "OK"
-          });
-          disableForm(false);
-          return;
-        }
-
-        const data = {
-          text: $("#text").val(),
-          language: $("#language").val(),
-          voice: $("#voice").val()
-        };
-
-        $("#result").addClass("d-none");
-
-        $.ajax({
-          url: "/api/v1/jobs",
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function (response) {
-            $("#jobId").text(response.jobId);
-            $("#result").removeClass("d-none");
-            $("#ttsForm")[0].reset();
-          },
-          error: function (xhr) {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: xhr.responseJSON ? xhr.responseJSON.error : "An error occurred while creating the job.",
-              confirmButtonText: "OK"
-            });
-            console.error("Error creating job:", xhr);
-          }
-        });
       });
-    })
-    ;
-  </script>
+    });
+  });
+</script>
 {% endblock %}

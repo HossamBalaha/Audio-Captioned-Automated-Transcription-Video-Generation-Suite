@@ -45,8 +45,10 @@ def ProcessJob(jobId):
     text = jobData["text"]
     voice = jobData.get("voice", configs["tts"]["voice"])
     language = jobData.get("language", configs["tts"]["language"])
+    speechRate = jobData.get("speechRate", configs["tts"]["speechRate"])
+
     if (VERBOSE):
-      print(f"Processing job {jobId} with language: {language}, voice: {voice}")
+      print(f"Processing job {jobId} with language: {language}, voice: {voice}, speech rate: {speechRate}")
       print(f"Text: {text[:50]}...")
 
     if (not videoCreator):
@@ -58,6 +60,7 @@ def ProcessJob(jobId):
       text.strip(),
       language=language,
       voice=voice,
+      speechRate=speechRate,
       uniqueHashID=jobId
     )
 
@@ -282,12 +285,13 @@ def postJob():
 
   # Save the job details to a JSON file.
   jobData = {
-    "id"       : jobId,  # Unique identifier for the job.
-    "status"   : "queued",  # Initial status of the job.
-    "text"     : text,  # Get the text from the request.
-    "language" : request.json.get("language", configs["tts"]["language"]),  # Language for TTS.
-    "voice"    : request.json.get("voice", configs["tts"]["voice"]),  # Voice for TTS.
-    "createdAt": currentTime,  # Timestamp when the job was created.
+    "id"        : jobId,  # Unique identifier for the job.
+    "status"    : "queued",  # Initial status of the job.
+    "text"      : text,  # Get the text from the request.
+    "speechRate": request.json.get("speechRate", configs["tts"]["speechRate"]),  # Speech rate for TTS.
+    "language"  : request.json.get("language", configs["tts"]["language"]),  # Language for TTS.
+    "voice"     : request.json.get("voice", configs["tts"]["voice"]),  # Voice for TTS.
+    "createdAt" : currentTime,  # Timestamp when the job was created.
   }
   with open(os.path.join(jobDir, "job.json"), "w") as f:
     json.dump(jobData, f)

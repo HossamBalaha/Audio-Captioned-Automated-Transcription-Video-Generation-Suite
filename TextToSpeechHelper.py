@@ -6,7 +6,7 @@
 ========================================================================
 # Author: Hossam Magdy Balaha
 # Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 4th, 2025
+# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -143,7 +143,13 @@ class TextToSpeechHelper(object):
 
   def GetSelectedVoice(self):
     """Returns the currently selected voice file."""
+
     return self.selectedVoice  # Return the currently selected voice.
+
+  def GetSpeechRate(self):
+    """Returns the current speech rate for the TTS system."""
+
+    return self.speechRate  # Return the current speech rate.
 
   def SetLanguage(self, language):
     """Sets the language for the TTS pipeline and initializes the pipeline with the new language."""
@@ -191,6 +197,7 @@ class TextToSpeechHelper(object):
     uniqueHashID=None,
     language=None,
     voice=None,
+    speechRate=None,
   ):
     """
     Generates speech from the given text and stores the audio data in the
@@ -204,6 +211,7 @@ class TextToSpeechHelper(object):
         (default is None, which will use the current timestamp).
       language (str): The language code for the TTS system (default is None, uses the current language).
       voice (str): The voice file to use for TTS (default is None, uses the current voice).
+      speechRate (float): The speech rate for TTS (default is None, uses the current speech rate).
     Returns:
       list: A list of tuples containing the generated text, phonemes, audio data, and file paths.
     """
@@ -213,6 +221,8 @@ class TextToSpeechHelper(object):
       self.SetLanguage(language)  # Set the language if provided.
     if (voice is not None):
       self.SetVoice(voice)  # Set the voice if provided.
+    if (speechRate is not None):
+      self.speechRate = speechRate  # Set the speech rate if provided.
 
     # Define the file path for the audio file.
     if (uniqueHashID is None):
@@ -278,6 +288,7 @@ if __name__ == "__main__":
   # Display the updated selected language and voice.
   print("Selected Language:", ttsHelper.GetSelectedLanguage())
   print("Selected Voice:", ttsHelper.GetSelectedVoice())
+  print("Selected Speech Rate:", ttsHelper.GetSpeechRate())
 
   # Generate and store speech for a sample text.
   text = "Hello, this is a test of the Kokoro TTS system."

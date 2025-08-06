@@ -8,7 +8,7 @@
   </button>
 </div>
 
-<div class="card">
+<div class="card" id="jobsCard">
   <div class="card-header">
     <h5 class="card-title mb-0">Active Jobs</h5>
   </div>
@@ -115,18 +115,50 @@
   $(document).ready(function () {
     loadJobs();
 
+    function escapeHtml(unsafe) {
+      return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+    }
+
     $("#refreshBtn").click(loadJobs);
 
     $(document).on("click", ".view-btn", function () {
       const jobId = $(this).data("id");
       const jobText = $(this).data("text");
-      //   Create a modal to display job details
-      Swal.fire({
-        title: "Job Details",
-        html: `<strong>Job ID:</strong> ${jobId}<br><strong>Text:</strong> ${jobText}`,
-        icon: "info",
-        showCloseButton: true,
-        confirmButtonText: "Close"
+      // Replace the new line characters with <br> for HTML display.
+      // Escape HTML to prevent XSS attacks.
+      const escapedText = escapeHtml(jobText).replace(/\n/g, "<br>");
+      // Create a bootstrap modal to display job details.
+      const modalHtml = `
+        <div class="modal fade" id="jobDetailsModal" tabindex="-1"
+          data-bs-keyboard="false" tabindex="-1"
+          aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="jobDetailsModalLabel">Job Details - ${jobId}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Job ID:</strong> ${jobId}</p>
+                <hr>
+                <p><strong>Text:</strong></p>
+                <div class="text-start">${escapedText}<div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      $("#jobsCard").append(modalHtml);
+      $("#jobDetailsModal").modal("show");
+      $("#jobDetailsModal").on("hidden.bs.modal", function () {
+        $(this).remove(); // Remove the modal from the DOM after closing it.
       });
     });
 
