@@ -502,7 +502,7 @@ the completed, pending, processing, and failed jobs.
 
 </details>
 
-#### GET `/api/v1/jobs/triggerRemaining`
+#### POST `/api/v1/jobs/triggerRemaining`
 
 <details>
 Triggers processing of any remaining jobs in the queue.

@@ -374,17 +374,25 @@ def getJobStatus(jobId):
 
 
 # Define a route to get the processed video.
-@app.route("/api/v1/jobs/triggerRemaining", methods=["GET"])
+@app.route("/api/v1/jobs/triggerRemaining", methods=["POST"])
 def triggerRemainingJobs():
   '''
   Trigger processing for any remaining queued jobs.
   '''
   global QUEUE_WATCHER, JOB_HISTORY_OBJ
 
-  # Start processing any remaining queued jobs.
   if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
+    QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
+    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
     QUEUE_WATCHER.start()
     return jsonify({"message": "Triggered processing for remaining queued jobs."}), 200
+  elif (QUEUE_WATCHER and QUEUE_WATCHER.is_alive()):
+    return jsonify({"message": "Queue watcher is already running."}), 200
+  elif (not QUEUE_WATCHER):
+    QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
+    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
+    QUEUE_WATCHER.start()
+    return jsonify({"message": "Initialized and started queue watcher."}), 200
   else:
     return jsonify({"message": "Queue watcher is already running or not initialized."}), 200
 

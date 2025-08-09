@@ -203,9 +203,10 @@
         cancelButtonText: "No, cancel"
       }).then((result) => {
         if (result.isConfirmed) {
-          $.post("/api/v1/jobs/triggerRemaining", function () {
+          $.post("/api/v1/jobs/triggerRemaining", function (response) {
             loadJobs();
-            Swal.fire("Triggered!", "All remaining jobs have been triggered.", "success");
+            let responseMessage = response.message || "All remaining jobs have been triggered.";
+            Swal.fire("Triggered!", responseMessage, "success");
           }).fail(function () {
             Swal.fire("Error!", "Failed to trigger remaining jobs.", "error");
           });
