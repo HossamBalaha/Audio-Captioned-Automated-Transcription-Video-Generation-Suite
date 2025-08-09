@@ -489,7 +489,7 @@ Deletes a job and its associated files.
 
 </details>
 
-#### DELETE `/api/v1/jobs/` [DANGER!]
+#### DELETE `/api/v1/jobs/all` [DANGER!]
 
 <details>
 Deletes all jobs and their associated files. Use with caution as this will remove all job data including

@@ -225,7 +225,7 @@
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: "/api/v1/jobs",
+            url: "/api/v1/jobs/all",
             method: "DELETE",
             success: function () {
               loadJobs();

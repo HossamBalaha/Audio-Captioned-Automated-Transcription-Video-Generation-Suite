@@ -486,7 +486,7 @@ def deleteProcessedVideo(jobId):
 
 
 # Define a route to delete all processed videos.
-@app.route(f"/api/v1/jobs/", methods=["DELETE"])
+@app.route(f"/api/v1/jobs/all", methods=["DELETE"])
 def deleteAllProcessedVideos():
   '''Delete all processed videos and associated data for all jobs.'''
   global JOB_HISTORY_OBJ
