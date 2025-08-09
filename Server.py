@@ -282,6 +282,16 @@ def postJob():
     return jsonify({"error": "Invalid JSON data"}), 400
 
   text = request.json.get("text", "").strip()
+  # Ensure that the text is string.
+  if (not isinstance(text, str)):
+    text = str(text)
+
+  speechRate = request.json.get("speechRate", configs["tts"]["speechRate"])
+  # Ensure that the speech rate is a float.
+  try:
+    speechRate = float(speechRate)
+  except ValueError:
+    speechRate = configs["tts"]["speechRate"]
 
   # Validate the input text to ensure it meets requirements.
   if (not text):
@@ -318,7 +328,7 @@ def postJob():
     "id"          : jobId,  # Unique identifier for the job.
     "status"      : "queued",  # Initial status of the job.
     "text"        : text,  # Get the text from the request.
-    "speechRate"  : request.json.get("speechRate", configs["tts"]["speechRate"]),  # Speech rate for TTS.
+    "speechRate"  : speechRate,  # Speech rate for TTS.
     "language"    : request.json.get("language", configs["tts"]["language"]),  # Language for TTS.
     "voice"       : request.json.get("voice", configs["tts"]["voice"]),  # Voice for TTS.
     "videoQuality": request.json.get("videoQuality", None),  # Video quality preference.

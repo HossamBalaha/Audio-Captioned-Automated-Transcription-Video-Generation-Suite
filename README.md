@@ -438,7 +438,7 @@ Checks the status of a video generation job. The status can be one of the follow
 - `processing`: The job is currently being processed.
 - `completed`: The job has been completed successfully.
 - `failed`: The job has failed during processing.
-- `pending`: The job is queued and waiting to be processed.
+- `queued`: The job is queued and waiting to be processed.
 
 - **Response** (JSON):
   ```json
@@ -493,7 +493,7 @@ Deletes a job and its associated files.
 
 <details>
 Deletes all jobs and their associated files. Use with caution as this will remove all job data including
-the completed, pending, processing, and failed jobs.
+the completed, queued, processing, and failed jobs.
 
 - **Response**: Confirmation message indicating all jobs have been deleted.
 
