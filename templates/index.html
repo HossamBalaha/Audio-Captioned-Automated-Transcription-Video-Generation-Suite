@@ -41,6 +41,8 @@
                 You will find the groups highlighted in the voice selection dropdown.
               </p>
             </div>
+          </div>
+          <div class="row">
             <div class="col-md">
               <div class="mb-3">
                 <label for="language" class="form-label">Language</label>
@@ -61,8 +63,22 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md">
+              <div class="mb-3">
+                <label for="voice" class="form-label">Video Quality</label>
+                <select class="form-select" id="videoQuality"></select>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="mb-3">
+                <label for="voice" class="form-label">Video Type</label>
+                <select class="form-select" id="videoType"></select>
+              </div>
+            </div>
+          </div>
 
-          <div class="text-center">
+          <div class="row text-center">
             <button type="submit" class="btn btn-primary">
               <i class="bi bi-play-circle"></i> Create Job
             </button>
@@ -89,6 +105,8 @@
   $(document).ready(function () {
     let allVoices = null;
     let allLanguages = null;
+    let allVideoTypes = null;
+    let allVideoQualities = null;
 
     function disableForm(disabled) {
       $("#ttsForm :input").prop("disabled", disabled).toggleClass("disabled", disabled);
@@ -97,10 +115,12 @@
       }
     }
 
-    function checkVoicesAndLanguages() {
-      let voicesLoaded = $("#voice option").length > 0;
-      let languagesLoaded = $("#language option").length > 0;
-      return voicesLoaded && languagesLoaded;
+    function checkLoadedData() {
+      const voicesLoaded = $("#voice option").length > 0;
+      const languagesLoaded = $("#language option").length > 0;
+      const videoTypesLoaded = $("#videoType option").length > 0;
+      const videoQualitiesLoaded = $("#videoQuality option").length > 0;
+      return voicesLoaded && languagesLoaded && videoTypesLoaded && videoQualitiesLoaded;
     }
 
     disableForm(true);
@@ -126,7 +146,7 @@
         });
       });
       allVoices = data["voices"];
-      if (checkVoicesAndLanguages()) {
+      if (checkLoadedData()) {
         disableForm(false);
       }
     });
@@ -139,7 +159,35 @@
       });
       allLanguages = data["languages"];
       // Check if the voices and languages are loaded.
-      if (checkVoicesAndLanguages()) {
+      if (checkLoadedData()) {
+        disableForm(false);
+      }
+    });
+
+    $.get("/api/v1/videoTypes", function (data) {
+      const videoTypeSelect = $("#videoType");
+      // Loop on the dictionary keys.
+      Object.keys(data["videoTypes"]).forEach(type => {
+        videoTypeSelect.append(`<option value="${data["videoTypes"][type]}">${data["videoTypes"][type]}</option>`);
+      });
+      allVideoTypes = data["videoTypes"];
+      // Check if the voices and languages are loaded.
+      if (checkLoadedData()) {
+        disableForm(false);
+      }
+    });
+
+    $.get("/api/v1/videoQualities", function (data) {
+      const videoQualitySelect = $("#videoQuality");
+      // Loop on the dictionary keys.
+      Object.keys(data["videoQualities"]).forEach(quality => {
+        videoQualitySelect.append(`<option value="${data["videoQualities"][quality][0]}">
+          ${data["videoQualities"][quality][0]}
+        </option>`);
+      });
+      allVideoQualities = data["videoQualities"];
+      // Check if the voices and languages are loaded.
+      if (checkLoadedData()) {
         disableForm(false);
       }
     });
@@ -201,7 +249,9 @@
         text: $("#text").val(),
         language: $("#language").val(),
         voice: $("#voice").val(),
-        speechRate: parseFloat($("#speechRate").val())
+        speechRate: parseFloat($("#speechRate").val()),
+        videoType: $("#videoType").val(),
+        videoQuality: $("#videoQuality").val(),
       };
 
       $("#result").addClass("d-none");
@@ -222,7 +272,7 @@
             confirmButtonText: "OK"
           });
           disableForm(false);
-          console.log("Job created successfully:", response);
+          // console.log("Job created successfully:", response);
         },
         error: function (xhr) {
           Swal.fire({

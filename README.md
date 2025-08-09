@@ -40,6 +40,8 @@ enable scalable, automated video production for content creators and developers.
 │   └── ...                    # More job directories
 ├── Assets/                    # Static assets (images, background videos, etc.)
 │   ├── Videos/                # Default background videos for video generation
+│   │   ├── Horizontal Videos/ # Horizontal orientation videos
+│   │   └── Vertical Videos/   # Vertical orientation videos
 │   ├── Audios/                # Default audio files for testing the modules
 │   └── Fonts/                 # Default fonts for captions
 ├── templates/                 # HTML templates for Flask webpage UIs
@@ -88,8 +90,8 @@ whisper:
   language: "en"
 video:
   default: "./Assets/Videos"
-  width: 3840
-  height: 2160
+  type: "Horizontal"
+  quality: "4K"
   fps: 30
   maxLengthPerVideo: 5
 ffmpeg:
@@ -101,6 +103,9 @@ ffmpeg:
   sampleRate: 44100
   channels: 2
 ```
+
+> **Notice**: These configurations are not the all settings available. More settings can be found and adjusted in
+> `ConfigsSettings.py`. Each setting is documented in the file.
 
 ### Jobs Directory
 
@@ -117,7 +122,9 @@ Stores all job-related data including:
 
 Contains background video assets used in the final video creation:
 
-- Default video assets in `"./Assets/Videos"`
+- Default video assets in `"./Assets/Videos/Horizontal Videos"` and
+  `"./Assets/Videos/Vertical Videos"`
+- Users can add their own videos to these directories.
 - System expects these videos to be of high quality (4K by default)
 - Each video segment is used for a fixed duration (`maxLengthPerVideo`)
 
@@ -189,6 +196,7 @@ Flask-based REST API server with the following endpoints:
 
 #### GET `/api/v1/status`
 
+<details>
 Returns the current status of the server.
 
 - **Response** (JSON):
@@ -198,8 +206,11 @@ Returns the current status of the server.
   }
   ```
 
+</details>
+
 #### GET `/api/v1/ready`
 
+<details>
 Checks if the server is ready to accept jobs.
 
 - **Response** (JSON):
@@ -213,8 +224,11 @@ Checks if the server is ready to accept jobs.
     - `200 OK`: Server is ready.
     - `503 Service Unavailable`: Server is not ready.
 
+</details>
+
 #### GET `/api/v1/languages`
 
+<details>
 Lists available TTS languages.
 
 - **Response** (JSON):
@@ -235,17 +249,19 @@ Lists available TTS languages.
   ```
 
 - **Status Codes**:
-    - `200 OK`: All jobs deleted successfully.
-    - `400 Bad Request`: Invalid request parameters.
+    - `200 OK`: Languages retrieved successfully.
+
+</details>
 
 #### GET `/api/v1/voices`
 
+<details>
 Lists available TTS voices for the current language.
 
 - **Request Header**:
     - `type`: The type of the output whether its list or dictionary. It can be `list` or `dict`.
 
-- **Response** (JSON):
+- **Response** (JSON if `type` is `list`):
   ```json
   {
     "voices": [
@@ -265,8 +281,132 @@ Lists available TTS voices for the current language.
   }
   ```
 
+- **Response** (JSON if `type` is `dict`):
+  ```json
+  {
+    "voices": {
+        "American English Female voices (11 voices)": [
+            "af_heart",
+            "af_alloy",
+            "af_aoede",
+            "af_bella",
+            "af_jessica",
+            "af_kore",
+            "af_nicole",
+            "af_nova",
+            "af_river",
+            "af_sarah",
+            "af_sky"
+        ],
+        ...
+    }
+  }
+  ```
+
+- **Status Codes**:
+    - `200 OK`: Voices retrieved successfully.
+
+</details>
+
+#### GET `/api/v1/videoTypes`
+
+<details>
+Lists available video types.
+
+- **Response** (JSON):
+  ```json
+  {
+    "videoTypes": [
+        "Horizontal",
+        "Vertical"
+    ]
+  }
+  ```
+
+- **Status Codes**:
+    - `200 OK`: Video types retrieved successfully.
+
+</details>
+
+#### GET `/api/v1/videoQualities`
+
+<details>
+Lists available video qualities.
+
+- **Response** (JSON):
+  ```json
+  {
+    "videoQualities": [
+        [
+            "4K",
+            [
+                3840,
+                2160
+            ]
+        ],
+        [
+            "Full HD",
+            [
+                1920,
+                1080
+            ]
+        ],
+        ...
+    ]
+  }
+  ```
+
+- **Status Codes**:
+    - `200 OK`: Video qualities retrieved successfully.
+
+</details>
+
+#### GET `/api/v1/jobs`
+
+<details>
+Gets a list of all submitted jobs including their details such as text, status, language, voice, etc.
+
+- **Response** (JSON):
+  ```json
+  {
+    "jobs": [
+        {
+            "createdAt": "2025-08-08 22:15:27",
+            "isCompleted": true,
+            "jobId": "07abdf3f0600152a9d0d01eab9769092",
+            "language": "en-gb",
+            "speechRate": 1,
+            "status": "completed",
+            "text": "Select the suitable voice according to the language you selected. For example, if you selected American English, you should select an American English voice. You will find the groups highlighted in the voice selection dropdown.",
+            "videoQuality": "HD",
+            "videoType": "Horizontal",
+            "voice": "af_heart"
+        },
+        {
+            "createdAt": "2025-08-08 22:15:48",
+            "isCompleted": true,
+            "jobId": "304c34066273fe14790873de94f30346",
+            "language": "en-gb",
+            "speechRate": 1,
+            "status": "completed",
+            "text": "Select the suitable voice according to the language you selected. For example, if you selected American English, you should select an American English voice. You will find the groups highlighted in the voice selection dropdown.",
+            "videoQuality": "HD",
+            "videoType": "Vertical",
+            "voice": "af_heart"
+        },
+        ...
+    ]
+  }
+  ```
+
+- **Status Codes**:
+    - `200 OK`: Jobs retrieved successfully.
+
+</details>
+
 #### POST `/api/v1/jobs`
 
+<details>
 Submits a new job for video generation.
 
 - **Request Body** (form-data):
@@ -274,33 +414,44 @@ Submits a new job for video generation.
     - `language`: (Optional) TTS language code (default: "en-us").
     - `voice`: (Optional) TTS voice ID (default: "af_nova").
     - `speechRate`: (Optional) TTS speech rate (default: 1.0).
+    - `videoType`: (Optional) Video type ("Horizontal" or "Vertical", default: "Horizontal").
+    - `videoQuality`: (Optional) Video quality ("4K", "Full HD", etc., default: "4K").
 
 - **Response** (JSON):
   ```json
   {
-    "jobId": "UNIQUE_JOB_ID"
+    "jobId": "5d8279821d778604193ab2f6e4e39264"
   }
   ```
 
 - **Status Codes**:
     - `202 Accepted`: Job successfully submitted.
     - `400 Bad Request`: Invalid input data (e.g., text too long).
-    - `500 Failed`: Failed to generate video.
-    - `503 Service Unavailable`: Server is busy or not ready.
+
+</details>
 
 #### GET `/api/v1/jobs/<jobId>`
 
-Checks the status of a video generation job.
+<details>
+Checks the status of a video generation job. The status can be one of the following:
+
+- `processing`: The job is currently being processed.
+- `completed`: The job has been completed successfully.
+- `failed`: The job has failed during processing.
+- `pending`: The job is queued and waiting to be processed.
 
 - **Response** (JSON):
   ```json
   {
-    "jobId": "UNIQUE_JOB_ID",
-    "status": "processing|completed|failed|pending",
+    "createdAt": "2025-08-08 22:21:53",
+    "jobId": "5d8279821d778604193ab2f6e4e39264",
     "language": "en-us",
-    "voice": "af_nova",
-    "text": "This project is a fully automated video creation pipeline that utilizes...",
-    "createdAt": "2025-08-01 09:14:25"
+    "speechRate": 1,
+    "status": "completed",
+    "text": "This project is a fully automated video creation pipeline that utilizes state-of-the-art AI tools for transcription,\ntext-to-speech, and video/audio processing. It integrates Whisper for speech-to-text, Kokoro TTS for voice generation,\nFFMPEG for video/audio manipulation, and Rust-powered build tools via Cargo — all orchestrated through a Python backend.\nPerfect for content creators, educators, or developers looking to automate short video generation from scripts or audio\ninputs.",
+    "videoQuality": "4K",
+    "videoType": "Vertical",
+    "voice": "af_nicole"
   }
   ```
 
@@ -308,14 +459,26 @@ Checks the status of a video generation job.
     - `200 OK`: Job status retrieved successfully.
     - `404 Not Found`: Job ID does not exist.
 
+</details>
+
 #### GET `/api/v1/jobs/<jobId>/result`
 
+<details>
 Downloads the completed video file.
 
-- **Response**: Video file (MP4 format) for download
+- **Response**: The video file as an attachment.
+
+- **Status Codes**:
+    - `200 OK`: Video file retrieved successfully.
+    - `404 Not Found`: Job ID does not exist or job is not completed.
+    - `400 Bad Request`: Job is not yet completed.
+    - `500 Internal Server Error`: Error retrieving the video file.
+
+</details>
 
 #### DELETE `/api/v1/jobs/<jobId>`
 
+<details>
 Deletes a job and its associated files.
 
 - **Response**: Confirmation message indicating the job has been deleted.
@@ -324,14 +487,34 @@ Deletes a job and its associated files.
     - `200 OK`: Job deleted successfully.
     - `404 Not Found`: Job ID does not exist.
 
+</details>
+
 #### DELETE `/api/v1/jobs/` [DANGER!]
 
+<details>
 Deletes all jobs and their associated files. Use with caution as this will remove all job data including
 the completed, pending, processing, and failed jobs.
 
 - **Response**: Confirmation message indicating all jobs have been deleted.
+
 - **Status Codes**:
     - `200 OK`: All jobs deleted successfully.
+
+</details>
+
+#### GET `/api/v1/jobs/triggerRemaining`
+
+<details>
+Triggers processing of any remaining jobs in the queue.
+
+- **Response**: Confirmation message indicating remaining jobs have been triggered. You may get:
+  -   "Triggered processing for remaining queued jobs."
+  -   "Queue watcher is already running or not initialized."
+
+- **Status Codes**:
+    - `200 OK`: Remaining jobs triggered successfully.
+
+</details>
 
 ## 🛠️ Preparation Steps
 
@@ -414,11 +597,18 @@ correct command for your system.
     - Configure video resolution and settings.
 
 2. Add background videos to the directory specified by `video.default` (default: `./Assets/Videos`)
+    - For horizontal videos, place them in `./Assets/Videos/Horizontal Videos`.
+    - For vertical videos, place them in `./Assets/Videos/Vertical Videos`.
+    - Ensure videos match the desired quality (e.g., 4K) and format.
     - You can get high-quality 4K videos from various sources like Pexels, Pixabay, or your own recordings.
 
-3. Ensure all required directories exist:
+3. Ensure all required directories exist (Optional; they exist by default):
     - `mkdir -p Jobs`
     - `mkdir -p Assets/Videos`
+    - `mkdir -p Assets/Videos/Horizontal Videos`
+    - `mkdir -p Assets/Videos/Vertical Videos`
+    - `mkdir -p Assets/Audios`
+    - `mkdir -p Assets/Fonts`
 
 ## 🚀 Usage Instructions
 
@@ -440,19 +630,19 @@ curl -X POST http://localhost:5000/api/v1/jobs \
 3. Monitor job status:
 
 ```bash
-curl http://localhost:5000/api/v1/jobs/<returned_job_id>
+curl http://localhost:5000/api/v1/jobs/<returnedJobID>
 ```
 
 4. Download the completed video:
 
 ```bash
-curl http://localhost:5000/api/v1/jobs/<returned_job_id>/result --output Video.mp4
+curl http://localhost:5000/api/v1/jobs/<returnedJobID>/result --output Video.mp4
 ```
 
 5. Delete a job and its files (to clean up and save space):
 
 ```bash
-curl -X DELETE http://localhost:5000/api/v1/jobs/<returned_job_id>
+curl -X DELETE http://localhost:5000/api/v1/jobs/<returnedJobID>
 ```
 
 ## 🛠️ Troubleshooting

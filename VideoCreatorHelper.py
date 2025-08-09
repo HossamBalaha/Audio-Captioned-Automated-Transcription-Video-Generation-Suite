@@ -84,10 +84,15 @@ class VideoCreatorHelper(object):
     # Return the list of transcriptions with timing information.
     return dataList
 
-  def GetCurrentVideosList(self):
+  def GetCurrentVideosList(self, videoType="Horizontal"):
     """Get the list of current videos in the default video directory."""
     # List all files in the default video directory.
-    currentVideosList = os.listdir(configs["video"].get("default", "./Assets/Videos"))
+    videosPath = configs["video"].get("default", "./Assets/Videos")
+    if (videoType == "Vertical"):
+      videosPath = os.path.join(videosPath, "Vertical Videos")
+    else:
+      videosPath = os.path.join(videosPath, "Horizontal Videos")
+    currentVideosList = os.listdir(videosPath)
     # Filter out only video files (assuming they have specific extensions).
     # Convert allowed extensions to a tuple for filtering.
     videoExtensions = tuple(configs["video"].get("allowedExtensions", [".mp4", ".avi", ".mov", ".mkv"]))
@@ -98,7 +103,7 @@ class VideoCreatorHelper(object):
 
     summary = []  # List to store video file paths and their durations.
     for videoFile in currentVideosList:
-      videoFilePath = os.path.join(configs["video"]["default"], videoFile)
+      videoFilePath = os.path.join(videosPath, videoFile)
       requiredDuration = configs["video"]["maxLengthPerVideo"]  # Maximum length of each video segment.
       if (os.path.isfile(videoFilePath)):
         # Get the duration of the video file using FFprobe.
@@ -114,9 +119,23 @@ class VideoCreatorHelper(object):
     language=None,
     voice=None,
     speechRate=None,
+    videoQuality=None,
+    videoType=None,
     uniqueHashID=None
   ):
-    """Generate a video from the audio and transcription data."""
+    '''
+    Generate a video with captions from the provided text.
+    Parameters:
+      text (str): The input text to convert to audio and captions.
+      language (str): The language for TTS.
+      voice (str): The voice for TTS.
+      speechRate (float): The speech rate for TTS.
+      videoQuality (str): The quality of the video (e.g., "4K" or "Full HD").
+      videoType (str): The type of the video (e.g., "Horizontal" or "Vertical").
+      uniqueHashID (str): A unique identifier for the job.
+    Returns:
+      (bool, str): A tuple indicating success and the generated video file name.
+    '''
 
     if (not uniqueHashID):
       currentTime = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))  # Get the current time.
@@ -207,16 +226,84 @@ class VideoCreatorHelper(object):
     if (VERBOSE):
       print(f"Total captions generated: {len(captionWords)}")
 
+    # Determine video quality and type; and hence we can determine width and height.
+    availableVideoQualities = configs["video"].get("availableQualities", [])
+    qualityKeys = [quality[0] for quality in availableVideoQualities]
+
+    availableVideoTypes = configs["video"].get("availableTypes", [])
+    if (not videoQuality or (videoQuality not in qualityKeys)):
+      videoQuality = "Full HD"  # Default to Full HD if not specified.
+    if (not videoType or (videoType not in availableVideoTypes)):
+      videoType = availableVideoTypes[0]
+    if (VERBOSE):
+      print(f"Video Quality: {videoQuality}, Video Type: {videoType}")
+    width, height = availableVideoQualities[qualityKeys.index(videoQuality)][1]
+    if (videoType == "Vertical"):
+      width, height = height, width
+    configs["video"]["width"] = width
+    configs["video"]["height"] = height
+
+    if (videoType == "Vertical"):
+      captionFontSize = configs["ffmpeg"].get("verticalCaptionFontSize", "4.8%")  # Font size for captions.
+    else:
+      captionFontSize = configs["ffmpeg"].get("horizontalCaptionFontSize", "6.8%")  # Font size for captions.
+
+    captionLineUsagePercentage = configs["ffmpeg"].get("captionLineUsagePercentage", 80)  # Line usage percentage.
+    captionReservedWidth = (width * captionLineUsagePercentage) / 100  # Calculate reserved width for captions.
+
+    charactersWidth = FFMPEGHelper().GetCharactersWidth(width, captionFontSize)
+
+    if (VERBOSE):
+      print(f"Video dimensions: {width}x{height}")
+      print(f"Caption reserved width: {captionReservedWidth}")
+      print(f"Caption font size: {captionFontSize}")
+      print(f"Characters width mapping: {charactersWidth}")
+
     # Loop through the caption words and create a caption string. Process N words at a time.
     captionsList = []  # List to store caption strings.
-    captionsPerLine = configs["ffmpeg"].get("captionsPerLine", 4)  # Number of captions per line.
-    for i in range(0, len(captionWords), captionsPerLine):
+    counter = 0
+    wordWidth = 0
+    # Loop through the caption words to create caption strings that fit within the reserved width.
+    while (counter < len(captionWords)):
+      currentWidth = 0
+      i = counter
+      while (i < len(captionWords)):
+        currentWord = captionWords[i]["word"].upper()
+        wordWidth = sum([charactersWidth.get(char, 0) for char in currentWord])
+        if (VERBOSE):
+          print(f"Word: {currentWord}, Width: {wordWidth}, Current Total Width: {currentWidth}")
+        # Check if the current word alone exceeds the reserved width.
+        if (wordWidth > captionReservedWidth):
+          if (VERBOSE):
+            print(f"Single word '{currentWord}' exceeds caption reserved width. Skipping this word.")
+          break
+        # Check if adding the current word along with the previous words exceeds the reserved width.
+        if (currentWidth + wordWidth <= captionReservedWidth):
+          currentWidth += wordWidth
+          i += 1
+        else:
+          break
+      if (VERBOSE):
+        print(f"Words from index {counter} to {i} fit in the caption width.")
+        print(f"Current width used: {currentWidth}, Reserved width: {captionReservedWidth}")
+      firstWordIndex = counter
+      lastWordIndex = i
+      text = " ".join([word["word"] for word in captionWords[firstWordIndex:lastWordIndex]])
       captionsList.append({
-        # Join the words into a single caption string.
-        "text" : " ".join([word["word"] for word in captionWords[i:i + captionsPerLine]]),
-        # Store the words for timing.
-        "words": captionWords[i:i + captionsPerLine],
+        "text" : text,
+        "words": captionWords[firstWordIndex:lastWordIndex],
       })
+      counter = lastWordIndex
+
+      if (wordWidth > captionReservedWidth):
+        # If a single word alone exceeds the reserved width, add it alone and move to the next word.
+        text = captionWords[counter]["word"]
+        captionsList.append({
+          "text" : text,
+          "words": [captionWords[counter]],
+        })
+        counter += 1
+
     if (VERBOSE):
       print(f"Total caption strings generated: {len(captionsList)}")
       print(captionsList)
@@ -249,7 +336,8 @@ class VideoCreatorHelper(object):
       return False, None
 
     maxLengthPerVideo = configs["video"].get("maxLengthPerVideo", 5)  # Maximum length of each video segment.
-    availableVideos = self.GetCurrentVideosList()  # Get the list of current videos and their durations.
+    # Get the list of current videos and their durations.
+    availableVideos = self.GetCurrentVideosList(videoType=videoType)
     requiredNoOfVideos = int(audioDuration / maxLengthPerVideo) + 1  # Calculate the number of videos needed.
     if (VERBOSE):
       print(f"Required number of videos: {requiredNoOfVideos} for audio duration {audioDuration:.2f} seconds.")
@@ -261,7 +349,7 @@ class VideoCreatorHelper(object):
     elif (requiredNoOfVideos > len(availableVideos)):
       while (requiredNoOfVideos > len(availableVideos)):
         # If not enough videos are available, add more random videos.
-        newVideos = self.GetCurrentVideosList()
+        newVideos = self.GetCurrentVideosList(videoType)
         if (not newVideos):
           if (VERBOSE):
             print("No more videos available to add. Exiting.")
@@ -282,9 +370,9 @@ class VideoCreatorHelper(object):
         videoFilePaths=videoFilePaths,  # List of paths to video files to concatenate.
         outputFilePath=portionedOutputVideoPath,  # Path to save the concatenated video file.
         start=0,  # Start time in seconds for the video portion.
-        end=configs["video"].get("maxLengthPerVideo", 5),  # End time in seconds for the video portion.
-        width=configs["video"].get("width", 3840),  # Width of the output video.
-        height=configs["video"].get("height", 2160),  # Height of the output video.
+        end=maxLengthPerVideo,  # End time in seconds for the video portion.
+        width=width,  # Width of the output video.
+        height=height,  # Height of the output video.
       )
     )
     if (not isDone):
@@ -317,6 +405,7 @@ class VideoCreatorHelper(object):
         videoFilePath=outputNoCaptionPath,  # Path to the input video file.
         outputFilePath=captionedVideoPath,  # Path to save the output video file with captions.
         captionsList=captionsList,  # A list of dictionaries containing caption text and timing.
+        captionFontSize=captionFontSize,  # Font size for the captions.
       )
     )
     if (not isDone):

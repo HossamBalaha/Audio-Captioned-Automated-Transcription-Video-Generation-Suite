@@ -26,7 +26,7 @@ from TextToSpeechHelper import TextToSpeechHelper
 
 # Function to process the job in a separate thread.
 def ProcessJob(jobId):
-  """Process the job: convert text to speech, add captions, and generate video."""
+  '''Process the job: convert text to speech, add captions, and generate video.'''
   global JOB_HISTORY_OBJ, videoCreator
 
   # Get the job directory path for file operations.
@@ -46,9 +46,15 @@ def ProcessJob(jobId):
     voice = jobData.get("voice", configs["tts"]["voice"])
     language = jobData.get("language", configs["tts"]["language"])
     speechRate = jobData.get("speechRate", configs["tts"]["speechRate"])
+    videoQuality = jobData.get("videoQuality", None)
+    videoType = jobData.get("videoType", None)
 
     if (VERBOSE):
-      print(f"Processing job {jobId} with language: {language}, voice: {voice}, speech rate: {speechRate}")
+      print(
+        f"Processing job {jobId} with language: {language}, "
+        f"voice: {voice}, speech rate: {speechRate}, "
+        f"video quality: {videoQuality}, video type: {videoType}"
+      )
       print(f"Text: {text[:50]}...")
 
     if (not videoCreator):
@@ -61,6 +67,8 @@ def ProcessJob(jobId):
       language=language,
       voice=voice,
       speechRate=speechRate,
+      videoQuality=videoQuality,
+      videoType=videoType,
       uniqueHashID=jobId
     )
 
@@ -87,7 +95,7 @@ def ProcessJob(jobId):
 
 # Function to update the job status in the JSON file.
 def UpdateJobStatus(jobId, status):
-  """Update the job status in the job's JSON file to maintain persistence."""
+  '''Update the job status in the job's JSON file to maintain persistence.'''
   jobDir = os.path.join(STORE_PATH, jobId)
   jobFilePath = os.path.join(jobDir, "job.json")
 
@@ -156,7 +164,7 @@ def jobsPage():
 # Define a route to get the status of the server.
 @app.route(f"/api/v1/status", methods=["GET"])
 def getServerStatus():
-  """Return the status of the server to indicate if it is running."""
+  '''Return the status of the server to indicate if it is running.'''
   # Return a JSON response indicating the server is running.
   return jsonify({"status": "Server is running"}), 200
 
@@ -164,7 +172,7 @@ def getServerStatus():
 # Define a route to get if the server is ready (no jobs in progress).
 @app.route(f"/api/v1/ready", methods=["GET"])
 def getServerReady():
-  """Check if the server is ready to accept new jobs by verifying job queue capacity."""
+  '''Check if the server is ready to accept new jobs by verifying job queue capacity.'''
   global JOB_HISTORY_OBJ
 
   # Count the number of queued jobs to determine server availability.
@@ -180,16 +188,34 @@ def getServerReady():
 
 @app.route(f"/api/v1/languages", methods=["GET"])
 def getAvailableLanguages():
-  """Return a list of available languages for text-to-speech processing."""
+  '''Return a list of available languages for text-to-speech processing.'''
   languages = TextToSpeechHelper().GetAvailableLanguages()
 
   # Return the list of languages as a JSON response.
   return jsonify({"languages": languages}), 200
 
 
+@app.route(f"/api/v1/videoTypes", methods=["GET"])
+def getAvailableVideoTypes():
+  '''Return a list of available video types for video generation.'''
+  videoTypes = configs["video"].get("availableTypes", ["Horizontal", "Vertical"])
+
+  # Return the list of video types as a JSON response.
+  return jsonify({"videoTypes": videoTypes}), 200
+
+
+@app.route(f"/api/v1/videoQualities", methods=["GET"])
+def getAvailableVideoQualities():
+  '''Return a list of available video qualities for video generation.'''
+  videoQualities = configs["video"].get("availableQualities", [])
+
+  # Return the list of video qualities as a JSON response.
+  return jsonify({"videoQualities": videoQualities}), 200
+
+
 @app.route(f"/api/v1/voices", methods=["GET"])
 def getAvailableVoices():
-  """Return a list of available voices for text-to-speech processing."""
+  '''Return a list of available voices for text-to-speech processing.'''
   # Get the list of available voices from the configuration.
   # Get an attribute from the query.
   typeKey = request.args.get("type", "list").lower()
@@ -207,7 +233,7 @@ def getAvailableVoices():
 
 @app.route(f"/api/v1/jobs", methods=["GET"])
 def getAllJobs():
-  """Return a list of all jobs with their statuses."""
+  '''Return a list of all jobs with their statuses.'''
   global JOB_HISTORY_OBJ
 
   # Prepare a list to hold job details.
@@ -222,13 +248,16 @@ def getAllJobs():
         with open(jobFilePath, "r") as f:
           jobData = json.load(f)
         jobsList.append({
-          "jobId"      : jobId,
-          "status"     : status,
-          "text"       : jobData.get("text", ""),
-          "language"   : jobData.get("language", configs["tts"]["language"]),
-          "voice"      : jobData.get("voice", configs["tts"]["voice"]),
-          "createdAt"  : jobData.get("createdAt", "N/A"),
-          "isCompleted": (status == "completed"),
+          "jobId"       : jobId,
+          "status"      : status,
+          "text"        : jobData.get("text", ""),
+          "language"    : jobData.get("language", configs["tts"]["language"]),
+          "voice"       : jobData.get("voice", configs["tts"]["voice"]),
+          "speechRate"  : jobData.get("speechRate", configs["tts"]["speechRate"]),
+          "videoQuality": jobData.get("videoQuality", None),
+          "videoType"   : jobData.get("videoType", None),
+          "createdAt"   : jobData.get("createdAt", "N/A"),
+          "isCompleted" : (status == "completed"),
         })
       except Exception as e:
         if (VERBOSE):
@@ -241,7 +270,7 @@ def getAllJobs():
 # Define a route to post a job.
 @app.route(f"/api/v1/jobs", methods=["POST"])
 def postJob():
-  """Create a new job for speech processing and return a unique ID for tracking."""
+  '''Create a new job for speech processing and return a unique ID for tracking.'''
   global QUEUE_WATCHER, JOB_HISTORY_OBJ
 
   # Check if the request contains JSON data.
@@ -276,6 +305,7 @@ def postJob():
   jobDir = os.path.join(STORE_PATH, jobId)
   os.makedirs(jobDir, exist_ok=True)
 
+  # Initialize the queue watcher if not already running.
   if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
     QUEUE_WATCHER = QueueWatcher(ProcessJob, maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
     QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
@@ -285,13 +315,15 @@ def postJob():
 
   # Save the job details to a JSON file.
   jobData = {
-    "id"        : jobId,  # Unique identifier for the job.
-    "status"    : "queued",  # Initial status of the job.
-    "text"      : text,  # Get the text from the request.
-    "speechRate": request.json.get("speechRate", configs["tts"]["speechRate"]),  # Speech rate for TTS.
-    "language"  : request.json.get("language", configs["tts"]["language"]),  # Language for TTS.
-    "voice"     : request.json.get("voice", configs["tts"]["voice"]),  # Voice for TTS.
-    "createdAt" : currentTime,  # Timestamp when the job was created.
+    "id"          : jobId,  # Unique identifier for the job.
+    "status"      : "queued",  # Initial status of the job.
+    "text"        : text,  # Get the text from the request.
+    "speechRate"  : request.json.get("speechRate", configs["tts"]["speechRate"]),  # Speech rate for TTS.
+    "language"    : request.json.get("language", configs["tts"]["language"]),  # Language for TTS.
+    "voice"       : request.json.get("voice", configs["tts"]["voice"]),  # Voice for TTS.
+    "videoQuality": request.json.get("videoQuality", None),  # Video quality preference.
+    "videoType"   : request.json.get("videoType", None),  # Video type preference.
+    "createdAt"   : currentTime,  # Timestamp when the job was created.
   }
   with open(os.path.join(jobDir, "job.json"), "w") as f:
     json.dump(jobData, f)
@@ -309,7 +341,7 @@ def postJob():
 # Define a route to get the status of a specific job.
 @app.route(f"/api/v1/jobs/<jobId>", methods=["GET"])
 def getJobStatus(jobId):
-  """Return the status of a specific job identified by its unique job ID."""
+  '''Return the status of a specific job identified by its unique job ID.'''
   global JOB_HISTORY_OBJ
 
   # Check if the job exists in the global status tracking dictionary.
@@ -329,21 +361,39 @@ def getJobStatus(jobId):
 
   # Return the job status and other details.
   return jsonify({
-    "jobId"    : jobId,
-    "status"   : status,
-    "text"     : jobData.get("text", ""),
-    "language" : jobData.get("language", configs["tts"]["language"]),
-    "voice"    : jobData.get("voice", configs["tts"]["voice"]),
-    "createdAt": jobData.get("createdAt", "N/A"),
+    "jobId"       : jobId,
+    "status"      : status,
+    "text"        : jobData.get("text", ""),
+    "language"    : jobData.get("language", configs["tts"]["language"]),
+    "voice"       : jobData.get("voice", configs["tts"]["voice"]),
+    "speechRate"  : jobData.get("speechRate", configs["tts"]["speechRate"]),
+    "videoQuality": jobData.get("videoQuality", None),
+    "videoType"   : jobData.get("videoType", None),
+    "createdAt"   : jobData.get("createdAt", "N/A"),
   }), 200
 
 
 # Define a route to get the processed video.
+@app.route("/api/v1/jobs/triggerRemaining", methods=["GET"])
+def triggerRemainingJobs():
+  '''
+  Trigger processing for any remaining queued jobs.
+  '''
+  global QUEUE_WATCHER, JOB_HISTORY_OBJ
+
+  # Start processing any remaining queued jobs.
+  if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
+    QUEUE_WATCHER.start()
+    return jsonify({"message": "Triggered processing for remaining queued jobs."}), 200
+  else:
+    return jsonify({"message": "Queue watcher is already running or not initialized."}), 200
+
+
 @app.route("/api/v1/jobs/<jobId>/result", methods=["GET"])
 def getProcessedVideo(jobId):
-  """
+  '''
   Return the processed video file for a completed job.
-  """
+  '''
   # Check if the job exists in the global status tracking dictionary.
   if (jobId not in JOB_HISTORY_OBJ.keys()):
     logger.warning(f"Job {jobId} not found in the jobs.")
@@ -394,7 +444,7 @@ def getProcessedVideo(jobId):
 # Define a route to delete the processed video.
 @app.route(f"/api/v1/jobs/<jobId>", methods=["DELETE"])
 def deleteProcessedVideo(jobId):
-  """Delete the processed video and associated data for a specific job."""
+  '''Delete the processed video and associated data for a specific job.'''
   global JOB_HISTORY_OBJ
 
   # Check if the job exists in the global status tracking dictionary.
@@ -420,7 +470,7 @@ def deleteProcessedVideo(jobId):
 # Define a route to delete all processed videos.
 @app.route(f"/api/v1/jobs/", methods=["DELETE"])
 def deleteAllProcessedVideos():
-  """Delete all processed videos and associated data for all jobs."""
+  '''Delete all processed videos and associated data for all jobs.'''
   global JOB_HISTORY_OBJ
 
   # Remove all job directories and their contents.

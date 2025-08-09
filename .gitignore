@@ -7,3 +7,5 @@ __pycache__
 Jobs/*
 Assets/Audio/*.mp3
 Assets/Videos/*.mp4
+Assets/Videos/Horizontal Videos/*.mp4
+Assets/Videos/Vertical Videos/*.mp4

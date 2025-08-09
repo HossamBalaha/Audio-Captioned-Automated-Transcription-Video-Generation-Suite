@@ -762,23 +762,22 @@ class FFMPEGHelper(object):
         print(f"Failed to merge audio and video files: {videoFilePath}, {audioFilePath}")
       return False
 
-  def GetCharactersWidth(self, videoHeight):
+  def GetCharactersWidth(self, size, baseFontSize):
     '''
     Get the width of each printable ASCII character for a given font and size.
     This function uses PIL to create a font object and measure character widths.
     Parameters:
-      videoHeight (int): Height of the video to calculate font size as a percentage.
+      size (int): Target size to calculate font size as a percentage.
+      baseFontSize (str|int): Base font size as a percentage string (e.g., "6.8%") or fixed size in pixels.
     Returns:
       dict: A dictionary mapping each printable ASCII character to its width in pixels.
     '''
 
     fontPath = configs["ffmpeg"].get("captionFont", "Arial.ttf")
 
-    # Calculate font size.
-    baseFontSize = configs["ffmpeg"].get("captionFontSize", "6.8%")
     if (isinstance(baseFontSize, str) and baseFontSize.endswith("%")):
       fontSizePercent = float(baseFontSize.rstrip("%"))
-      fontSize = float(videoHeight * fontSizePercent / 100.0)
+      fontSize = float(size * fontSizePercent / 100.0)
     else:
       fontSize = float(baseFontSize)
 
@@ -815,6 +814,7 @@ class FFMPEGHelper(object):
     videoFilePath,  # Path to the input video file.
     outputFilePath,  # Path to save the output video file with captions.
     captionsList,  # A list of dictionaries containing caption text and timing.
+    captionFontSize,  # Font size for captions.
   ):
     '''
     Add word-by-word highlighted captions to a video file using ffmpeg.
@@ -823,6 +823,9 @@ class FFMPEGHelper(object):
       videoFilePath (str): Path to the input video file.
       outputFilePath (str): Path to save the output video file with captions.
       captionsList (list): A list of dictionaries containing caption words and timing.
+      captionFontSize (str|int): Font size for captions as a percentage string (e.g., "5%") or fixed size in pixels.
+    Returns:
+      bool: True if captions were added successfully, False otherwise.
     '''
 
     # Get video dimensions.
@@ -845,11 +848,11 @@ class FFMPEGHelper(object):
     captionPosition = configs["ffmpeg"].get("captionPosition", "bottom")
 
     # Calculate relative font size (as percentage of video height).
-    baseFontSize = configs["ffmpeg"].get("captionFontSize", "5%")
+    baseFontSize = captionFontSize  # configs["ffmpeg"].get("captionFontSize", "5%")
     if (isinstance(baseFontSize, str) and baseFontSize.endswith("%")):
       # Convert percentage to actual pixel size.
       fontSizePercent = float(baseFontSize.rstrip("%"))
-      fontSize = str(int(videoHeight * fontSizePercent / 100))
+      fontSize = str(int(videoWidth * fontSizePercent / 100))
     else:
       # Use fixed size if not percentage.
       fontSize = str(baseFontSize)
@@ -903,7 +906,8 @@ class FFMPEGHelper(object):
     if (VERBOSE):
       print(f"Total number of words to process: {totalNumberOfWords}")
 
-    charWidths = self.GetCharactersWidth(videoHeight)  # Get character widths for the font.
+    # Get character widths for the font.
+    charWidths = self.GetCharactersWidth(videoWidth, baseFontSize)
     if (VERBOSE):
       print(f"Character widths for font '{fontType}': {charWidths}")
 
@@ -998,7 +1002,6 @@ class FFMPEGHelper(object):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".txt") as filterFile:
       filterFile.write(vfFilter)
       tempFilterFilePath = filterFile.name
-
 
     # videoFormat = configs["ffmpeg"].get("videoFormat", "mp4")
 

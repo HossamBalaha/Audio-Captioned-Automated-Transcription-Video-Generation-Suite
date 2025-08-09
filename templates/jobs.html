@@ -3,8 +3,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Jobs Management</h2>
-  <button id="refreshBtn" class="btn btn-outline-primary">
+  <button id="refreshBtn" class="btn btn-outline-primary ms-auto me-2">
     <i class="bi bi-arrow-clockwise"></i> Refresh
+  </button>
+  <button id="triggerRemaining" class="btn btn-outline-danger">
+    <i class="bi bi-fan"></i> Trigger Remaining Jobs
   </button>
 </div>
 
@@ -147,7 +150,9 @@
                 <p><strong>Job ID:</strong> ${jobId}</p>
                 <hr>
                 <p><strong>Text:</strong></p>
-                <div class="text-start">${escapedText}<div>
+                <div class="text-start">
+                <p class="text-start">${escapedText}</p>
+                <div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -183,6 +188,26 @@
             error: function () {
               Swal.fire("Error!", "Failed to delete the job.", "error");
             }
+          });
+        }
+      });
+    });
+
+    $("#triggerRemaining").click(function () {
+      Swal.fire({
+        title: "Trigger Remaining Jobs",
+        text: "This will trigger all remaining jobs. Are you sure you want to proceed?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, trigger",
+        cancelButtonText: "No, cancel"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.post("/api/v1/jobs/triggerRemaining", function () {
+            loadJobs();
+            Swal.fire("Triggered!", "All remaining jobs have been triggered.", "success");
+          }).fail(function () {
+            Swal.fire("Error!", "Failed to trigger remaining jobs.", "error");
           });
         }
       });

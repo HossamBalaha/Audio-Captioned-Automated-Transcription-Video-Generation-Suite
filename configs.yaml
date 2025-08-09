@@ -17,7 +17,6 @@ colors:
 - blue
 - magenta
 - black
-- lightgray
 - orange
 - purple
 - pink
@@ -31,41 +30,23 @@ ffmpeg:
   audioCodec: libmp3lame
   audioFormat: mp3
   captionFont: ./Assets/Fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf
-  captionFontSize: 6.8%
-  captionPosition: middle
+  captionLineUsagePercentage: 50
+  captionPosition: bottom
   captionPositionOffset: 15%
-  captionSymbols:
-  - .
-  - ','
-  - ;
-  - '-'
-  - _
-  - ''''
-  - '"'
   captionTextBorderColor: blue
   captionTextBorderColorHighlighted: random
   captionTextBorderWidth: 2
   captionTextBorderWidthHighlighted: 13%
   captionTextColor: white
   captionTextColorHighlighted: white
-  captionsPerLine: 5
   channels: 2
-  defaultCaptionFontSizeHighlighted: 6.8%
-  defaultCaptionPosition: middle
-  defaultCaptionPositionOffset: 15%
-  defaultCaptionTextBorderColor: blue
-  defaultCaptionTextBorderColorHighlighted: random
-  defaultCaptionTextBorderWidth: 2
-  defaultCaptionTextBorderWidthHighlighted: 13%
-  defaultCaptionTextColor: white
-  defaultCaptionTextColorHighlighted: white
-  defaultFont: ./Assets/Fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf
-  defaultFontSize: 6.8%
   fps: 30
+  horizontalCaptionFontSize: 4.5%
   isSilentThreshold: 0.01
   normalizationFilter: loudnorm
   pixelFormat: yuv420p
   sampleRate: 44100
+  verticalCaptionFontSize: 9.0%
   videoBitrate: 5000k
   videoCodec: libx264
   videoFormat: mp4
@@ -82,11 +63,30 @@ video:
   - .avi
   - .mov
   - .mkv
+  availableQualities:
+  - - 4K
+    - - 3840
+      - 2160
+  - - Full HD
+    - - 1920
+      - 1080
+  - - HD
+    - - 1280
+      - 720
+  - - 480p
+    - - 854
+      - 480
+  - - 360p
+    - - 640
+      - 360
+  availableTypes:
+  - Horizontal
+  - Vertical
   default: ./Assets/Videos
   fps: 30
-  height: 2160
   maxLengthPerVideo: 10
-  width: 3840
+  quality: 4K
+  type: Horizontal
 whisper:
   language: en
   modelName: turbo
