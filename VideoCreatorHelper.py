@@ -17,6 +17,7 @@ import shutup
 shutup.please()  # This function call suppresses unnecessary warnings.
 
 import ffmpeg, os, time, random, yaml, hashlib, asyncio
+import numpy as np
 from WhisperTranscribeHelper import WhisperTranscribeHelper
 from TextToSpeechHelper import TextToSpeechHelper
 from TextHelper import CleanText
@@ -99,7 +100,10 @@ class VideoCreatorHelper(object):
     currentVideosList = [f for f in currentVideosList if f.lower().endswith(videoExtensions)]
 
     # Shuffle the list of video files to randomize their order.
-    random.shuffle(currentVideosList)
+    # Seed with current time for randomness.
+    np.random.seed(int(time.time()))
+    # Shuffle the list of videos.
+    np.random.shuffle(currentVideosList)
 
     summary = []  # List to store video file paths and their durations.
     for videoFile in currentVideosList:
