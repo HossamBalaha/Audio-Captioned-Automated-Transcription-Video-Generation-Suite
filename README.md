@@ -76,7 +76,7 @@ introduction.
 <summary>Click to expand index page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Index.png" 
-alt="Logo" width="500" align="center" style="text-align: center !important; align: center;">
+alt="Logo" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
 </details>
 
@@ -88,7 +88,7 @@ This page lets users submit text for automated video generation, select language
 <summary>Click to expand text to video page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/T2V%20Job%20Creation.png" 
-alt="Text to Video" width="500" align="center" style="text-align: center !important; align: center;">
+alt="Text to Video" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
 </details>
 
@@ -100,7 +100,7 @@ View, track, and manage all submitted video generation jobs, including their sta
 <summary>Click to expand T2V jobs management page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Text%20to%20Video%20(T2V)%20Jobs%20Management.png" 
-alt="T2V Jobs Management" width="500" align="center" style="text-align: center !important; align: center;">
+alt="T2V Jobs Management" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
 </details>
 
@@ -112,7 +112,7 @@ Access advanced audio utilities such as duration, size, silence detection, and n
 <summary>Click to expand audio tools page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Audio%20Tools.png" 
-alt="Audio Tools" width="500" align="center" style="text-align: center !important; align: center;">
+alt="Audio Tools" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
 </details>
 
