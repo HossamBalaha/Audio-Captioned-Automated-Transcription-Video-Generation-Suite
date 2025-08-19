@@ -85,8 +85,7 @@ This page lets users submit text for automated video generation, select language
 <summary>Click to expand text to video page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/T2V%20Job%20Creation.png" 
-alt="Text to Video" width="100%" align="center" 
-style="text-align: center !important; align: center; border: 1px solid #ccc; border-radius: 8px; padding: 10px;">
+alt="Text to Video" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
 </details>
 
