@@ -47,6 +47,77 @@ this suite offers a powerful foundation for scalable, AI-driven media production
 
 ---
 
+## 🎨 Web Interface
+
+The Audio-Captioned Automated Transcription & Video Generation Suite features a modern, user-friendly web interface
+designed for seamless interaction and efficient workflow. Built with Flask and Bootstrap, the interface allows users to
+easily submit jobs, manage video generation tasks, and utilize advanced audio tools—all from any device.
+
+**Key Technologies:**
+
+- Flask (Python web framework)
+- Bootstrap (responsive UI)
+- JavaScript (interactivity)
+- HTML5 & CSS3
+
+**User Experience Features:**
+
+- Responsive design for desktop and mobile
+- Intuitive navigation bar
+- Expandable details and visual previews
+- Real-time job status updates
+
+### Index
+
+The landing page provides an overview of the suite, quick access to main features, and a visually appealing
+introduction.
+
+<details>
+<summary>Click to expand index page details</summary>
+<div style="text-align: center !important;" align="center">
+<img src="/static/images/Index.png" 
+alt="Logo" width="500" align="center" style="text-align: center !important; align: center;">
+</div>
+</details>
+
+### Text to Video
+
+This page lets users submit text for automated video generation, select language, voice, video type, and quality.
+
+<details>
+<summary>Click to expand text to video page details</summary>
+<div style="text-align: center !important;" align="center">
+<img src="/static/images/T2V%20Job%20Creation.png" 
+alt="Text to Video" width="500" align="center" style="text-align: center !important; align: center;">
+</div>
+</details>
+
+### T2V Jobs Management
+
+View, track, and manage all submitted video generation jobs, including their status and details.
+
+<details>
+<summary>Click to expand T2V jobs management page details</summary>
+<div style="text-align: center !important;" align="center">
+<img src="/static/images/Text%20to%20Video%20(T2V)%20Jobs%20Management.png" 
+alt="T2V Jobs Management" width="500" align="center" style="text-align: center !important; align: center;">
+</div>
+</details>
+
+### Audio Tools
+
+Access advanced audio utilities such as duration, size, silence detection, and normalization.
+
+<details>
+<summary>Click to expand audio tools page details</summary>
+<div style="text-align: center !important;" align="center">
+<img src="/static/images/Audio%20Tools.png" 
+alt="Audio Tools" width="500" align="center" style="text-align: center !important; align: center;">
+</div>
+</details>
+
+---
+
 ## 📁 Project Structure
 
 ```plaintext
@@ -72,9 +143,11 @@ this suite offers a powerful foundation for scalable, AI-driven media production
 │   ├── Audios/                # Default audio files for testing the modules
 │   └── Fonts/                 # Default fonts for captions
 ├── templates/                 # HTML templates for Flask webpage UIs
+│   ├── index.html             # Main webpage template
 │   ├── base.html              # Base template for all pages
-│   ├── jobs.html              # Job management page template
-│   └── index.html             # Main webpage template
+│   ├── text2Video.html        # Text to video generation page
+│   ├── audioTools.html        # Audio processing tools page
+│   └── jobs.html              # Job management page template
 ├── static/                    # Static files for Flask (CSS, JS, images)
 │   ├── css/                   # CSS files for styling
 │   │   └── styles.css         # Main stylesheet
@@ -84,6 +157,9 @@ this suite offers a powerful foundation for scalable, AI-driven media production
 │   │   └── logo.png           # Project logo
 └── └── favicon.ico            # Favicon for the webpage
 ```
+
+<details>
+<summary>Click to expand project structure and details</summary>
 
 ### configs.yaml
 
