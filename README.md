@@ -298,12 +298,10 @@ Key methods:
 <details>
 <summary>API Endpoints</summary>
 
-
 Flask-based REST API server with the following endpoints:
 
 #### GET `/api/v1/status`
 
-<details>
 Returns the current status of the server.
 
 - **Response** (JSON):
@@ -313,11 +311,8 @@ Returns the current status of the server.
   }
   ```
 
-</details>
-
 #### GET `/api/v1/ready`
 
-<details>
 Checks if the server is ready to accept jobs.
 
 - **Response** (JSON):
@@ -331,11 +326,8 @@ Checks if the server is ready to accept jobs.
     - `200 OK`: Server is ready.
     - `503 Service Unavailable`: Server is not ready.
 
-</details>
-
 #### GET `/api/v1/languages`
 
-<details>
 Lists available TTS languages.
 
 - **Response** (JSON):
@@ -358,11 +350,8 @@ Lists available TTS languages.
 - **Status Codes**:
     - `200 OK`: Languages retrieved successfully.
 
-</details>
-
 #### GET `/api/v1/voices`
 
-<details>
 Lists available TTS voices for the current language.
 
 - **Request Header**:
@@ -413,11 +402,8 @@ Lists available TTS voices for the current language.
 - **Status Codes**:
     - `200 OK`: Voices retrieved successfully.
 
-</details>
-
 #### GET `/api/v1/videoTypes`
 
-<details>
 Lists available video types.
 
 - **Response** (JSON):
@@ -433,11 +419,8 @@ Lists available video types.
 - **Status Codes**:
     - `200 OK`: Video types retrieved successfully.
 
-</details>
-
 #### GET `/api/v1/videoQualities`
 
-<details>
 Lists available video qualities.
 
 - **Response** (JSON):
@@ -466,11 +449,8 @@ Lists available video qualities.
 - **Status Codes**:
     - `200 OK`: Video qualities retrieved successfully.
 
-</details>
-
 #### GET `/api/v1/jobs`
 
-<details>
 Gets a list of all submitted jobs including their details such as text, status, language, voice, etc.
 
 - **Response** (JSON):
@@ -509,11 +489,8 @@ Gets a list of all submitted jobs including their details such as text, status, 
 - **Status Codes**:
     - `200 OK`: Jobs retrieved successfully.
 
-</details>
-
 #### POST `/api/v1/jobs`
 
-<details>
 Submits a new job for video generation.
 
 - **Request Body** (form-data):
@@ -535,11 +512,8 @@ Submits a new job for video generation.
     - `202 Accepted`: Job successfully submitted.
     - `400 Bad Request`: Invalid input data (e.g., text too long).
 
-</details>
-
 #### GET `/api/v1/jobs/<jobId>`
 
-<details>
 Checks the status of a video generation job. The status can be one of the following:
 
 - `processing`: The job is currently being processed.
@@ -566,11 +540,8 @@ Checks the status of a video generation job. The status can be one of the follow
     - `200 OK`: Job status retrieved successfully.
     - `404 Not Found`: Job ID does not exist.
 
-</details>
-
 #### GET `/api/v1/jobs/<jobId>/result`
 
-<details>
 Downloads the completed video file.
 
 - **Response**: The video file as an attachment.
@@ -581,11 +552,8 @@ Downloads the completed video file.
     - `400 Bad Request`: Job is not yet completed.
     - `500 Internal Server Error`: Error retrieving the video file.
 
-</details>
-
 #### DELETE `/api/v1/jobs/<jobId>`
 
-<details>
 Deletes a job and its associated files.
 
 - **Response**: Confirmation message indicating the job has been deleted.
@@ -594,11 +562,8 @@ Deletes a job and its associated files.
     - `200 OK`: Job deleted successfully.
     - `404 Not Found`: Job ID does not exist.
 
-</details>
-
 #### DELETE `/api/v1/jobs/all` [DANGER!]
 
-<details>
 Deletes all jobs and their associated files. Use with caution as this will remove all job data including
 the completed, queued, processing, and failed jobs.
 
@@ -607,11 +572,8 @@ the completed, queued, processing, and failed jobs.
 - **Status Codes**:
     - `200 OK`: All jobs deleted successfully.
 
-</details>
-
 #### POST `/api/v1/jobs/triggerRemaining`
 
-<details>
 Triggers processing of any remaining jobs in the queue.
 
 - **Response**: Confirmation message indicating remaining jobs have been triggered. You may get:
@@ -621,11 +583,8 @@ Triggers processing of any remaining jobs in the queue.
 - **Status Codes**:
     - `200 OK`: Remaining jobs triggered successfully.
 
-</details>
-
 #### POST `/api/v1/audio-duration`
 
-<details>
 Returns the duration (in seconds) of an uploaded audio file.
 
 - **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
@@ -635,11 +594,8 @@ Returns the duration (in seconds) of an uploaded audio file.
     - `400 Bad Request`: No file or invalid file type.
     - `500 Internal Server Error`: Could not determine duration.
 
-</details>
-
 #### POST `/api/v1/audio-size`
 
-<details>
 Returns the size of an uploaded audio file in human-readable format.
 
 - **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
@@ -649,11 +605,8 @@ Returns the size of an uploaded audio file in human-readable format.
     - `400 Bad Request`: No file or invalid file type.
     - `500 Internal Server Error`: Could not determine size.
 
-</details>
-
 #### POST `/api/v1/check-silence`
 
-<details>
 Checks if the uploaded audio file is silent.
 
 - **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
@@ -663,11 +616,8 @@ Checks if the uploaded audio file is silent.
     - `400 Bad Request`: No file or invalid file type.
     - `500 Internal Server Error`: Error checking silence.
 
-</details>
-
 #### POST `/api/v1/normalize-audio`
 
-<details>
 Normalizes the uploaded audio file and returns a download link for the normalized file.
 
 - **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
@@ -678,6 +628,7 @@ Normalizes the uploaded audio file and returns a download link for the normalize
     - `500 Internal Server Error`: Error normalizing audio.
 
 </details>
+
 </details>
 
 ## 🛠️ Preparation Steps
