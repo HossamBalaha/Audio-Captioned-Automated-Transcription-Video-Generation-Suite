@@ -2,18 +2,21 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Jobs Management</h2>
+  <h2>Text to Video (T2V) Jobs Management</h2>
   <button id="refreshBtn" class="btn btn-outline-primary ms-auto me-2">
     <i class="bi bi-arrow-clockwise"></i> Refresh
   </button>
-  <button id="triggerRemaining" class="btn btn-outline-danger">
-    <i class="bi bi-fan"></i> Trigger Remaining Jobs
+  <button id="triggerRemaining" class="btn btn-outline-secondary me-2">
+    <i class="bi bi-fan"></i> Trigger Remaining T2V Jobs
+  </button>
+  <button id="deleteAllBtn" class="btn btn-outline-danger">
+    <i class="bi bi-trash"></i> Delete All T2V Jobs
   </button>
 </div>
 
 <div class="card" id="jobsCard">
   <div class="card-header">
-    <h5 class="card-title mb-0">Active Jobs</h5>
+    <h5 class="card-title mb-0">Active T2V Jobs</h5>
   </div>
   <div class="card-body">
     <div id="jobsContainer">
@@ -24,12 +27,6 @@
       </div>
     </div>
   </div>
-</div>
-
-<div class="mt-3 text-end">
-  <button id="deleteAllBtn" class="btn btn-danger">
-    <i class="bi bi-trash"></i> Delete All Jobs
-  </button>
 </div>
 {% endblock %}
 
@@ -57,7 +54,7 @@
     $.get("/api/v1/jobs", function (data) {
       let html = '';
       if (data.jobs.length === 0) {
-        html = '<div class="text-center py-5"><p class="text-muted">No jobs found</p></div>';
+        html = '<div class="text-center py-5"><p class="text-muted">No text to video jobs found</p></div>';
       } else {
         html = '<div class="row">';
         data.jobs.forEach(job => {

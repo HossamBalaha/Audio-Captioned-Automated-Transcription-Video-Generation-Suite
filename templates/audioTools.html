@@ -1,0 +1,736 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-4 justify-content-center">
+  <!-- Audio Duration Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="audioDuration"
+         data-bs-target="#durationModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-clock-history display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Get Audio Duration</h5>
+        <p class="card-text">Find out the length of your audio file (in seconds).</p>
+      </div>
+    </div>
+  </div>
+  <!-- Audio Size Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="audioSize"
+         data-bs-target="#sizeModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-hdd display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Get Audio Size</h5>
+        <p class="card-text">Check the file size of your audio.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Silence Detection Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="checkSilence"
+         data-bs-target="#silenceModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-volume-mute display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Check Silence</h5>
+        <p class="card-text">Detect if your audio file is silent.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Normalize Audio Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="normalizeAudio"
+         data-bs-target="#normalizeModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-sliders display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Normalize Audio</h5>
+        <p class="card-text">Make your audio volume consistent and clear.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Generate Silent Audio Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="generateSilent"
+         data-bs-target="#generateSilentModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-volume-off display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Generate Silent Audio</h5>
+        <p class="card-text">Create a silent audio file of any duration.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Convert Audio Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="convertAudio"
+         data-bs-target="#convertModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-arrow-repeat display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Convert Audio</h5>
+        <p class="card-text">Change format, bitrate, sample rate, channels, or trim.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Change Volume Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="changeVolume"
+         data-bs-target="#volumeModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-volume-up display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Change Volume</h5>
+        <p class="card-text">Amplify or attenuate your audio file.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Change Speed Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="changeSpeed"
+         data-bs-target="#speedModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-fast-forward display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Change Speed</h5>
+        <p class="card-text">Speed up or slow down your audio file.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Reverse Audio Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="reverseAudio"
+         data-bs-target="#reverseModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-arrow-counterclockwise display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Reverse Audio</h5>
+        <p class="card-text">Play your audio file backwards.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Extract Audio from Video Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="extractAudio"
+         data-bs-target="#extractModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-film display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Extract Audio</h5>
+        <p class="card-text">Extract audio from a video file.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Concatenate Audios Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="concatAudios"
+         data-bs-target="#concatModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-link-45deg display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Concatenate Audios</h5>
+        <p class="card-text">Merge multiple audio files into one.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Split Audio Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="splitAudio"
+         data-bs-target="#splitModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-scissors display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Split Audio</h5>
+        <p class="card-text">Divide audio into segments.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Fade In/Out Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="fadeAudio"
+         data-bs-target="#fadeModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-brightness-alt-high display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Fade In/Out</h5>
+        <p class="card-text">Add fade in/out effects to audio.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Remove Vocals Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="removeVocals"
+         data-bs-target="#removeVocalsModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-person-x display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Remove Vocals</h5>
+        <p class="card-text">Remove vocals from your audio file.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Equalizer/Filter Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="equalizerFilter"
+         data-bs-target="#equalizerModal">
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <i class="bi bi-sliders2-vertical display-3 option-icon mb-3"></i>
+        <h5 class="card-title">Equalizer/Filter</h5>
+        <p class="card-text">Apply equalizer or filter to audio.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals for each option -->
+<!-- Duration Modal -->
+<div class="modal fade" id="durationModal" tabindex="-1" aria-labelledby="durationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="durationModalLabel">Get Audio Duration</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioDurationForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile"
+                 accept=".wav, .mp3, .ogg, .flac" required>
+
+          <button type="submit" class="btn btn-primary w-100">Get Duration</button>
+        </form>
+        <div id="durationResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Size Modal -->
+<div class="modal fade" id="sizeModal" tabindex="-1" aria-labelledby="sizeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sizeModalLabel">Get Audio Size</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioSizeForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <button type="submit" class="btn btn-primary w-100">Get Size</button>
+        </form>
+        <div id="sizeResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Silence Modal -->
+<div class="modal fade" id="silenceModal" tabindex="-1" aria-labelledby="silenceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="silenceModalLabel">Check Silence</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioSilenceForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <button type="submit" class="btn btn-primary w-100">Check Silence</button>
+        </form>
+        <div id="silenceResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Normalize Modal -->
+<div class="modal fade" id="normalizeModal" tabindex="-1" aria-labelledby="normalizeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="normalizeModalLabel">Normalize Audio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioNormalizeForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <button type="submit" class="btn btn-primary w-100">Normalize</button>
+        </form>
+        <div id="normalizeResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Generate Silent Modal -->
+<div class="modal fade" id="generateSilentModal" tabindex="-1" aria-labelledby="generateSilentModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="generateSilentModalLabel">Generate Silent Audio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="silentAudioForm">
+          <label for="silentDuration" class="form-label">Duration (seconds)</label>
+          <input type="number" class="form-control mb-3" id="silentDuration" name="duration" min="1" required>
+          <button type="submit" class="btn btn-primary w-100">Generate Silence</button>
+        </form>
+        <div id="silentResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Convert Modal -->
+<div class="modal fade" id="convertModal" tabindex="-1" aria-labelledby="convertModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="convertModalLabel">Convert Audio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioConvertForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label for="convertFormat" class="form-label">Format</label>
+              <select class="form-select" id="convertFormat" name="outputFormat">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="aac">AAC</option>
+                <option value="flac">FLAC</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label for="convertBitrate" class="form-label">Bitrate</label>
+              <input type="text" class="form-control" id="convertBitrate" name="bitrate" placeholder="256k">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label for="convertSampleRate" class="form-label">Sample Rate</label>
+              <input type="number" class="form-control" id="convertSampleRate" name="sampleRate" placeholder="44100">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label for="convertChannels" class="form-label">Channels</label>
+              <select class="form-select" id="convertChannels" name="channels">
+                <option value="1">Mono</option>
+                <option value="2" selected>Stereo</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label for="convertStartTime" class="form-label">Trim Start (sec)</label>
+              <input type="number" class="form-control" id="convertStartTime" name="startTime" min="0" step="0.01">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label for="convertEndTime" class="form-label">Trim End (sec)</label>
+              <input type="number" class="form-control" id="convertEndTime" name="endTime" min="0" step="0.01">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mt-2">Convert</button>
+        </form>
+        <div id="convertResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Volume Modal -->
+<div class="modal fade" id="volumeModal" tabindex="-1" aria-labelledby="volumeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="volumeModalLabel">Change Audio Volume</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioVolumeForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <label for="volume" class="form-label">Volume (e.g. 1.0 = original, 2.0 = double, 0.5 = half)</label>
+          <input type="number" class="form-control mb-3" name="volume" id="volume" value="1.0" step="0.01" min="0">
+          <button type="submit" class="btn btn-primary w-100">Change Volume</button>
+        </form>
+        <div id="volumeResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Speed Modal -->
+<div class="modal fade" id="speedModal" tabindex="-1" aria-labelledby="speedModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="speedModalLabel">Change Audio Speed</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioSpeedForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <label for="speed" class="form-label">Speed (e.g. 1.0 = original, 2.0 = double, 0.5 = half)</label>
+          <input type="number" class="form-control mb-3" name="speed" id="speed" value="1.0" step="0.01" min="0.5"
+                 max="2.0">
+          <button type="submit" class="btn btn-primary w-100">Change Speed</button>
+        </form>
+        <div id="speedResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Reverse Modal -->
+<div class="modal fade" id="reverseModal" tabindex="-1" aria-labelledby="reverseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reverseModalLabel">Reverse Audio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioReverseForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <button type="submit" class="btn btn-primary w-100">Reverse</button>
+        </form>
+        <div id="reverseResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Extract Modal -->
+<div class="modal fade" id="extractModal" tabindex="-1" aria-labelledby="extractModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="extractModalLabel">Extract Audio from Video</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioExtractForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="videoFile" accept="video/*" required>
+          <button type="submit" class="btn btn-primary w-100">Extract</button>
+        </form>
+        <div id="extractResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Concat Modal -->
+<div class="modal fade" id="concatModal" tabindex="-1" aria-labelledby="concatModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="concatModalLabel">Concatenate Audios</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioConcatForm" enctype="multipart/form-data">
+          <label for="audioFiles" class="form-label">Select multiple audio files</label>
+          <input type="file" class="form-control mb-3" name="audioFiles" id="audioFiles"
+                 accept=".wav, .mp3, .ogg, .flac" multiple
+                 required>
+          <button type="submit" class="btn btn-primary w-100">Concatenate</button>
+        </form>
+        <div id="concatResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Split Modal -->
+<div class="modal fade" id="splitModal" tabindex="-1" aria-labelledby="splitModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="splitModalLabel">Split Audio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioSplitForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <label for="segmentDuration" class="form-label">Segment Duration (seconds)</label>
+          <input type="number" class="form-control mb-3" name="segmentDuration" id="segmentDuration" value="10" min="1">
+          <button type="submit" class="btn btn-primary w-100">Split</button>
+        </form>
+        <div id="splitResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Fade Modal -->
+<div class="modal fade" id="fadeModal" tabindex="-1" aria-labelledby="fadeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fadeModalLabel">Add Fade In/Out</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioFadeForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <label for="fadeIn" class="form-label">Fade In Duration (seconds)</label>
+          <input type="number" class="form-control mb-3" name="fadeIn" id="fadeIn" value="0" min="0">
+          <label for="fadeOut" class="form-label">Fade Out Duration (seconds)</label>
+          <input type="number" class="form-control mb-3" name="fadeOut" id="fadeOut" value="0" min="0">
+          <button type="submit" class="btn btn-primary w-100">Add Fade</button>
+        </form>
+        <div id="fadeResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Remove Vocals Modal -->
+<div class="modal fade" id="removeVocalsModal" tabindex="-1" aria-labelledby="removeVocalsModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="removeVocalsModalLabel">Remove Vocals</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioRemoveVocalsForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <button type="submit" class="btn btn-danger w-100">Remove Vocals</button>
+        </form>
+        <div id="removeVocalsResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Equalizer Modal -->
+<div class="modal fade" id="equalizerModal" tabindex="-1" aria-labelledby="equalizerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="equalizerModalLabel">Apply Equalizer/Filter</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="audioEqualizerForm" enctype="multipart/form-data">
+          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          <label for="freq" class="form-label">Frequency (Hz)</label>
+          <input type="number" class="form-control mb-3" name="freq" id="freq" value="1000" min="20" max="20000">
+          <label for="width" class="form-label">Width</label>
+          <input type="number" class="form-control mb-3" name="width" id="width" value="2" min="1" max="10">
+          <label for="gain" class="form-label">Gain (dB)</label>
+          <input type="number" class="form-control mb-3" name="gain" id="gain" value="5" min="-20" max="20">
+          <button type="submit" class="btn btn-primary w-100">Apply Equalizer</button>
+        </form>
+        <div id="equalizerResult" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .option-card {
+    transition: box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .option-card:hover {
+    box-shadow: 0 6px 24px rgba(30, 60, 114, 0.18);
+  }
+
+  .option-icon {
+    transition: transform 0.2s;
+    color: #2a5298;
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    // Animate card icons on hover
+    $(".option-card").hover(
+        function () {
+          anime({
+            targets: $(this).find(".option-icon")[0],
+            scale: 1.25,
+            duration: 350,
+            easing: "easeOutExpo"
+          });
+        },
+        function () {
+          anime({
+            targets: $(this).find(".option-icon")[0],
+            scale: 1.0,
+            duration: 350,
+            easing: "easeOutExpo"
+          });
+        }
+    );
+
+    $("#audioDurationForm").on("submit", function (e) {
+      e.preventDefault();
+      // Disable the submit button to prevent multiple submissions.
+      var submitButton = $(this).find("button[type='submit']");
+      submitButton.prop("disabled", true);
+      submitButton.addClass("disabled");
+      let loaderHTML = `Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      submitButton.html(loaderHTML);
+      // Create FormData object to send the file.
+      var formData = new FormData(this);
+      $.ajax({
+        url: "/api/v1/audio-duration",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Audio Duration",
+            html: `<span class="badge text-bg-warning p-2 h3 m-0">Duration: ${response.duration} seconds</span>`,
+            confirmButtonColor: "#3085d6"
+          });
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to get duration"),
+            confirmButtonColor: "#d33"
+          });
+        },
+        complete: function () {
+          // Re-enable the submit button after processing.
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Get Duration");
+        }
+      });
+    });
+
+    $("#audioSizeForm").on("submit", function (e) {
+      e.preventDefault();
+      var submitButton = $(this).find("button[type='submit']");
+      submitButton.prop("disabled", true);
+      submitButton.addClass("disabled");
+      let loaderHTML = `Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      submitButton.html(loaderHTML);
+      var formData = new FormData(this);
+      $.ajax({
+        url: "/api/v1/audio-size",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Audio Size",
+            html: `<span class="badge text-bg-warning p-2 h3 m-0">Size: ${response.size}</span>`,
+            confirmButtonColor: "#3085d6"
+          });
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to get size"),
+            confirmButtonColor: "#d33"
+          });
+        },
+        complete: function () {
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Get Size");
+        }
+      });
+    });
+
+    $("#audioSilenceForm").on("submit", function (e) {
+      e.preventDefault();
+      var submitButton = $(this).find("button[type='submit']");
+      submitButton.prop("disabled", true);
+      submitButton.addClass("disabled");
+      let loaderHTML = `Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      submitButton.html(loaderHTML);
+      var formData = new FormData(this);
+      $.ajax({
+        url: "/api/v1/check-silence",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Silence Check",
+            html: `<span class="badge text-bg-${response.isSilent ? 'danger' : 'success'} p-2 h3 m-0">
+              ${response.isSilent ? 'The audio is silent.' : 'The audio is not silent.'}</span>`,
+            confirmButtonColor: "#3085d6"
+          });
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to check silence"),
+            confirmButtonColor: "#d33"
+          });
+        },
+        complete: function () {
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Check Silence");
+        }
+      });
+    });
+
+    $("#audioNormalizeForm").on("submit", function (e) {
+      e.preventDefault();
+      var submitButton = $(this).find("button[type='submit']");
+      submitButton.prop("disabled", true);
+      submitButton.addClass("disabled");
+      let loaderHTML = `Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      submitButton.html(loaderHTML);
+      var formData = new FormData(this);
+      $.ajax({
+        url: "/api/v1/normalize-audio",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        timeout: 0,
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Audio Normalized",
+            html: `<span class="badge text-bg-success p-2 h3 m-0">Audio has been normalized successfully.<br><br>It will be downloaded automatically.</span>`,
+            confirmButtonColor: "#3085d6"
+          });
+          let link = response.link;
+          let filename = response.filename || "NormalizedAudio.mp3";
+          let a = document.createElement("a");
+          a.setAttribute("href", link);
+          a.setAttribute("download", filename);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to normalize audio"),
+            confirmButtonColor: "#d33"
+          });
+        },
+        complete: function () {
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Normalize");
+        }
+      });
+    });
+
+    // Disable the remaining cards for now.
+    let disabledCards = [
+      "#generateSilent",
+      "#convertAudio",
+      "#changeVolume",
+      "#changeSpeed",
+      "#reverseAudio",
+      "#extractAudio",
+      "#concatAudios",
+      "#splitAudio",
+      "#fadeAudio",
+      "#removeVocals",
+      "#equalizerFilter"
+    ];
+    disabledCards.forEach(function (card) {
+      // Disable the card.
+      $(card).addClass("disabled");
+      $(card).css("pointer-events", "none");
+      $(card).css("opacity", "0.5");
+      // Remove their modals.
+      let modalId = card.replace("#", "") + "Modal";
+      $("#" + modalId).remove();
+    });
+
+  });
+</script>
+{% endblock %}

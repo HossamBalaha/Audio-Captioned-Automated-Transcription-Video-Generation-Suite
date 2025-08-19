@@ -2,8 +2,9 @@
 
 **Author:** Hossam Magdy Balaha  
 **CV:** [hossambalaha.github.io](https://hossambalaha.github.io/)<br>
-**GitHub:** [github.com/hossam-balaha](https://github.com/hossam-balaha)  
-**Support the Channel:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
+**GitHub:** [https://github.com/HossamBalaha](https://github.com/HossamBalaha)  
+**Support Me:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
+**Current Development Status:** Active
 
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Logo.png" alt="Logo" width="500" align="center" style="text-align: center !important; align: center;">
@@ -13,10 +14,36 @@
 
 ## 📄 Overview
 
-A state-of-the-art, end-to-end video generation system that transforms text into professional-quality captioned videos
-with synchronized voiceover. Utilizing Whisper for precise speech timing, Kokoro TTS for natural-sounding
-text-to-speech, and FFmpeg for advanced audiovisual processing, the pipeline integrates seamlessly via a Flask API to
-enable scalable, automated video production for content creators and developers.
+Audio-Captioned Automated Transcription & Video Generation Suite is a comprehensive, modular system designed to automate
+the creation of professional-quality captioned videos from text or audio input. It integrates advanced AI and multimedia
+technologies to deliver a seamless, scalable workflow for content creators, educators, and developers.
+
+**Key Features:**
+
+- **End-to-End Automation:** Transforms text or audio into synchronized, captioned videos with natural-sounding
+  voiceovers.
+- **Speech & Transcription:** Utilizes Whisper for accurate speech-to-text transcription and word-level timing, enabling
+  precise caption synchronization.
+- **Text-to-Speech:** Integrates Kokoro TTS for customizable, high-quality voice generation with support for multiple
+  languages and voices.
+- **Audio & Video Processing:** Employs FFmpeg for advanced audio normalization, silence detection, video trimming,
+  merging, and caption overlay.
+- **RESTful API:** Exposes a robust Flask API for job submission, status tracking, asset management, and audio
+  utilities (duration, size, silence check, normalization).
+- **Flexible Input/Output:** Supports various audio formats (MP3, WAV, OGG) and video qualities (4K, Full HD, etc.),
+  with customizable backgrounds and fonts.
+- **Extensible & Modular:** Designed for easy integration, customization, and extension to fit diverse automation and
+  media production needs.
+
+**Workflow:**
+
+1. Submit text or audio via API or web interface.
+2. System generates or transcribes audio, extracts timing, and selects background video assets.
+3. Merges audio, video, and captions into a final, downloadable video file.
+4. Provides additional audio tools for duration, size, silence detection, and normalization.
+
+Whether you need to batch-generate social media clips, automate educational content, or build custom video pipelines,
+this suite offers a powerful foundation for scalable, AI-driven media production.
 
 ---
 
@@ -191,6 +218,10 @@ Key methods:
 - `GetAvailableModels()`: Lists all available Whisper models.
 
 ### Server.py (API Documentation)
+
+<details>
+<summary>API Endpoints</summary>
+
 
 Flask-based REST API server with the following endpoints:
 
@@ -508,12 +539,69 @@ the completed, queued, processing, and failed jobs.
 Triggers processing of any remaining jobs in the queue.
 
 - **Response**: Confirmation message indicating remaining jobs have been triggered. You may get:
-  -   "Triggered processing for remaining queued jobs."
-  -   "Queue watcher is already running or not initialized."
+    - "Triggered processing for remaining queued jobs."
+    - "Queue watcher is already running or not initialized."
 
 - **Status Codes**:
     - `200 OK`: Remaining jobs triggered successfully.
 
+</details>
+
+#### POST `/api/v1/audio-duration`
+
+<details>
+Returns the duration (in seconds) of an uploaded audio file.
+
+- **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
+- **Response**: `{ "duration": float }` (duration in seconds, rounded to 2 decimals)
+- **Status Codes**:
+    - `200 OK`: Duration returned successfully.
+    - `400 Bad Request`: No file or invalid file type.
+    - `500 Internal Server Error`: Could not determine duration.
+
+</details>
+
+#### POST `/api/v1/audio-size`
+
+<details>
+Returns the size of an uploaded audio file in human-readable format.
+
+- **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
+- **Response**: `{ "size": string }` (e.g., "1.23 MB", "456 bytes")
+- **Status Codes**:
+    - `200 OK`: Size returned successfully.
+    - `400 Bad Request`: No file or invalid file type.
+    - `500 Internal Server Error`: Could not determine size.
+
+</details>
+
+#### POST `/api/v1/check-silence`
+
+<details>
+Checks if the uploaded audio file is silent.
+
+- **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
+- **Response**: `{ "isSilent": bool }`
+- **Status Codes**:
+    - `200 OK`: Silence check returned successfully.
+    - `400 Bad Request`: No file or invalid file type.
+    - `500 Internal Server Error`: Error checking silence.
+
+</details>
+
+#### POST `/api/v1/normalize-audio`
+
+<details>
+Normalizes the uploaded audio file and returns a download link for the normalized file.
+
+- **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
+- **Response**: `{ "link": string, "filename": string }` (link to download normalized audio)
+- **Status Codes**:
+    - `200 OK`: Normalized audio link returned successfully.
+    - `400 Bad Request`: No file or invalid file type.
+    - `500 Internal Server Error`: Error normalizing audio.
+
+</details>
 </details>
 
 ## 🛠️ Preparation Steps
