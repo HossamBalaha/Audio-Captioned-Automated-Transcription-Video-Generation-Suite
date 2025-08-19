@@ -72,13 +72,10 @@ easily submit jobs, manage video generation tasks, and utilize advanced audio to
 The landing page provides an overview of the suite, quick access to main features, and a visually appealing
 introduction.
 
-<details>
-<summary>Click to expand index page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Index.png" 
 alt="Logo" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
-</details>
 
 ### Text to Video
 
