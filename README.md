@@ -2,9 +2,9 @@
 
 **Author:** Hossam Magdy Balaha  
 **CV:** [hossambalaha.github.io](https://hossambalaha.github.io/)<br>
-**GitHub:** [https://github.com/HossamBalaha](https://github.com/HossamBalaha)  
-**Support Me:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)
-**Current Development Status:** Active
+**GitHub:** [https://github.com/HossamBalaha](https://github.com/HossamBalaha)<br>
+**Support Me:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)<br>
+**Current Development Status:** Active<br>
 
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Logo.png" alt="Logo" width="500" align="center" style="text-align: center !important; align: center;">
