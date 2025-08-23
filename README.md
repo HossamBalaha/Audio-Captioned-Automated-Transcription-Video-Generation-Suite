@@ -696,6 +696,7 @@ Generate a silent audio file of a specified duration and format.
     - `500 Internal Server Error`: Error generating silent audio.
 
 </details>
+</details>
 
 ## 🛠️ Preparation Steps
 
