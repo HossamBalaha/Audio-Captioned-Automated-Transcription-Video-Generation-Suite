@@ -12,6 +12,19 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [📄 Overview](#-overview)
+- [🎨 Web Interface](#-web-interface)
+- [🤖 N8N Integration & Applicability](#-n8n-integration--applicability)
+- [📁 Project Structure](#-project-structure)
+- [🛠️ Preparation Steps](#️-preparation-steps)
+- [🚀 Usage Instructions](#-usage-instructions)
+- [🛠️ Troubleshooting](#️-troubleshooting)
+- [💖 Support](#-support)
+- [📄 Copyright and License](#-copyright-and-license)
+- [📬 Contact](#-contact)
+
 ## 📄 Overview
 
 Audio-Captioned Automated Transcription & Video Generation Suite is a comprehensive, modular system designed to automate
