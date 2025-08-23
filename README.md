@@ -632,6 +632,7 @@ Normalize an uploaded audio file and return a download link for the normalized f
 - **Status Codes**:
     - `200 OK`: Normalized audio link returned successfully.
     - `400 Bad Request`: No file or invalid file type.
+    - `404 Not Found`: Could not find the generated file.
     - `500 Internal Server Error`: Error normalizing audio.
 
 #### POST `/api/v1/generate-silent-audio`
