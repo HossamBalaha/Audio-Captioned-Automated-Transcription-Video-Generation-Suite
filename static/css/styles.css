@@ -1,4 +1,6 @@
-/* Flexbox sticky footer */
+/* =============================
+   Layout & Flexbox
+   ============================= */
 html, body {
     height: 100%;
     margin: 0;
@@ -16,10 +18,47 @@ body > .container.mt-4 {
     flex-shrink: 0;
 }
 
-/* Modern Navbar Theme */
+/* =============================
+   Typography & Font
+   ============================= */
+body {
+    font-family: 'Barlow Condensed', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+}
+
+.card-title, .card-title.mb-2, .card-title.mb-0 {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #1e3c72;
+    margin-bottom: 0.5rem;
+}
+
+.card-header .card-title {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+.card-text {
+    color: #3a4a6b;
+    font-size: 1.08rem;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1e3c72;
+    letter-spacing: 0.01em;
+}
+
+/* =============================
+   Navbar
+   ============================= */
 .navbar {
     background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
     box-shadow: 0 2px 8px rgba(30, 60, 114, 0.15);
+    /*border-radius: 0 0 1.5rem 1.5rem;*/
+    padding: 0.5rem 1rem;
 }
 
 .navbar .navbar-brand {
@@ -32,30 +71,250 @@ body > .container.mt-4 {
 .navbar .nav-link {
     color: #e0e7ff !important;
     font-weight: 500;
-    transition: color 0.2s;
+    transition: color 0.2s, background 0.2s;
+    border-radius: 1rem;
+    margin: 0 0.5rem;
+    padding: 0.4rem 1rem;
 }
 
 .navbar .nav-link:hover, .navbar .nav-link.active {
     color: #ffd700 !important;
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
 }
 
 .navbar-toggler {
     border-color: #e0e7ff;
+    border-radius: 1rem;
 }
 
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(224,231,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
-/* Responsive tweaks */
-@media (max-width: 991px) {
-    .navbar .navbar-brand {
+/* =============================
+   Card & Option Card
+   ============================= */
+.card, .option-card {
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(30, 60, 114, 0.10);
+    background: linear-gradient(120deg, #f8fafc 80%, #e3eafc 100%);
+    border: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover, .option-card:hover {
+    box-shadow: 0 8px 32px rgba(30, 60, 114, 0.18);
+    transform: scale(1.01);
+}
+
+.card-header {
+    background: linear-gradient(90deg, #2a5298 0%, #1e3c72 100%);
+    color: #fff;
+    border-radius: 1.25rem 1.25rem 0 0;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+    padding: 1.2rem 1.5rem;
+}
+
+.option-icon {
+    transition: transform 0.2s, color 0.2s;
+    color: #2a5298;
+    /*background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);*/
+    border-radius: 50%;
+    padding: 0.5rem 0.7rem;
+    /*box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);*/
+}
+
+/*.option-card:hover .option-icon {*/
+/*    transform: scale(1.15) rotate(-8deg);*/
+/*    color: #fff;*/
+/*    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);*/
+/*}*/
+
+/* =============================
+   Buttons
+   ============================= */
+.btn-primary {
+    background: linear-gradient(90deg, #2a5298 0%, #1e3c72 100%);
+    border: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+    box-shadow: 0 4px 16px rgba(30, 60, 114, 0.18);
+}
+
+.btn-success {
+    border-radius: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-danger {
+    border-radius: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* =============================
+   Alerts & Code Blocks
+   ============================= */
+.alert-success {
+    background: linear-gradient(90deg, #e0eafc 0%, #cfdef3 100%);
+    border-radius: 1rem;
+    color: #1e3c72;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+}
+
+.alert-warning, .alert-info {
+    border-radius: 1rem;
+    box-shadow: 0 1px 4px rgba(30, 60, 114, 0.07);
+}
+
+code.bg-light {
+    border-radius: 0.5rem;
+    font-size: 1.05rem;
+    color: #2a5298;
+    background: #e3eafc !important;
+    padding: 0.5rem 1rem !important;
+}
+
+/* =============================
+   Forms & Inputs
+   ============================= */
+.form-select, .form-control, .form-range {
+    border-radius: 1rem;
+    border: 1px solid #cfdef3;
+    box-shadow: 0 1px 4px rgba(30, 60, 114, 0.07);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-select:focus, .form-control:focus, .form-range:focus {
+    border-color: #2a5298;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.12);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    font-size: 1.08rem;
+    background: #f8fafc;
+}
+
+.form-range {
+    accent-color: #2a5298;
+}
+
+/* =============================
+   Footer (Enhanced)
+   ============================= */
+.footer {
+    background: linear-gradient(90deg, #e0eafc 0%, #cfdef3 100%);
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -2px 12px rgba(30, 60, 114, 0.10);
+    font-size: 1.08rem;
+    color: #3a4a6b;
+    padding: 2rem 0 1rem 0;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+
+.footer strong {
+    color: #1e3c72;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.footer a {
+    color: #2a5298;
+    font-weight: 600;
+    text-decoration: none;
+    margin: 0 0.3rem;
+    transition: color 0.2s, text-shadow 0.2s, background 0.2s, box-shadow 0.2s;
+    padding: 0.2rem 0.7rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.footer a:hover {
+    color: #fff;
+    background: linear-gradient(90deg, #2a5298 0%, #1e3c72 100%);
+    text-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.10);
+}
+
+.footer i {
+    margin-right: 0.2rem;
+    vertical-align: middle;
+    font-size: 1.1em;
+    color: #2a5298;
+    transition: color 0.2s;
+}
+
+.footer a:hover i {
+    color: #ffd700;
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        padding: 1rem 0.7rem;
+        font-size: 1.1rem;
+    }
+
+    .card-title {
         font-size: 1.2rem;
     }
 
-    .navbar .nav-link {
+    .form-label {
         font-size: 1rem;
+    }
+
+    .btn-primary, .btn-success, .btn-danger {
+        padding: 0.4rem 1rem;
+        font-size: 1rem;
+    }
+
+    .option-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .option-icon {
+        font-size: 2.5rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+    }
+
+    .footer {
+        border-radius: 1rem 1rem 0 0;
+        font-size: 1rem;
+        padding: 1.2rem 0 0.7rem 0;
+        margin-top: 2rem;
+    }
+
+    .footer a {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.98rem;
+    }
+
+    .navbar {
+        /*border-radius: 0 0 1rem 1rem;*/
+        padding: 0.5rem 0.5rem;
     }
 }
