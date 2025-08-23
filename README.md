@@ -16,34 +16,42 @@
 
 Audio-Captioned Automated Transcription & Video Generation Suite is a comprehensive, modular system designed to automate
 the creation of professional-quality captioned videos from text or audio input. It integrates advanced AI and multimedia
-technologies to deliver a seamless, scalable workflow for content creators, educators, and developers.
+technologies to deliver a seamless, scalable workflow for content creators, educators, developers, and automation
+platforms like N8N.
 
 **Key Features:**
 
-- **End-to-End Automation:** Transforms text or audio into synchronized, captioned videos with natural-sounding
-  voiceovers.
-- **Speech & Transcription:** Utilizes Whisper for accurate speech-to-text transcription and word-level timing, enabling
-  precise caption synchronization.
-- **Text-to-Speech:** Integrates Kokoro TTS for customizable, high-quality voice generation with support for multiple
-  languages and voices.
+- **End-to-End Automation:** Instantly transforms text or audio into synchronized, captioned videos with
+  natural-sounding voiceovers, ready for social media, education, or marketing.
+- **Speech & Transcription:** Utilizes Whisper for highly accurate speech-to-text transcription with word-level timing,
+  enabling precise caption synchronization and multilingual support.
+- **Text-to-Speech:** Integrates Kokoro TTS for customizable, high-quality voice generation, supporting multiple
+  languages, voices, and adjustable speech rates.
 - **Audio & Video Processing:** Employs FFmpeg for advanced audio normalization, silence detection, video trimming,
-  merging, and caption overlay.
+  merging, format conversion, and caption overlay.
 - **RESTful API:** Exposes a robust Flask API for job submission, status tracking, asset management, and audio
-  utilities (duration, size, silence check, normalization).
-- **Flexible Input/Output:** Supports various audio formats (MP3, WAV, OGG) and video qualities (4K, Full HD, etc.),
-  with customizable backgrounds and fonts.
+  utilities (duration, size, silence check, normalization, conversion, and more).
+- **Flexible Input/Output:** Supports a wide range of audio formats (MP3, WAV, OGG) and video qualities (4K, Full HD,
+  etc.), with customizable backgrounds, fonts, and video types (horizontal/vertical).
 - **Extensible & Modular:** Designed for easy integration, customization, and extension to fit diverse automation and
-  media production needs.
+  media production needs, including seamless orchestration with N8N workflows.
+- **Batch & Scalable Processing:** Enables batch job submission and scalable automation for large-scale media
+  production, ideal for shorts, reels, and educational series.
+- **Multi-Step Workflow Support:** Facilitates complex workflows such as transcription, TTS, video assembly, and
+  automated publishing to platforms like YouTube, TikTok, or cloud storage.
+- **Content Enrichment & Routing:** Supports content enrichment (e.g., auto-generated scripts, translation, branding)
+  and conditional logic for error handling, notifications, and output routing.
 
 **Workflow:**
 
-1. Submit text or audio via API or web interface.
+1. Submit text or audio via API, web interface, or automated workflow (e.g., N8N).
 2. System generates or transcribes audio, extracts timing, and selects background video assets.
 3. Merges audio, video, and captions into a final, downloadable video file.
-4. Provides additional audio tools for duration, size, silence detection, and normalization.
+4. Provides additional audio tools for duration, size, silence detection, normalization, conversion, and more.
+5. Enables automated publishing, notifications, and integration with third-party platforms via API or workflow tools.
 
-Whether you need to batch-generate social media clips, automate educational content, or build custom video pipelines,
-this suite offers a powerful foundation for scalable, AI-driven media production.
+Whether you need to batch-generate social media clips, automate educational content, build custom video pipelines, or
+orchestrate media production with N8N, this suite offers a powerful foundation for scalable, AI-driven media automation.
 
 ---
 
@@ -51,7 +59,7 @@ this suite offers a powerful foundation for scalable, AI-driven media production
 
 The Audio-Captioned Automated Transcription & Video Generation Suite features a modern, user-friendly web interface
 designed for seamless interaction and efficient workflow. Built with Flask and Bootstrap, the interface allows users to
-easily submit jobs, manage video generation tasks, and utilize advanced audio tools—all from any device.
+easily submit jobs, manage video generation tasks, and utilize advanced audio tools; all from any device.
 
 **Key Technologies:**
 
@@ -81,39 +89,71 @@ alt="Logo" width="100%" align="center" style="text-align: center !important; ali
 
 This page lets users submit text for automated video generation, select language, voice, video type, and quality.
 
-<details>
-<summary>Click to expand text to video page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/T2V%20Job%20Creation.png" 
 alt="Text to Video" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
-</details>
 
 ### T2V Jobs Management
 
 View, track, and manage all submitted video generation jobs, including their status and details.
 
-<details>
-<summary>Click to expand T2V jobs management page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Text%20to%20Video%20(T2V)%20Jobs%20Management.png" 
 alt="T2V Jobs Management" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
-</details>
 
 ### Audio Tools
 
 Access advanced audio utilities such as duration, size, silence detection, and normalization.
 
-<details>
-<summary>Click to expand audio tools page details</summary>
 <div style="text-align: center !important;" align="center">
 <img src="/static/images/Audio%20Tools.png" 
 alt="Audio Tools" width="100%" align="center" style="text-align: center !important; align: center;">
 </div>
-</details>
 
 ---
+
+## 🤖 N8N Integration & Applicability
+
+N8N is a powerful open-source workflow automation tool that can be seamlessly integrated with this suite to automate and
+orchestrate media production tasks, including the creation of shorts, videos, and more. By leveraging N8N's visual
+workflow builder and its extensive library of integrations, you can:
+
+- **Automate Video Creation Pipelines:** Trigger video generation jobs from text or audio received via email, chat,
+  webhooks, or other sources.
+- **Batch Processing:** Schedule or batch-submit multiple jobs for automated captioned video creation, ideal for social
+  media campaigns or educational content.
+- **Multi-Step Workflows:** Chain together steps such as transcription, text-to-speech, video assembly, and delivery to
+  platforms like YouTube, TikTok, or cloud storage.
+- **API Integration:** Use N8N's HTTP Request node to interact with the suite's RESTful API endpoints for job
+  submission, status tracking, and asset management.
+- **Conditional Logic & Routing:** Build workflows that react to job status, errors, or content type, enabling advanced
+  automation scenarios (e.g., send notifications when a video is ready, retry failed jobs, or route outputs to different
+  destinations).
+- **Content Enrichment:** Combine with other N8N nodes to enrich content (e.g., fetch trending topics, auto-generate
+  scripts, translate captions, or add branding).
+- **Scalable Automation:** Orchestrate large-scale media production by integrating with cloud storage, databases, and
+  third-party services.
+
+**Example N8N Workflow:**
+
+1. **Trigger:** Receive new text or audio via webhook, email, or cloud upload.
+2. **Submit Job:** Use HTTP Request node to POST to `/api/v1/jobs`.
+3. **Monitor Status:** Poll `/api/v1/jobs/<jobId>` until completed.
+4. **Download Result:** Fetch the final video via `/api/v1/jobs/<jobId>/result`.
+5. **Publish/Distribute:** Upload to YouTube, TikTok, Google Drive, or send via email.
+6. **Notify:** Send a Slack/Discord message or email when the job is done.
+
+**Benefits of N8N Integration:**
+
+- No-code/low-code automation for non-developers
+- Visual workflow builder for rapid prototyping
+- Connects with hundreds of services (cloud, social, productivity, AI)
+- Enables scalable, repeatable, and error-resistant media production
+
+For more details, see [N8N documentation](https://n8n.io/docs/) and explore how to connect this suite's API endpoints to
+your automation workflows.
 
 ## 📁 Project Structure
 
@@ -654,8 +694,6 @@ Generate a silent audio file of a specified duration and format.
     - `400 Bad Request`: Invalid input data (e.g., negative duration).
     - `404 Not Found`: Could not find the generated file.
     - `500 Internal Server Error`: Error generating silent audio.
-
-</details>
 
 </details>
 
