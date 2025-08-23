@@ -25,6 +25,8 @@
 - [📄 Copyright and License](#-copyright-and-license)
 - [📬 Contact](#-contact)
 
+---
+
 ## 📄 Overview
 
 Audio-Captioned Automated Transcription & Video Generation Suite is a comprehensive, modular system designed to automate
