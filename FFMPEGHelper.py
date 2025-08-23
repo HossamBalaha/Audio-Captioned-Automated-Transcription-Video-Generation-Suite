@@ -212,6 +212,8 @@ class FFMPEGHelper(object):
       process: The subprocess object containing the result of the command.      
     '''
     try:
+      if (VERBOSE):
+        print(f"Executing command for `{functionName}`:\n{command}")
       process = await asyncio.create_subprocess_exec(
         *command,
         stdout=subprocess.PIPE,
@@ -237,25 +239,53 @@ class FFMPEGHelper(object):
     self,
     audioFilePath,  # Path to the input audio file.
     outputFilePath,  # Path to save the normalized audio file.
+    audioCodec=None,  # Audio codec to use (optional).
+    audioFormat=None,  # Audio format to use (optional).
+    audioBitrate=None,  # Audio bitrate to use (optional).
+    normalizationFilter=None,  # Normalization filter to use (optional).
+    sampleRate=None,  # Sample rate to use (optional).
+    channels=None,  # Number of audio channels to use (optional).
   ):
     '''
     Normalize the audio volume of a file.
     This function uses ffmpeg to normalize the audio volume of an audio file.
+
     Parameters:
       audioFilePath (str): Path to the input audio file.
       outputFilePath (str): Path to save the normalized audio file.
+      audioCodec (str): Audio codec to use (optional). If not provided, the default from configs will be used.
+      audioFormat (str): Audio format to use (optional). If not provided, the default from configs will be used.
+      audioBitrate (str): Audio bitrate to use (optional). If not provided, the default from configs will be used.
+      normalizationFilter (str): Normalization filter to use (optional). If not provided, the default from configs will be used.
+      sampleRate (int): Sample rate to use (optional). If not provided, the default from configs will be used.
+      channels (int): Number of audio channels to use (optional). If not provided, the default from configs will be used.
+
     Returns:
       bool: True if normalization was successful, False otherwise.
     '''
+
+    if (audioCodec is None):
+      audioCodec = configs["ffmpeg"].get("audioCodec", "libmp3lame")
+    if (audioFormat is None):
+      audioFormat = configs["ffmpeg"].get("audioFormat", "mp3")
+    if (audioBitrate is None):
+      audioBitrate = configs["ffmpeg"].get("audioBitrate", "256k")
+    if (normalizationFilter is None):
+      normalizationFilter = configs["ffmpeg"].get("normalizationFilter", "loudnorm")
+    if (sampleRate is None):
+      sampleRate = configs["ffmpeg"].get("sampleRate", 44100)
+    if (channels is None):
+      channels = configs["ffmpeg"].get("channels", 2)
+
     ffmpegCommand = [
       "ffmpeg",  # Command to run ffmpeg.
       "-i", audioFilePath,  # Input audio file.
-      "-c:a", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec.
-      "-f", configs["ffmpeg"].get("audioFormat", "mp3"),  # Set the audio format.
-      "-b:a", configs["ffmpeg"].get("audioBitrate", "256k"),  # Set the audio bitrate.
-      "-af", configs["ffmpeg"].get("normalizationFilter", "loudnorm"),  # Apply normalization filter.
-      "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set the sample rate.
-      "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set the number of audio channels.
+      "-c:a", audioCodec,  # Set the audio codec.
+      "-f", audioFormat,  # Set the audio format.
+      "-b:a", audioBitrate,  # Set the audio bitrate.
+      "-af", normalizationFilter,  # Apply normalization filter.
+      "-ar", str(sampleRate),  # Set the sample rate.
+      "-ac", str(channels),  # Set the number of audio channels.
       "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output normalized audio file.
@@ -275,25 +305,43 @@ class FFMPEGHelper(object):
     self,
     outputFilePath,  # Path to save the silent audio file.
     duration,  # Duration of the silent audio in seconds.
+    audioCodec=None,  # Audio codec to use (optional).
+    audioFormat=None,  # Audio format to use (optional).
+    sampleRate=None,  # Sample rate to use (optional).
+    channels=None,  # Number of audio channels to use (optional).
   ):
     '''
     Generate a silent audio file of specified duration.
     This function uses ffmpeg to create a silent audio file with the specified parameters.
+
     Parameters:
       outputFilePath (str): Path to save the silent audio file.
       duration (int): Duration of the silent audio in seconds.
+      audioCodec (str): Audio codec to use (optional). If not provided, the default from configs will be used.
+      audioFormat (str): Audio format to use (optional). If not provided, the default from configs will be used.
+
     Returns:
       bool: True if the generation was successful, False otherwise.
     '''
+
+    if (audioCodec is None):
+      audioCodec = configs["ffmpeg"].get("audioCodec", "libmp3lame")
+    if (audioFormat is None):
+      audioFormat = configs["ffmpeg"].get("audioFormat", "mp3")
+    if (sampleRate is None):
+      sampleRate = configs["ffmpeg"].get("sampleRate", 44100)
+    if (channels is None):
+      channels = configs["ffmpeg"].get("channels", 2)
+
     ffmpegCommand = [
       "ffmpeg",  # Command to run ffmpeg.
       "-f", "lavfi",  # Use lavfi (libavfilter) to generate silence.
       "-i", "anullsrc",  # Use anullsrc filter to generate silent audio.
       "-t", str(duration),  # Set the duration of the silent audio.
-      "-ar", str(configs["ffmpeg"].get("sampleRate", 44100)),  # Set the sample rate.
-      "-ac", str(configs["ffmpeg"].get("channels", 2)),  # Set the number of audio channels.
-      "-acodec", configs["ffmpeg"].get("audioCodec", "libmp3lame"),  # Set the audio codec for silent audio.
-      "-f", configs["ffmpeg"].get("audioFormat", "mp3"),  # Set the audio format.
+      "-ar", str(sampleRate),  # Set the sample rate.
+      "-ac", str(channels),  # Set the number of audio channels.
+      "-acodec", audioCodec,  # Set the audio codec for silent audio.
+      "-f", audioFormat,  # Set the audio format.
       "-preset", "fast",  # Use a fast preset for encoding. It balances speed and quality.
       "-y",  # Overwrite output file without asking.
       outputFilePath  # Output audio file path.

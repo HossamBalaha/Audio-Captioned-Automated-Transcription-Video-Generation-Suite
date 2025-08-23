@@ -179,10 +179,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-clock-history"></i> Audio Duration Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-clock-history"></i> <strong>Get Audio Duration:</strong> Find out the length of your
+              audio file (in seconds).
+            </li>
+          </ul>
+        </div>
         <form id="audioDurationForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile"
                  accept=".wav, .mp3, .ogg, .flac" required>
-
           <button type="submit" class="btn btn-primary w-100">Get Duration</button>
         </form>
         <div id="durationResult" class="mt-3"></div>
@@ -199,6 +206,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-hdd"></i> Audio Size Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-hdd"></i> <strong>Get Audio Size:</strong> Check the file size of your audio for storage
+              and upload planning.
+            </li>
+          </ul>
+        </div>
         <form id="audioSizeForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <button type="submit" class="btn btn-primary w-100">Get Size</button>
@@ -217,18 +232,26 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-volume-mute"></i> Silence Detection Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-volume-mute"></i> <strong>Check Silence:</strong> Detect if your audio file contains
+              silence or is muted.
+            </li>
+          </ul>
+        </div>
         <form id="audioSilenceForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <button type="submit" class="btn btn-primary w-100">Check Silence</button>
         </form>
-        <div id="silenceResult" class="mt-3"></div>
+        <div id="silenceResult" class="col-12 mt-3"></div>
       </div>
     </div>
   </div>
 </div>
 <!-- Normalize Modal -->
 <div class="modal fade" id="normalizeModal" tabindex="-1" aria-labelledby="normalizeModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="normalizeModalLabel">Normalize Audio</h5>
@@ -236,10 +259,59 @@
       </div>
       <div class="modal-body">
         <form id="audioNormalizeForm" enctype="multipart/form-data">
-          <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
-          <button type="submit" class="btn btn-primary w-100">Normalize</button>
+          <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+            <h6 class="mb-2"><i class="bi bi-sliders"></i> Audio Normalization Filters Options</h6>
+            <ul class="mb-0 ps-3">
+              <li><i class="bi bi-volume-up"></i> <strong>Loudness Normalization:</strong> Adjusts audio to a standard
+                loudness level for consistent volume.
+              </li>
+              <li><i class="bi bi-graph-up"></i> <strong>Dynamic Audio Normalization:</strong> Smooths out volume
+                variations for a more balanced sound.
+              </li>
+              <li><i class="bi bi-search"></i> <strong>Volume Detect:</strong> Analyzes audio to find peak volume
+                levels.
+              </li>
+              <li><i class="bi bi-sliders2-vertical"></i> <strong>Audio Compressor:</strong> Reduces the volume range to
+                make quieter sounds louder and louder sounds quieter.
+              </li>
+            </ul>
+          </div>
+          <div class="col-12 mb-2">
+            <input type="file" class="form-control" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
+          </div>
+          <div class="col-md mb-2">
+            <label for="normalizeBitrate" class="form-label">Bitrate</label>
+            <select class="form-select" id="normalizeBitrate" name="normalizeBitrate">
+              <option value="128k">128k</option>
+              <option value="192k">192k</option>
+              <option value="256k" selected>256k</option>
+              <option value="320k">320k</option>
+            </select>
+          </div>
+          <div class="col-12 mb-2">
+            <label for="normalizeSampleRate" class="form-label">Sample Rate (Hz)</label>
+            <select class="form-select" id="normalizeSampleRate" name="normalizeSampleRate">
+              <option value="22050">16000</option>
+              <option value="22050">24000</option>
+              <option value="32000">32000</option>
+              <option value="44100" selected>44100</option>
+              <option value="48000">48000</option>
+            </select>
+          </div>
+          <div class="col-12 mb-2">
+            <label for="normalizeFilter" class="form-label">Normalization Filter</label>
+            <select class="form-select" id="normalizeFilter" name="normalizeFilter">
+              <option value="loudnorm" selected>Loudness Normalization</option>
+              <option value="dynaudnorm">Dynamic Audio Normalization</option>
+              <option value="volumedetect">Volume Detect</option>
+              <option value="acompressor">Audio Compressor</option>
+            </select>
+          </div>
+          <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary w-100">Normalize</button>
+          </div>
         </form>
-        <div id="normalizeResult" class="mt-3"></div>
+        <div id="normalizeResult" class="col-12 mt-3"></div>
       </div>
     </div>
   </div>
@@ -254,12 +326,32 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="silentAudioForm">
-          <label for="silentDuration" class="form-label">Duration (seconds)</label>
-          <input type="number" class="form-control mb-3" id="silentDuration" name="duration" min="1" required>
-          <button type="submit" class="btn btn-primary w-100">Generate Silence</button>
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-volume-off"></i> Generate Silent Audio Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-volume-off"></i> <strong>Generate Silent Audio:</strong> Create a silent audio file of
+              any duration and format for use in video or audio projects.
+            </li>
+          </ul>
+        </div>
+        <form id="generateSilentForm">
+          <div class="col-12 mb-2">
+            <label for="silentDuration" class="form-label">Duration (seconds)</label>
+            <input type="number" class="form-control" id="silentDuration" name="duration" min="1">
+          </div>
+          <div class="col-12 mb-2">
+            <label for="silentFormat" class="form-label">Format</label>
+            <select name="silentFormat" id="silentFormat" class="form-select">
+              <option value="mp3" selected>MP3</option>
+              <option value="wav">WAV</option>
+              <option value="ogg">OGG</option>
+            </select>
+          </div>
+          <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary w-100">Generate Silence</button>
+          </div>
         </form>
-        <div id="silentResult" class="mt-3"></div>
+        <div id="silentResult" class="col-12 mt-3"></div>
       </div>
     </div>
   </div>
@@ -273,6 +365,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-arrow-repeat"></i> Audio Conversion Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-arrow-repeat"></i> <strong>Convert Audio:</strong> Change format, bitrate, sample rate,
+              channels, or trim your audio file.
+            </li>
+          </ul>
+        </div>
         <form id="audioConvertForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <div class="row">
@@ -281,8 +381,7 @@
               <select class="form-select" id="convertFormat" name="outputFormat">
                 <option value="mp3">MP3</option>
                 <option value="wav">WAV</option>
-                <option value="aac">AAC</option>
-                <option value="flac">FLAC</option>
+                <option value="ogg">OGG</option>
               </select>
             </div>
             <div class="col-md-6 mb-2">
@@ -325,6 +424,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-volume-up"></i> Change Volume Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-volume-up"></i> <strong>Change Volume:</strong> Amplify or attenuate your audio file.
+            </li>
+          </ul>
+        </div>
         <form id="audioVolumeForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <label for="volume" class="form-label">Volume (e.g. 1.0 = original, 2.0 = double, 0.5 = half)</label>
@@ -345,6 +451,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-fast-forward"></i> Change Speed Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-fast-forward"></i> <strong>Change Speed:</strong> Speed up or slow down your audio file.
+            </li>
+          </ul>
+        </div>
         <form id="audioSpeedForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <label for="speed" class="form-label">Speed (e.g. 1.0 = original, 2.0 = double, 0.5 = half)</label>
@@ -366,6 +479,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-arrow-counterclockwise"></i> Reverse Audio Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-arrow-counterclockwise"></i> <strong>Reverse Audio:</strong> Play your audio file
+              backwards.
+            </li>
+          </ul>
+        </div>
         <form id="audioReverseForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <button type="submit" class="btn btn-primary w-100">Reverse</button>
@@ -384,6 +505,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-film"></i> Extract Audio Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-film"></i> <strong>Extract Audio:</strong> Extract audio from a video file.</li>
+          </ul>
+        </div>
         <form id="audioExtractForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="videoFile" accept="video/*" required>
           <button type="submit" class="btn btn-primary w-100">Extract</button>
@@ -402,6 +529,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-link-45deg"></i> Concatenate Audios Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-link-45deg"></i> <strong>Concatenate Audios:</strong> Merge multiple audio files into
+              one.
+            </li>
+          </ul>
+        </div>
         <form id="audioConcatForm" enctype="multipart/form-data">
           <label for="audioFiles" class="form-label">Select multiple audio files</label>
           <input type="file" class="form-control mb-3" name="audioFiles" id="audioFiles"
@@ -423,6 +558,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-scissors"></i> Split Audio Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-scissors"></i> <strong>Split Audio:</strong> Divide audio into segments.</li>
+          </ul>
+        </div>
         <form id="audioSplitForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <label for="segmentDuration" class="form-label">Segment Duration (seconds)</label>
@@ -443,6 +584,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-brightness-alt-high"></i> Fade In/Out Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-brightness-alt-high"></i> <strong>Fade In/Out:</strong> Add fade in/out effects to
+              audio.
+            </li>
+          </ul>
+        </div>
         <form id="audioFadeForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <label for="fadeIn" class="form-label">Fade In Duration (seconds)</label>
@@ -466,6 +615,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-person-x"></i> Remove Vocals Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-person-x"></i> <strong>Remove Vocals:</strong> Remove vocals from your audio file.</li>
+          </ul>
+        </div>
         <form id="audioRemoveVocalsForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <button type="submit" class="btn btn-danger w-100">Remove Vocals</button>
@@ -484,6 +639,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info text-start mb-3 p-3 shadow-sm">
+          <h6 class="mb-2"><i class="bi bi-sliders2-vertical"></i> Equalizer/Filter Feature</h6>
+          <ul class="mb-0 ps-3">
+            <li><i class="bi bi-sliders2-vertical"></i> <strong>Equalizer/Filter:</strong> Apply equalizer or filter to
+              audio.
+            </li>
+          </ul>
+        </div>
         <form id="audioEqualizerForm" enctype="multipart/form-data">
           <input type="file" class="form-control mb-3" name="audioFile" accept=".wav, .mp3, .ogg, .flac" required>
           <label for="freq" class="form-label">Frequency (Hz)</label>
@@ -707,9 +870,61 @@
       });
     });
 
+    $("#generateSilentForm").on("submit", function (e) {
+      e.preventDefault();
+      var submitButton = $(this).find("button[type='submit']");
+      submitButton.prop("disabled", true);
+      submitButton.addClass("disabled");
+      let loaderHTML = `Processing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+      submitButton.html(loaderHTML);
+      var duration = $("#silentDuration").val();
+      var format = $("#silentFormat").val();
+      if (format[0] !== ".") format = "." + format;
+      var payload = JSON.stringify({
+        silentDuration: duration,
+        silentFormat: format
+      });
+      $.ajax({
+        url: "/api/v1/generate-silent-audio",
+        type: "POST",
+        data: payload,
+        processData: false,
+        contentType: "application/json",
+        timeout: 0,
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Silent Audio Generated",
+            html: `<span class="badge text-bg-success p-2 h3 m-0">Silent audio has been generated successfully.<br><br>It will be downloaded automatically.</span>`,
+            confirmButtonColor: "#3085d6"
+          });
+          let link = response.link;
+          let filename = response.filename || "SilentAudio.wav";
+          let a = document.createElement("a");
+          a.setAttribute("href", link);
+          a.setAttribute("download", filename);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to generate silent audio"),
+            confirmButtonColor: "#d33"
+          });
+        },
+        complete: function () {
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Generate Silence");
+        }
+      });
+    });
+
     // Disable the remaining cards for now.
     let disabledCards = [
-      "#generateSilent",
       "#convertAudio",
       "#changeVolume",
       "#changeSpeed",

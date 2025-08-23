@@ -434,20 +434,62 @@ def normalizeAudio():
   if (not any(file.filename.endswith(ext) for ext in allowedExtensions)):
     return jsonify({"error": f"File type not allowed, must be one of {allowedExtensions}"}), 400
 
+  normalizeBitrate = request.form.get("normalizeBitrate", "256k")
+  try:
+    normalizeBitrate = str(normalizeBitrate)
+    if (not normalizeBitrate.endswith("k")):
+      normalizeBitrate += "k"
+  except ValueError:
+    normalizeBitrate = "256k"
+
+  normalizeSampleRate = request.form.get("normalizeSampleRate", 44100)
+  try:
+    normalizeSampleRate = int(normalizeSampleRate)
+    if (normalizeSampleRate <= 0):
+      raise ValueError
+  except ValueError:
+    normalizeSampleRate = 44100
+
+  normalizeFilter = request.form.get("normalizeFilter", "loudnorm")
+  if (normalizeFilter not in ["loudnorm", "dynaudnorm", "acompressor", "volumedetect"]):
+    normalizeFilter = "loudnorm"
+
   # Save the file to a temporary location.
   uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}"
   usedExtension = os.path.splitext(file.filename)[1]
   tempFilePath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
   file.save(tempFilePath)
 
+  if (usedExtension == ".mp3"):
+    audioCodec = "libmp3lame"
+    audioFormat = "mp3"
+  elif (usedExtension == ".wav"):
+    audioCodec = "pcm_s16le"
+    audioFormat = "wav"
+  elif (usedExtension == ".ogg"):
+    audioCodec = "libvorbis"
+    audioFormat = "ogg"
+  else:
+    audioCodec = "libmp3lame"
+    audioFormat = "mp3"
+
   # Normalize the audio using FFMPEG.
   try:
     outputPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_normalized{usedExtension}")
     if (os.path.exists(outputPath)):
       os.remove(outputPath)
+    print(audioCodec, audioFormat, normalizeBitrate, normalizeSampleRate, normalizeFilter)
     # Normalize the audio file using FFMPEG.
     isDone = asyncio.run(
-      FFMPEGHelper().NormalizeAudio(tempFilePath, outputPath)
+      FFMPEGHelper().NormalizeAudio(
+        tempFilePath,
+        outputPath,
+        audioCodec=audioCodec,
+        audioFormat=audioFormat,
+        audioBitrate=normalizeBitrate,
+        sampleRate=normalizeSampleRate,
+        normalizationFilter=normalizeFilter,
+      )
     )
     if (not isDone):
       current_app.logger.error("Failed to normalize audio.")
@@ -479,16 +521,80 @@ def normalizeAudio():
     return jsonify({"error": "Error normalizing audio"}), 500
 
 
+@apiBp.route("/api/v1/generate-silent-audio", methods=["POST"])
+def generateSilentAudio():
+  data = request.get_json()
+  if (not data):
+    return jsonify({"error": "Invalid JSON data"}), 400
+  duration = data.get("silentDuration", 1)
+  try:
+    duration = float(duration)
+    if (duration <= 0):
+      raise ValueError
+  except ValueError:
+    return jsonify({"error": "Duration must be a positive number"}), 400
+
+  configs = current_app.config["configs"]
+  STORE_PATH = current_app.config["STORE_PATH"]
+  allowedExtensions = configs["audio"].get("allowedExtensions", [".mp3", ".wav", ".ogg"])
+  outputFormat = data.get("silentFormat", ".wav").lower()
+  if (outputFormat not in allowedExtensions):
+    outputFormat = ".wav"
+
+  uniqueFilename = f"silent_{int(duration)}s_{hashlib.md5(str(time.time()).encode()).hexdigest()}"
+  outputPath = os.path.join(STORE_PATH, f"{uniqueFilename}{outputFormat}")
+
+  try:
+    if (outputFormat == ".mp3"):
+      audioCodec = "libmp3lame"
+      audioFormat = "mp3"
+    elif (outputFormat == ".wav"):
+      audioCodec = "pcm_s16le"
+      audioFormat = "wav"
+    elif (outputFormat == ".ogg"):
+      audioCodec = "libvorbis"
+      audioFormat = "ogg"
+    else:
+      audioCodec = "libmp3lame"
+      audioFormat = "mp3"
+
+    isDone = asyncio.run(
+      FFMPEGHelper().GenerateSilentAudio(outputPath, duration, audioCodec=audioCodec, audioFormat=audioFormat)
+    )
+    if (not isDone):
+      return jsonify({"error": "Failed to generate silent audio"}), 500
+    if (not os.path.exists(outputPath)):
+      return jsonify({"error": "Silent audio file not found"}), 404
+    if (not os.access(outputPath, os.R_OK)):
+      return jsonify({"error": "Silent audio file is not accessible"}), 500
+    if (os.path.getsize(outputPath) == 0):
+      return jsonify({"error": "Silent audio file is empty"}), 500
+    return {
+      "link"    : f"/api/v1/download/{uniqueFilename}{outputFormat}",
+      "filename": f"{uniqueFilename}{outputFormat}"
+    }
+  except Exception as e:
+    current_app.logger.error(f"Error generating silent audio: {str(e)}")
+    return jsonify({"error": "Error generating silent audio"}), 500
+
+
 @apiBp.route("/api/v1/download/<filename>", methods=["GET"])
 def downloadFile(filename):
   STORE_PATH = current_app.config["STORE_PATH"]
-  filePath = os.path.join(STORE_PATH, filename)
+  # Sanitize filename to prevent path traversal
+  safeFilename = os.path.basename(filename)
+  filePath = os.path.join(STORE_PATH, safeFilename)
 
   if (not os.path.exists(filePath)):
     return jsonify({"error": "File not found"}), 404
 
   if (not os.access(filePath, os.R_OK)):
     return jsonify({"error": "File is not accessible"}), 403
+
+  # Optionally restrict allowed file types:
+  # allowedExtensions = [".mp3", ".wav", ".ogg", ".mp4", ".json"]
+  # if not any(filePath.endswith(ext) for ext in allowedExtensions):
+  #     return jsonify({"error": "File type not allowed"}), 403
 
   try:
     return send_file(filePath, as_attachment=True), 200

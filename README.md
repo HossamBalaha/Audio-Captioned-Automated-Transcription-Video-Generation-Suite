@@ -615,14 +615,44 @@ Checks if the uploaded audio file is silent.
 
 #### POST `/api/v1/normalize-audio`
 
-Normalizes the uploaded audio file and returns a download link for the normalized file.
+Normalize an uploaded audio file and return a download link for the normalized file.
 
 - **Request**: `multipart/form-data` with field `audioFile` (allowed: .mp3, .wav, .ogg)
-- **Response**: `{ "link": string, "filename": string }` (link to download normalized audio)
+    - Optional fields:
+        - `normalizeBitrate`: Output bitrate (default: "256k")
+        - `normalizeSampleRate`: Output sample rate (default: 44100)
+        - `normalizeFilter`: Normalization filter ("loudnorm", "dynaudnorm", "volumedetect", "acompressor")
+- **Response** (JSON): `{ "link": string, "filename": string }` (link to download normalized audio)
+  ```json
+  {
+    "link": "/api/v1/download/normalized_audio.mp3",
+    "filename": "normalized_audio.mp3"
+  }
+  ```
 - **Status Codes**:
     - `200 OK`: Normalized audio link returned successfully.
     - `400 Bad Request`: No file or invalid file type.
     - `500 Internal Server Error`: Error normalizing audio.
+
+#### POST `/api/v1/generate-silent-audio`
+
+Generate a silent audio file of a specified duration and format.
+
+- **Request Body** (JSON):
+    - `silentDuration`: Duration of the silent audio in seconds (float, required, >0).
+    - `silentFormat`: Audio format for the silent file (e.g., ".wav", ".mp3", ".ogg").
+- **Response** (JSON): `{ "link": string, "filename": string }` (link to download silent audio)
+  ```json
+  {
+    "link": "/api/v1/download/silent_audio.mp3",
+    "filename": "silent_audio.mp3"
+  }
+  ```
+- **Status Codes**:
+    - `200 OK`: Silent audio generated successfully.
+    - `400 Bad Request`: Invalid input data (e.g., negative duration).
+    - `404 Not Found`: Could not find the generated file.
+    - `500 Internal Server Error`: Error generating silent audio.
 
 </details>
 
