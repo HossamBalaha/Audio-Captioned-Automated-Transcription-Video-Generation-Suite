@@ -26,15 +26,15 @@ from VideoCreatorHelper import VideoCreatorHelper
 
 
 def ProcessJob(jobId):
-  '''Process the job: convert text to speech, add captions, and generate video.'''
+  # Process the job: convert text to speech, add captions, and generate video.
   videoCreator = app.config.get("videoCreator", None)
-  JOB_HISTORY_OBJ = app.config["JOB_HISTORY_OBJ"]
+  jobHistoryObj = app.config["JOB_HISTORY_OBJ"]
 
   # Get the job directory path for file operations.
   jobDir = os.path.join(STORE_PATH, jobId)
 
-  # Update the job status to "processing".
-  JOB_HISTORY_OBJ.updateStatus(jobId, "processing")
+  # Update the job status to processing.
+  jobHistoryObj.updateStatus(jobId, "processing")
   UpdateJobStatus(jobId, "processing")
 
   try:
@@ -74,30 +74,30 @@ def ProcessJob(jobId):
     )
 
     if (not isGenerated):
-      JOB_HISTORY_OBJ.updateStatus(jobId, "failed")
+      jobHistoryObj.updateStatus(jobId, "failed")
       UpdateJobStatus(jobId, "failed")
       return jsonify({"error": "Failed to generate video"}), 500
 
     # If the video was generated successfully, update the job status.
     if (VERBOSE):
       print(f"Video generated successfully for job {jobId} with ID: {videoID}")
-    JOB_HISTORY_OBJ.updateStatus(jobId, "completed")
+    jobHistoryObj.updateStatus(jobId, "completed")
     UpdateJobStatus(jobId, "completed")
 
     # Update the video creator in the app config.
     app.config["videoCreator"] = videoCreator
 
   except Exception as e:
-    # If an error occurs, update the job status to "failed".
+    # If an error occurs, update the job status to failed.
     if (VERBOSE):
       print(f"Error processing job {jobId}: {str(e)}")
-    JOB_HISTORY_OBJ.updateStatus(jobId, "failed")
+    jobHistoryObj.updateStatus(jobId, "failed")
     UpdateJobStatus(jobId, "failed")
     return jsonify({"error": f"Failed to process job {jobId}: {str(e)}"}), 500
 
 
 def UpdateJobStatus(jobId, status):
-  '''Update the job status in the job's JSON file to maintain persistence.'''
+  # Update the job status in the job's JSON file to maintain persistence.
   jobDir = os.path.join(STORE_PATH, jobId)
   jobFilePath = os.path.join(jobDir, "job.json")
 

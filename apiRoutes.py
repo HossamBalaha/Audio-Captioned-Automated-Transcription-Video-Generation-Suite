@@ -20,16 +20,16 @@ apiBp = Blueprint("api", __name__)
 
 
 @apiBp.route("/api/v1/status", methods=["GET"])
-def getServerStatus():
+def GetServerStatus():
   return jsonify({"status": "Server is running"}), 200
 
 
 @apiBp.route("/api/v1/ready", methods=["GET"])
-def getServerReady():
+def GetServerReady():
   JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
   MAX_JOBS = current_app.config.get("MAX_JOBS", 1)
   noOfQuestedJobs = len([status for status in JOB_HISTORY_OBJ.values() if (status == "queued")])
-  isBusy = noOfQuestedJobs >= MAX_JOBS
+  isBusy = (noOfQuestedJobs >= MAX_JOBS)
   if (not isBusy):
     return jsonify({"ready": True}), 200
   else:
@@ -37,27 +37,27 @@ def getServerReady():
 
 
 @apiBp.route("/api/v1/languages", methods=["GET"])
-def getAvailableLanguages():
+def GetAvailableLanguages():
   languages = TextToSpeechHelper().GetAvailableLanguages()
   return jsonify({"languages": languages}), 200
 
 
 @apiBp.route("/api/v1/videoTypes", methods=["GET"])
-def getAvailableVideoTypes():
+def GetAvailableVideoTypes():
   configs = current_app.config["configs"]
   videoTypes = configs["video"].get("availableTypes", ["Horizontal", "Vertical"])
   return jsonify({"videoTypes": videoTypes}), 200
 
 
 @apiBp.route("/api/v1/videoQualities", methods=["GET"])
-def getAvailableVideoQualities():
+def GetAvailableVideoQualities():
   configs = current_app.config["configs"]
   videoQualities = configs["video"].get("availableQualities", [])
   return jsonify({"videoQualities": videoQualities}), 200
 
 
 @apiBp.route("/api/v1/voices", methods=["GET"])
-def getAvailableVoices():
+def GetAvailableVoices():
   typeKey = request.args.get("type", "list").lower()
   if (typeKey not in ["list", "dict"]):
     return jsonify({"error": "Invalid type parameter, must be 'list' or 'dict'"}), 400
@@ -69,7 +69,7 @@ def getAvailableVoices():
 
 
 @apiBp.route("/api/v1/jobs", methods=["GET"])
-def getAllJobs():
+def GetAllJobs():
   JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
   STORE_PATH = current_app.config["STORE_PATH"]
   configs = current_app.config["configs"]
@@ -93,13 +93,13 @@ def getAllJobs():
           "createdAt"   : jobData.get("createdAt", "N/A"),
           "isCompleted" : (status == "completed"),
         })
-      except Exception as e:
+      except Exception:
         pass
   return jsonify({"jobs": jobsList}), 200
 
 
 @apiBp.route("/api/v1/jobs", methods=["POST"])
-def postJob():
+def PostJob():
   QUEUE_WATCHER = current_app.config["QUEUE_WATCHER"]
   JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
   STORE_PATH = current_app.config["STORE_PATH"]
@@ -170,16 +170,16 @@ def postJob():
 
 
 @apiBp.route("/api/v1/jobs/<jobId>", methods=["GET"])
-def getJobStatus(jobId):
-  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
-  STORE_PATH = current_app.config["STORE_PATH"]
+def GetJobStatus(jobId):
+  jobHistoryObj = current_app.config["JOB_HISTORY_OBJ"]
+  storePath = current_app.config["STORE_PATH"]
   configs = current_app.config["configs"]
 
-  if (jobId not in JOB_HISTORY_OBJ.keys()):
+  if (jobId not in jobHistoryObj.keys()):
     return jsonify({"error": "Job not found"}), 404
 
-  status = JOB_HISTORY_OBJ.get(jobId, "unknown")
-  jobDir = os.path.join(STORE_PATH, jobId)
+  status = jobHistoryObj.get(jobId, "unknown")
+  jobDir = os.path.join(storePath, jobId)
 
   try:
     with open(os.path.join(jobDir, "job.json"), "r") as f:
@@ -201,42 +201,42 @@ def getJobStatus(jobId):
 
 
 @apiBp.route("/api/v1/jobs/triggerRemaining", methods=["POST"])
-def triggerRemainingJobs():
-  QUEUE_WATCHER = current_app.config["QUEUE_WATCHER"]
-  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
-  MAX_JOBS = current_app.config.get("MAX_JOBS", 1)
-  MAX_TIMEOUT = current_app.config.get("MAX_TIMEOUT", 10)
+def TriggerRemainingJobs():
+  queueWatcher = current_app.config["QUEUE_WATCHER"]
+  jobHistoryObj = current_app.config["JOB_HISTORY_OBJ"]
+  maxJobs = current_app.config.get("MAX_JOBS", 1)
+  maxTimeout = current_app.config.get("MAX_TIMEOUT", 10)
 
-  if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
-    QUEUE_WATCHER = QueueWatcher(current_app.config["ProcessJob"], maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
-    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
-    current_app.config["QUEUE_WATCHER"] = QUEUE_WATCHER
-    QUEUE_WATCHER.start()
+  if (queueWatcher and not queueWatcher.is_alive()):
+    queueWatcher = QueueWatcher(current_app.config["ProcessJob"], maxJobs=maxJobs, maxTimeout=maxTimeout)
+    queueWatcher.jobHistoryObj = jobHistoryObj
+    current_app.config["QUEUE_WATCHER"] = queueWatcher
+    queueWatcher.start()
     return jsonify({"message": "Triggered processing for remaining queued jobs."}), 200
-  elif (QUEUE_WATCHER and QUEUE_WATCHER.is_alive()):
+  elif (queueWatcher and queueWatcher.is_alive()):
     return jsonify({"message": "Queue watcher is already running."}), 200
-  elif (not QUEUE_WATCHER):
-    QUEUE_WATCHER = QueueWatcher(current_app.config["ProcessJob"], maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
-    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
-    current_app.config["QUEUE_WATCHER"] = QUEUE_WATCHER
-    QUEUE_WATCHER.start()
+  elif (not queueWatcher):
+    queueWatcher = QueueWatcher(current_app.config["ProcessJob"], maxJobs=maxJobs, maxTimeout=maxTimeout)
+    queueWatcher.jobHistoryObj = jobHistoryObj
+    current_app.config["QUEUE_WATCHER"] = queueWatcher
+    queueWatcher.start()
     return jsonify({"message": "Initialized and started queue watcher."}), 200
   else:
     return jsonify({"message": "Queue watcher is already running or not initialized."}), 200
 
 
 @apiBp.route("/api/v1/jobs/<jobId>/result", methods=["GET"])
-def getProcessedVideo(jobId):
-  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
-  STORE_PATH = current_app.config["STORE_PATH"]
+def GetProcessedVideo(jobId):
+  jobHistoryObj = current_app.config["JOB_HISTORY_OBJ"]
+  storePath = current_app.config["STORE_PATH"]
   configs = current_app.config["configs"]
   logger = current_app.config["logger"]
 
-  if (jobId not in JOB_HISTORY_OBJ.keys()):
+  if (jobId not in jobHistoryObj.keys()):
     logger.warning(f"Job {jobId} not found in the jobs.")
     return jsonify({"error": "Job not found"}), 404
 
-  jobDir = os.path.join(STORE_PATH, jobId)
+  jobDir = os.path.join(storePath, jobId)
   jobDataPath = os.path.join(jobDir, "job.json")
 
   try:
@@ -272,48 +272,48 @@ def getProcessedVideo(jobId):
 
 
 @apiBp.route("/api/v1/jobs/<jobId>", methods=["DELETE"])
-def deleteProcessedVideo(jobId):
-  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
-  STORE_PATH = current_app.config["STORE_PATH"]
+def DeleteProcessedVideo(jobId):
+  jobHistoryObj = current_app.config["JOB_HISTORY_OBJ"]
+  storePath = current_app.config["STORE_PATH"]
 
-  if (jobId not in JOB_HISTORY_OBJ.keys()):
+  if (jobId not in jobHistoryObj.keys()):
     return jsonify({"error": "Job not found"}), 404
-  jobDir = os.path.join(STORE_PATH, jobId)
+  jobDir = os.path.join(storePath, jobId)
 
   if (os.path.exists(jobDir)):
     import shutil
     shutil.rmtree(jobDir)
 
-  if (jobId in JOB_HISTORY_OBJ.keys()):
-    JOB_HISTORY_OBJ.delete(jobId)
+  if (jobId in jobHistoryObj.keys()):
+    jobHistoryObj.delete(jobId)
 
   return jsonify({"message": "Job data deleted successfully"}), 200
 
 
 @apiBp.route("/api/v1/jobs/all", methods=["DELETE"])
-def deleteAllProcessedVideos():
-  '''Delete all processed videos and associated data for all jobs.'''
-  STORE_PATH = current_app.config.get("STORE_PATH")
-  JOB_HISTORY_OBJ = current_app.config.get("JOB_HISTORY_OBJ")
+def DeleteAllProcessedVideos():
+  # Delete all processed videos and associated data for all jobs.
+  storePath = current_app.config.get("STORE_PATH")
+  jobHistoryObj = current_app.config.get("JOB_HISTORY_OBJ")
 
   # Remove all job directories and their contents.
-  if (STORE_PATH and os.path.exists(STORE_PATH)):
+  if (storePath and os.path.exists(storePath)):
     import shutil
-    for item in os.listdir(STORE_PATH):
-      itemPath = os.path.join(STORE_PATH, item)
+    for item in os.listdir(storePath):
+      itemPath = os.path.join(storePath, item)
       if (os.path.isdir(itemPath)):
         shutil.rmtree(itemPath)
 
   # Clear the job statuses dictionary.
-  if (JOB_HISTORY_OBJ):
-    JOB_HISTORY_OBJ.clear()
+  if (jobHistoryObj):
+    jobHistoryObj.clear()
 
   # Return a success message.
   return jsonify({"message": "All job data deleted successfully"}), 200
 
 
 @apiBp.route("/api/v1/audio-duration", methods=["POST"])
-def getAudioDuration():
+def GetAudioDuration():
   # Get the file from the request.
   if (not request.files or "audioFile" not in request.files):
     return jsonify({"error": "No file provided"}), 400
@@ -576,6 +576,1063 @@ def generateSilentAudio():
   except Exception as e:
     current_app.logger.error(f"Error generating silent audio: {str(e)}")
     return jsonify({"error": "Error generating silent audio"}), 500
+
+
+@apiBp.route("/api/v1/convert-audio", methods=["POST"])
+def convertAudio():
+  # Convert audio: format, bitrate, sample rate, channels, optional trim
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  configs = current_app.config["configs"]
+  allowedExtensions = configs["audio"].get("allowedExtensions", [".mp3", ".wav", ".ogg"])
+  usedExtension = os.path.splitext(file.filename)[1].lower()
+  if (usedExtension not in allowedExtensions):
+    return jsonify({"error": f"File type not allowed, must be one of {allowedExtensions}"}), 400
+
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+
+  # Parameters
+  outFormat = request.form.get("outputFormat", usedExtension.replace('.', ''))
+  if (not outFormat.startswith(".")):
+    outFormat = "." + outFormat
+  if (outFormat not in allowedExtensions):
+    outFormat = usedExtension
+
+  bitrate = request.form.get("bitrate", None)
+  try:
+    sampleRate = int(request.form.get("sampleRate", configs["ffmpeg"].get("sampleRate", 44100)))
+  except Exception:
+    sampleRate = configs["ffmpeg"].get("sampleRate", 44100)
+  try:
+    channels = int(request.form.get("channels", configs["ffmpeg"].get("channels", 2)))
+  except Exception:
+    channels = configs["ffmpeg"].get("channels", 2)
+
+  startTime = request.form.get("startTime", None)
+  endTime = request.form.get("endTime", None)
+
+  # If trimming requested, create a trimmed temp file first
+  workingPath = tempPath
+  try:
+    if (startTime is not None and endTime is not None and startTime != "" and endTime != ""):
+      try:
+        s = float(startTime)
+        e = float(endTime)
+        trimmedPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_trimmed{usedExtension}")
+        isDone = asyncio.run(FFMPEGHelper().TrimAudio(workingPath, trimmedPath, s, e))
+        if (not isDone):
+          raise Exception("Failed to trim file")
+        # remove original temp and use trimmed
+        if (os.path.exists(workingPath)):
+          os.remove(workingPath)
+        workingPath = trimmedPath
+      except Exception as ex:
+        current_app.logger.error(f"Error trimming audio: {str(ex)}")
+        if (os.path.exists(tempPath)):
+          os.remove(tempPath)
+        return jsonify({"error": "Failed to trim audio"}), 500
+
+    # Build output path
+    outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_converted{outFormat}")
+    # Use NormalizeAudio function as a general re-encoder (it applies codec/bitrate/sample rate)
+    # Choose codec based on extension
+    if (outFormat == ".mp3"):
+      audioCodec = "libmp3lame"
+      audioFormat = "mp3"
+    elif (outFormat == ".wav"):
+      audioCodec = "pcm_s16le"
+      audioFormat = "wav"
+    elif (outFormat == ".ogg"):
+      audioCodec = "libvorbis"
+      audioFormat = "ogg"
+    else:
+      audioCodec = configs["ffmpeg"].get("audioCodec", "libmp3lame")
+      audioFormat = outFormat.replace('.', '')
+
+    # Set bitrate if provided
+    if (bitrate and not bitrate.endswith('k')):
+      bitrate = str(bitrate) + 'k'
+
+    isDone = asyncio.run(
+      FFMPEGHelper().NormalizeAudio(
+        workingPath,
+        outPath,
+        audioCodec=audioCodec,
+        audioFormat=audioFormat,
+        audioBitrate=bitrate or configs["ffmpeg"].get("audioBitrate", "256k"),
+        sampleRate=sampleRate,
+        channels=channels,
+        normalizationFilter=request.form.get("normalizeFilter",
+                                             configs["ffmpeg"].get("normalizationFilter", "loudnorm"))
+      )
+    )
+
+    if (os.path.exists(workingPath)):
+      try:
+        os.remove(workingPath)
+      except Exception:
+        pass
+
+    if (not isDone or not os.path.exists(outPath)):
+      current_app.logger.error("Conversion failed or output missing")
+      return jsonify({"error": "Failed to convert audio"}), 500
+
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error converting audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error converting audio"}), 500
+
+
+@apiBp.route("/api/v1/change-volume", methods=["POST"])
+def changeVolume():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    volume = float(request.form.get("volume", 1.0))
+  except Exception:
+    volume = 1.0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_vol{usedExtension}")
+  try:
+    ff = FFMPEGHelper()
+    cmd = [
+      "ffmpeg", "-i", tempPath,
+      "-af", f"volume={volume}",
+      "-y", outPath
+    ]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "ChangeVolume"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to change volume"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error changing volume: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error changing volume"}), 500
+
+
+@apiBp.route("/api/v1/change-speed", methods=["POST"])
+def changeSpeed():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    speed = float(request.form.get("speed", 1.0))
+  except Exception:
+    speed = 1.0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_spd{usedExtension}")
+  try:
+    # atempo supports 0.5-2.0 per instance; chain if needed
+    tempo = speed
+    if (tempo <= 0):
+      raise ValueError
+    atempoFilters = []
+    while (tempo > 2.0):
+      atempoFilters.append("atempo=2.0")
+      tempo /= 2.0
+    while (tempo < 0.5):
+      atempoFilters.append("atempo=0.5")
+      tempo /= 0.5
+    atempoFilters.append(f"atempo={tempo}")
+    af = ",".join(atempoFilters)
+    ff = FFMPEGHelper()
+    cmd = ["ffmpeg", "-i", tempPath, "-af", af, "-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "ChangeSpeed"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to change speed"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error changing speed: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error changing speed"}), 500
+
+
+@apiBp.route("/api/v1/reverse-audio", methods=["POST"])
+def reverseAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_rev{usedExtension}")
+  try:
+    ff = FFMPEGHelper()
+    cmd = ["ffmpeg", "-i", tempPath, "-af", "areverse", "-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "ReverseAudio"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to reverse audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error reversing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error reversing audio"}), 500
+
+
+@apiBp.route("/api/v1/extract-audio", methods=["POST"])
+def extractAudio():
+  if (not request.files or "videoFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["videoFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  usedExtension = ".mp3"
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{os.path.splitext(file.filename)[1]}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_extracted{usedExtension}")
+  try:
+    ff = FFMPEGHelper()
+    # Check whether the uploaded video actually contains an audio stream.
+    try:
+      hasAudio = ff.HasAudioStream(tempPath)
+    except Exception as e:
+      hasAudio = False
+    if (not hasAudio):
+      # Clean up temp file and return a 400 (bad request) indicating no audio present.
+      try:
+        if (os.path.exists(tempPath)):
+          os.remove(tempPath)
+      except Exception:
+        pass
+      return jsonify({"error": "Uploaded video contains no audio stream"}), 400
+
+    # Extract audio and convert to mp3
+    cmd = ["ffmpeg", "-i", tempPath, "-vn", "-acodec", "libmp3lame", "-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "ExtractAudio"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to extract audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error extracting audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error extracting audio"}), 500
+
+
+@apiBp.route("/api/v1/concat-audio", methods=["POST"])
+def concatAudio():
+  if (not request.files or "audioFiles" not in request.files):
+    return jsonify({"error": "No files provided"}), 400
+  files = request.files.getlist("audioFiles")
+  if (len(files) == 0):
+    return jsonify({"error": "No files selected"}), 400
+  storedPaths = []
+  try:
+    for f in files:
+      ext = os.path.splitext(f.filename)[1]
+      unique = f"{hashlib.md5(f.filename.encode()).hexdigest()}_{int(time.time())}"
+      p = os.path.join(current_app.config["STORE_PATH"], f"{unique}{ext}")
+      f.save(p)
+      storedPaths.append(p)
+    outPath = os.path.join(current_app.config["STORE_PATH"], f"concat_{int(time.time())}.mp3")
+    isDone = asyncio.run(FFMPEGHelper().ConcatAudioFiles(storedPaths, outPath))
+    # cleanup inputs
+    for p in storedPaths:
+      try:
+        os.remove(p)
+      except Exception:
+        pass
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to concatenate audio files"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error concatenating audio: {str(e)}")
+    for p in storedPaths:
+      try:
+        os.remove(p)
+      except Exception:
+        pass
+    return jsonify({"error": "Error concatenating audio"}), 500
+
+
+@apiBp.route("/api/v1/split-audio", methods=["POST"])
+def splitAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    segmentDuration = float(request.form.get("segmentDuration", 10))
+  except Exception:
+    segmentDuration = 10.0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  try:
+    totalDur = FFMPEGHelper().GetFileDuration(tempPath)
+    if (totalDur is None):
+      raise Exception("Could not determine duration")
+    parts = []
+    start = 0.0
+    idx = 0
+    while start < totalDur:
+      end = min(start + segmentDuration, totalDur)
+      outPart = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_part{idx}{usedExtension}")
+      isDone = asyncio.run(FFMPEGHelper().TrimAudio(tempPath, outPart, start, end))
+      if (not isDone or not os.path.exists(outPart)):
+        raise Exception("Failed to create segment")
+      parts.append(outPart)
+      start = end
+      idx += 1
+    # Create a zip archive of parts
+    import zipfile
+    zipName = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_parts.zip")
+    with zipfile.ZipFile(zipName, 'w') as zf:
+      for p in parts:
+        zf.write(p, arcname=os.path.basename(p))
+    # cleanup parts and original
+    for p in parts:
+      try:
+        os.remove(p)
+      except Exception:
+        pass
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    return {"link": f"/api/v1/download/{os.path.basename(zipName)}", "filename": os.path.basename(zipName)}
+  except Exception as e:
+    current_app.logger.error(f"Error splitting audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error splitting audio"}), 500
+
+
+@apiBp.route("/api/v1/fade-audio", methods=["POST"])
+def fadeAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    fadeIn = float(request.form.get("fadeIn", 0))
+  except Exception:
+    fadeIn = 0
+  try:
+    fadeOut = float(request.form.get("fadeOut", 0))
+  except Exception:
+    fadeOut = 0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_fade{usedExtension}")
+  try:
+    afParts = []
+    if (fadeIn > 0):
+      afParts.append(f"afade=t=in:st=0:d={fadeIn}")
+    if (fadeOut > 0):
+      # Need file duration to place fade out start
+      duration = FFMPEGHelper().GetFileDuration(tempPath) or 0
+      startOut = max(0, duration - fadeOut)
+      afParts.append(f"afade=t=out:st={startOut}:d={fadeOut}")
+    af = ",".join(afParts) if afParts else ""
+    ff = FFMPEGHelper()
+    cmd = ["ffmpeg", "-i", tempPath]
+    if af:
+      cmd += ["-af", af]
+    cmd += ["-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "FadeAudio"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to add fade"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error applying fade: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error applying fade"}), 500
+
+
+@apiBp.route("/api/v1/remove-vocals", methods=["POST"])
+def removeVocals():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_novocals{usedExtension}")
+  try:
+    # Basic center-channel vocal removal for stereo files
+    ff = FFMPEGHelper()
+    cmd = ["ffmpeg", "-i", tempPath, "-af", "pan=stereo|c0=c0-c1|c1=c1-c0", "-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "RemoveVocals"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to remove vocals"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error removing vocals: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error removing vocals"}), 500
+
+
+@apiBp.route("/api/v1/equalize-audio", methods=["POST"])
+def equalizeAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    freq = float(request.form.get("freq", 1000))
+  except Exception:
+    freq = 1000.0
+  try:
+    width = float(request.form.get("width", 2))
+  except Exception:
+    width = 2.0
+  try:
+    gain = float(request.form.get("gain", 5))
+  except Exception:
+    gain = 5.0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_eq{usedExtension}")
+  try:
+    # Use equalizer filter: equalizer=f=<freq>:width_type=h:width=<width>:g=<gain>
+    filterStr = f"equalizer=f={freq}:width_type=h:width={width}:g={gain}"
+    ff = FFMPEGHelper()
+    cmd = ["ffmpeg", "-i", tempPath, "-af", filterStr, "-y", outPath]
+    success, proc = asyncio.run(ff._ExecuteFFmpegCommand(cmd, "EqualizeAudio"))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not success or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to apply equalizer"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error equalizing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error equalizing audio"}), 500
+
+
+@apiBp.route("/api/v1/mix-audio", methods=["POST"])
+def mixAudio():
+  if (not request.files or "audioFiles" not in request.files):
+    return jsonify({"error": "No files provided"}), 400
+  files = request.files.getlist("audioFiles")
+  if (len(files) < 2):
+    return jsonify({"error": "At least 2 audio files required"}), 400
+  storedPaths = []
+  try:
+    for f in files:
+      ext = os.path.splitext(f.filename)[1]
+      unique = f"{hashlib.md5(f.filename.encode()).hexdigest()}_{int(time.time())}"
+      p = os.path.join(current_app.config["STORE_PATH"], f"{unique}{ext}")
+      f.save(p)
+      storedPaths.append(p)
+    # Get volume levels from form data (comma-separated).
+    volumesStr = request.form.get("volumes", "")
+    volumes = None
+    if (volumesStr):
+      try:
+        volumes = [float(v.strip()) for v in volumesStr.split(",")]
+      except Exception:
+        volumes = None
+    duration = request.form.get("duration", "longest")
+    outPath = os.path.join(current_app.config["STORE_PATH"], f"mixed_{int(time.time())}.mp3")
+    isDone = asyncio.run(FFMPEGHelper().MixAudioFiles(storedPaths, outPath, volumes=volumes, duration=duration))
+    for p in storedPaths:
+      try:
+        os.remove(p)
+      except Exception:
+        pass
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to mix audio files"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error mixing audio: {str(e)}")
+    for p in storedPaths:
+      try:
+        os.remove(p)
+      except Exception:
+        pass
+    return jsonify({"error": "Error mixing audio"}), 500
+
+
+@apiBp.route("/api/v1/reduce-noise", methods=["POST"])
+def reduceNoise():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    noiseReduction = int(request.form.get("noiseReduction", 20))
+  except Exception:
+    noiseReduction = 20
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_noisereduced{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().ReduceNoise(tempPath, outPath, noiseReduction=noiseReduction))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to reduce noise"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error reducing noise: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error reducing noise"}), 500
+
+
+@apiBp.route("/api/v1/remove-silence", methods=["POST"])
+def removeSilence():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    threshold = int(request.form.get("threshold", -50))
+    duration = float(request.form.get("duration", 0.5))
+  except Exception:
+    threshold = -50
+    duration = 0.5
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_nosilence{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().RemoveSilence(tempPath, outPath, threshold=threshold, duration=duration))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to remove silence"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error removing silence: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error removing silence"}), 500
+
+
+@apiBp.route("/api/v1/enhance-audio", methods=["POST"])
+def enhanceAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    bassGain = int(request.form.get("bassGain", 0))
+    trebleGain = int(request.form.get("trebleGain", 0))
+  except Exception:
+    bassGain = 0
+    trebleGain = 0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_enhanced{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().EnhanceAudio(tempPath, outPath, bassGain=bassGain, trebleGain=trebleGain))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to enhance audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error enhancing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error enhancing audio"}), 500
+
+
+@apiBp.route("/api/v1/compress-audio", methods=["POST"])
+def compressAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    threshold = int(request.form.get("threshold", -20))
+    ratio = int(request.form.get("ratio", 4))
+    attack = int(request.form.get("attack", 200))
+    release = int(request.form.get("release", 1000))
+    makeupGain = int(request.form.get("makeupGain", 0))
+  except Exception:
+    threshold = -20
+    ratio = 4
+    attack = 200
+    release = 1000
+    makeupGain = 0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_compressed{usedExtension}")
+  try:
+    isDone = asyncio.run(
+      FFMPEGHelper().CompressAudio(tempPath, outPath, threshold=threshold, ratio=ratio, attack=attack,
+                                    release=release, makeupGain=makeupGain))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to compress audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error compressing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error compressing audio"}), 500
+
+
+@apiBp.route("/api/v1/convert-channels", methods=["POST"])
+def convertChannels():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    targetChannels = int(request.form.get("targetChannels", 1))
+  except Exception:
+    targetChannels = 1
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  channelName = "mono" if targetChannels == 1 else "stereo"
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_{channelName}{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().ConvertChannels(tempPath, outPath, targetChannels=targetChannels))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to convert channels"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error converting channels: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error converting channels"}), 500
+
+
+@apiBp.route("/api/v1/loop-audio", methods=["POST"])
+def loopAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    loopCount = int(request.form.get("loopCount", 2))
+    totalDuration = request.form.get("totalDuration", None)
+    if (totalDuration):
+      totalDuration = float(totalDuration)
+  except Exception:
+    loopCount = 2
+    totalDuration = None
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_looped{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().LoopAudio(tempPath, outPath, loopCount=loopCount, totalDuration=totalDuration))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to loop audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error looping audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error looping audio"}), 500
+
+
+@apiBp.route("/api/v1/shift-pitch", methods=["POST"])
+def shiftPitch():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    semitones = int(request.form.get("semitones", 0))
+  except Exception:
+    semitones = 0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_pitched{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().ShiftPitch(tempPath, outPath, semitones=semitones))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to shift pitch"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error shifting pitch: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error shifting pitch"}), 500
+
+
+@apiBp.route("/api/v1/add-echo", methods=["POST"])
+def addEcho():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    delay = int(request.form.get("delay", 1000))
+    decay = float(request.form.get("decay", 0.5))
+  except Exception:
+    delay = 1000
+    decay = 0.5
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_echo{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().AddEcho(tempPath, outPath, delay=delay, decay=decay))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to add echo"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error adding echo: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error adding echo"}), 500
+
+
+@apiBp.route("/api/v1/adjust-stereo", methods=["POST"])
+def adjustStereo():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    width = float(request.form.get("width", 1.0))
+  except Exception:
+    width = 1.0
+  usedExtension = os.path.splitext(file.filename)[1]
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{usedExtension}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_stereo{usedExtension}")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().AdjustStereoWidth(tempPath, outPath, width=width))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to adjust stereo"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error adjusting stereo: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error adjusting stereo"}), 500
+
+
+@apiBp.route("/api/v1/generate-waveform", methods=["POST"])
+def generateWaveform():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    width = int(request.form.get("width", 1280))
+    height = int(request.form.get("height", 240))
+    colors = request.form.get("colors", "blue")
+  except Exception:
+    width = 1280
+    height = 240
+    colors = "blue"
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{os.path.splitext(file.filename)[1]}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_waveform.png")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().GenerateWaveform(tempPath, outPath, width=width, height=height, colors=colors))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to generate waveform"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error generating waveform: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error generating waveform"}), 500
+
+
+@apiBp.route("/api/v1/generate-spectrum", methods=["POST"])
+def generateSpectrum():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    width = int(request.form.get("width", 1280))
+    height = int(request.form.get("height", 720))
+    colorScheme = request.form.get("colorScheme", "rainbow")
+  except Exception:
+    width = 1280
+    height = 720
+    colorScheme = "rainbow"
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{os.path.splitext(file.filename)[1]}")
+  file.save(tempPath)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_spectrum.mp4")
+  try:
+    isDone = asyncio.run(
+      FFMPEGHelper().GenerateSpectrum(tempPath, outPath, width=width, height=height, colorScheme=colorScheme))
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to generate spectrum"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error generating spectrum: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error generating spectrum"}), 500
+
+
+@apiBp.route("/api/v1/crossfade-audio", methods=["POST"])
+def crossfadeAudio():
+  if (not request.files or "firstAudio" not in request.files or "secondAudio" not in request.files):
+    return jsonify({"error": "Two audio files required"}), 400
+  file1 = request.files["firstAudio"]
+  file2 = request.files["secondAudio"]
+  if (file1.filename == "" or file2.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  try:
+    duration = int(request.form.get("duration", 3))
+  except Exception:
+    duration = 3
+  unique1 = f"{hashlib.md5(file1.filename.encode()).hexdigest()}_{int(time.time())}"
+  unique2 = f"{hashlib.md5(file2.filename.encode()).hexdigest()}_{int(time.time()) + 1}"
+  path1 = os.path.join(current_app.config["STORE_PATH"], f"{unique1}{os.path.splitext(file1.filename)[1]}")
+  path2 = os.path.join(current_app.config["STORE_PATH"], f"{unique2}{os.path.splitext(file2.filename)[1]}")
+  file1.save(path1)
+  file2.save(path2)
+  outPath = os.path.join(current_app.config["STORE_PATH"], f"crossfade_{int(time.time())}.mp3")
+  try:
+    isDone = asyncio.run(FFMPEGHelper().CrossfadeAudio(path1, path2, outPath, duration=duration))
+    if (os.path.exists(path1)):
+      os.remove(path1)
+    if (os.path.exists(path2)):
+      os.remove(path2)
+    if (not isDone or not os.path.exists(outPath)):
+      return jsonify({"error": "Failed to crossfade audio"}), 500
+    return {"link": f"/api/v1/download/{os.path.basename(outPath)}", "filename": os.path.basename(outPath)}
+  except Exception as e:
+    current_app.logger.error(f"Error crossfading audio: {str(e)}")
+    for p in [path1, path2]:
+      try:
+        if (os.path.exists(p)):
+          os.remove(p)
+      except Exception:
+        pass
+    return jsonify({"error": "Error crossfading audio"}), 500
+
+
+@apiBp.route("/api/v1/analyze-audio", methods=["POST"])
+def analyzeAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{os.path.splitext(file.filename)[1]}")
+  file.save(tempPath)
+  try:
+    analysis = FFMPEGHelper().AnalyzeAudio(tempPath)
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (analysis is None):
+      return jsonify({"error": "Failed to analyze audio"}), 500
+    return jsonify(analysis), 200
+  except Exception as e:
+    current_app.logger.error(f"Error analyzing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error analyzing audio"}), 500
+
+
+@apiBp.route("/api/v1/transcribe-audio", methods=["POST"])
+def transcribeAudio():
+  if (not request.files or "audioFile" not in request.files):
+    return jsonify({"error": "No file provided"}), 400
+  file = request.files["audioFile"]
+  if (file.filename == ""):
+    return jsonify({"error": "No file selected"}), 400
+  language = request.form.get("language", "en")
+  outputFormat = request.form.get("outputFormat", "txt")
+  uniqueFilename = f"{hashlib.md5(file.filename.encode()).hexdigest()}_{int(time.time())}"
+  tempPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}{os.path.splitext(file.filename)[1]}")
+  file.save(tempPath)
+  try:
+    from WhisperTranscribeHelper import WhisperTranscribeHelper
+    transcriber = WhisperTranscribeHelper()
+    result = transcriber.Transcribe(tempPath, language=language)
+    if (os.path.exists(tempPath)):
+      os.remove(tempPath)
+    if (result is None):
+      return jsonify({"error": "Failed to transcribe audio"}), 500
+    # Format output based on request.
+    if (outputFormat == "json"):
+      return jsonify(result), 200
+    elif (outputFormat == "txt"):
+      text = result.get("text", "")
+      return jsonify({"transcription": text}), 200
+    elif (outputFormat == "srt"):
+      # Generate SRT format from segments.
+      srtContent = ""
+      if ("segments" in result):
+        for i, seg in enumerate(result["segments"]):
+          srtContent += f"{i + 1}\n"
+          start = seg.get("start", 0)
+          end = seg.get("end", 0)
+          srtContent += f"{formatSRTTime(start)} --> {formatSRTTime(end)}\n"
+          srtContent += f"{seg.get('text', '').strip()}\n\n"
+      return jsonify({"srt": srtContent}), 200
+    else:
+      return jsonify(result), 200
+  except Exception as e:
+    current_app.logger.error(f"Error transcribing audio: {str(e)}")
+    if (os.path.exists(tempPath)):
+      try:
+        os.remove(tempPath)
+      except Exception:
+        pass
+    return jsonify({"error": "Error transcribing audio"}), 500
+
+
+def formatSRTTime(seconds):
+  hours = int(seconds // 3600)
+  minutes = int((seconds % 3600) // 60)
+  secs = int(seconds % 60)
+  millis = int((seconds % 1) * 1000)
+  return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
 
 
 @apiBp.route("/api/v1/download/<filename>", methods=["GET"])
