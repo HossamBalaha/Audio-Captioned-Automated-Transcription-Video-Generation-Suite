@@ -1,8 +1,10 @@
 # 🎬 Audio-Captioned Automated Transcription & Video Generation Suite
 
-[![Repo Size](https://img.shields.io/github/repo-size/HossamBalaha/Text2Video-Generation-Suite?style=flat-square)](https://github.com/HossamBalaha)
+[![Repo Size](https://img.shields.io/github/repo-size/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite?style=flat-square)](https://github.com/HossamBalaha)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/status-Active-brightgreen?style=flat-square)](#)
+[![License](https://img.shields.io/github/license/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite?style=flat-square)](LICENSE)
+[![Support Me](https://img.shields.io/badge/Support-☕%20Buy%20Me%20a%20Coffee-yellow?style=flat-square)](https://coff.ee/hossammbalaha)
 
 A comprehensive, modular suite to automatically generate captioned videos from text or audio using Whisper, Kokoro TTS,
 FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for professional-grade media automation.
@@ -26,28 +28,16 @@ FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for profess
 - [📁 Project Structure](#-project-structure)
 - [⚙️ Prerequisites](#️-prerequisites)
 - [🛠️ Installation & Setup](#️-installation--setup)
-- [🗣️ Supported TTS Voices & Languages](#️-supported-tts-voices--languages)
-- [📺 Video Qualities & Resolutions](#-video-qualities--resolutions)
-- [⚙️ Configuration Guide](#️-configuration-guide)
-- [🚀 Batch Processing & Scaling](#-batch-processing--scaling)
-- [💡 Performance Tips & Optimization](#-performance-tips--optimization)
-- [📋 Real-World Examples & Workflows](#-real-world-examples--workflows)
-- [🔧 Advanced Configuration](#-advanced-configuration)
 - [🎯 Usage Instructions](#-usage-instructions)
 - [🔌 API Reference](#-api-reference)
-- [🐛 Troubleshooting](#-troubleshooting)
-- [🧪 Testing & Validation](#-testing--validation)
-- [🔐 Security Considerations](#-security-considerations)
-- [🛠️ Development & Contribution](#️-development--contribution)
-- [📖 Additional Resources](#-additional-resources)
-- [📱 Deploying to Production](#-deploying-to-production)
-- [📊 Monitoring & Logging](#-monitoring--logging)
+- [📖 Comprehensive API Examples](#-comprehensive-api-examples--demonstrations)
+- [🧪 Testing](#-testing)
+- [🗣️ Supported TTS Voices & Languages](#️-supported-tts-voices--languages)
+- [📺 Video Qualities & Resolutions](#-video-qualities--resolutions)
 - [📄 License & Attribution](#-license--attribution)
 - [💬 Support & Community](#-support--community)
 - [📞 Author & Contact](#-author--contact)
-- [📈 Roadmap & Future Plans](#-roadmap--future-plans)
 - [❓ FAQ](#-faq)
-- [📊 Project Statistics](#-project-statistics)
 
 ---
 
@@ -108,15 +98,19 @@ automation platforms like N8N.
 
 ### 1. Install & Run
 
-```bash
-# Clone and setup
-git clone https://github.com/HossamBalaha/Text2Video-Generation-Suite.git
-cd Text2Video-Generation-Suite
+```cmd
+:: Clone and setup
+git clone https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite.git
+cd Audio-Captioned-Automated-Transcription-Video-Generation-Suite
 
-# Install dependencies
+:: (Optional) Create and activate a virtualenv
+python -m venv .venv
+call .venv\Scripts\activate
+
+:: Install dependencies
 pip install -r requirements.txt
 
-# Run server
+:: Run server
 python Server.py
 ```
 
@@ -227,61 +221,36 @@ See [N8N Documentation](https://n8n.io/docs/) for integration details.
 
 ### 30 Total Audio Tools
 
-**15 Pre-existing Tools:**
-
 - Get Audio Duration
 - Get Audio Size
 - Check Silence
+- Analyze Audio
+- Reduce Noise
+- Remove Silence
+- Enhance Audio (bass/treble)
+- Compress Audio (dynamic range)
+- Adjust Stereo Width
+- Convert Channels (Stereo ↔ Mono)
+- Shift Pitch
+- Loop Audio
+- Add Echo
+- Crossfade Audio
+- Generate Waveform (PNG)
+- Generate Spectrum (Video)
+- Transcribe Audio (TXT/JSON/SRT)
+- Mix Audio (multi-track)
 - Normalize Audio
 - Generate Silent Audio
-- Convert Audio
+- Convert Audio (format)
 - Change Volume
 - Change Speed
 - Reverse Audio
-- Extract Audio
+- Extract Audio (from video)
 - Concatenate Audios
-- Split Audio
+- Split Audio (segments)
 - Fade In/Out
 - Remove Vocals
-- Equalizer/Filter
-
-**15 New Tools (December 2025):**
-
-#### Analysis & Measurement (4)
-
-- **🎵 Get Audio Duration** - Extract audio length in seconds
-- **📊 Get Audio Size** - Check file size in various units
-- **🔍 Check Silence** - Detect if audio is silent
-- **📈 Analyze Audio** - Get comprehensive metrics (codec, bitrate, sample rate, channels)
-
-#### Enhancement & Processing (5)
-
-- **🔊 Reduce Noise** - Remove background noise using FFmpeg denoiser
-- **🔇 Remove Silence** - Automatically delete silent portions
-- **🎚️ Enhance Audio** - Boost bass and treble (-20 to +20 dB)
-- **📉 Compress Audio** - Apply dynamic range compression with configurable parameters
-- **🎧 Adjust Stereo Width** - Control stereo field width (0=mono, 1=normal, 2=wide)
-
-#### Conversion & Transformation (3)
-
-- **🔄 Convert Channels** - Stereo ↔ Mono conversion
-- **🎼 Shift Pitch** - Change pitch without affecting speed (±12 semitones)
-- **🔁 Loop Audio** - Create seamless audio loops with specified duration
-
-#### Effects & Blending (2)
-
-- **🎵 Add Echo** - Add echo/delay effects (configurable delay and decay)
-- **🔀 Crossfade Audio** - Create smooth transitions between two tracks
-
-#### Generation & Visualization (3)
-
-- **📊 Generate Waveform** - Create visual waveform PNG image
-- **🎨 Generate Spectrum** - Create spectrum analyzer video visualization
-- **🎤 Transcribe Audio** - Convert speech to text (TXT/JSON/SRT formats)
-
-#### Advanced Operations (1)
-
-- **🎵 Mix Audio** - Combine multiple audio tracks simultaneously with volume control
+- Equalize/Filter
 
 ### API Endpoints (30 Total)
 
@@ -341,7 +310,7 @@ GET /api/v1/download/<filename>      - Download processed files
 ## 📁 Project Structure
 
 ```
-Text2Video-Generation-Suite/
+Audio-Captioned-Automated-Transcription-Video-Generation-Suite/
 ├── README.md                      # This file
 ├── configs.yaml                   # Main configuration file
 ├── requirements.txt               # Python dependencies
@@ -448,8 +417,8 @@ audio:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/HossamBalaha/Text2Video-Generation-Suite.git
-cd Text2Video-Generation-Suite
+git clone https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite.git
+cd Audio-Captioned-Automated-Transcription-Video-Generation-Suite
 ```
 
 ### 2. Verify FFmpeg Installation
@@ -524,38 +493,6 @@ Server will start at: `http://localhost:5000`
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
-
-### 1. Install & Run
-
-```bash
-# Clone and setup
-git clone https://github.com/HossamBalaha/Text2Video-Generation-Suite.git
-cd Text2Video-Generation-Suite
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run server
-python Server.py
-```
-
-### 2. Access the App
-
-Open `http://localhost:5000` in your browser
-
-### 3. Generate Your First Video
-
-1. Go to **Text to Video** tab
-2. Enter text: *"Hello world, this is my first generated video"*
-3. Select language: **English**
-4. Select voice: **af_nova**
-5. Click **Create Job**
-6. Monitor in **Jobs** tab
-7. Download when complete ✅
-
----
-
 ## 🎯 Usage Instructions
 
 ### Via Web Interface
@@ -586,896 +523,935 @@ Open `http://localhost:5000` in your browser
     - Download completed videos
     - Track processing progress
 
-### Via REST API
+---
 
-#### Create Video Job
+## 🔌 API Reference
+
+This API is versioned under `/api/v1`. All responses are JSON unless a file is returned. Upload endpoints expect
+multipart/form-data. Error responses include an `error` field describing the issue.
+
+Base URL: `http://localhost:<port>` where `<port>` matches `configs.yaml` (`api.port`, default 5000).
+
+### Conventions
+
+- Authentication: None by default (add reverse proxy or auth if deploying to production)
+- Rate limits: None enforced by the app
+- File uploads: Use `multipart/form-data` with the specified form field names
+- JSON bodies: Use `Content-Type: application/json`
+- Downloads: Returned via `GET /api/v1/download/<filename>` or `GET /api/v1/jobs/<jobId>/result`
+
+### Server & Capabilities
+
+#### GET `/api/v1/status` — Health check
+
+Check if the server is running and responsive.
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/status
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "status": "Server is running"
+}
+```
+
+**Use Case:** Monitor server availability in production or automated health checks.
+
+---
+
+#### GET `/api/v1/ready` — Capacity check for job queue
+
+Check if the server can accept new video generation jobs based on current queue capacity.
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/ready
+```
+
+**Response when ready:** 200 OK
+
+```json
+{
+  "ready": true
+}
+```
+
+**Response when busy:** 503 Service Unavailable
+
+```json
+{
+  "ready": false,
+  "jobsInProgress": 3
+}
+```
+
+**Use Case:** Before submitting a job, check capacity to avoid queuing delays. Useful in batch processing workflows.
+
+---
+
+#### GET `/api/v1/languages` — Available TTS languages
+
+Get the list of all supported text-to-speech languages.
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/languages
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "languages": [
+    "en-us",
+    "en-gb",
+    "es-es",
+    "fr-fr",
+    "de-de",
+    "ja-jp",
+    "zh-cn",
+    "pt-br"
+  ]
+}
+```
+
+**Use Case:** Populate language dropdown in UI or validate user-provided language codes.
+
+---
+
+#### GET `/api/v1/voices?type=list|dict` — Available voices
+
+Get available TTS voices. Use `type=list` for a flat array or `type=dict` for voices grouped by language.
+
+**Request (List):**
+
+```bash
+curl "http://localhost:5000/api/v1/voices?type=list"
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "voices": [
+    "af_nova",
+    "af_bella",
+    "af_sarah",
+    "am_michael",
+    "am_adam",
+    "bf_emma",
+    "bm_george"
+  ]
+}
+```
+
+**Request (Dictionary):**
+
+```bash
+curl "http://localhost:5000/api/v1/voices?type=dict"
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "voices": {
+    "en-us": [
+      "af_nova",
+      "af_bella",
+      "af_sarah",
+      "am_michael",
+      "am_adam"
+    ],
+    "en-gb": [
+      "bf_emma",
+      "bm_george"
+    ],
+    "es-es": [
+      "e_diosa",
+      "e_dario"
+    ],
+    "fr-fr": [
+      "f_ailette",
+      "f_baptiste"
+    ]
+  }
+}
+```
+
+**Use Case:** Build language-specific voice selectors in your application UI.
+
+---
+
+#### GET `/api/v1/videoTypes` — Available video aspect types
+
+Get supported video aspect ratios (horizontal/vertical).
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/videoTypes
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "videoTypes": [
+    "Horizontal",
+    "Vertical"
+  ]
+}
+```
+
+**Use Case:** Determine which aspect ratios are available for video generation.
+
+---
+
+#### GET `/api/v1/videoQualities` — Available video qualities
+
+Get supported video quality/resolution options.
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/videoQualities
+```
+
+**Response:** 200 OK
+
+```json
+{
+  "videoQualities": [
+    "4K",
+    "Full HD",
+    "HD",
+    "480p",
+    "360p"
+  ]
+}
+```
+
+**Use Case:** Present quality options to users or select appropriate quality based on bandwidth/storage.
+
+### Video Generation API
+
+Submit text to generate a captioned video with synthesized speech.
+
+---
+
+#### POST `/api/v1/jobs` — Create a new text-to-video job
+
+Submit text for video generation with optional customization.
+
+**Request (Minimal):**
+
+```bash
+curl -X POST http://localhost:5000/api/v1/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello world!"}'
+```
+
+**Request (Windows cmd.exe):**
+
+```cmd
+curl -X POST http://localhost:5000/api/v1/jobs -H "Content-Type: application/json" -d "{\"text\":\"Hello world!\"}"
+```
+
+**Request (Full Options):**
 
 ```bash
 curl -X POST http://localhost:5000/api/v1/jobs \
   -H "Content-Type: application/json" \
   -d '{
-    "text": "Your text here",
+    "text": "Welcome to our product launch. This video demonstrates the key features.",
     "language": "en-us",
     "voice": "af_nova",
-    "videoType": "Horizontal",
-    "videoQuality": "4K"
+    "speechRate": 1.0,
+    "videoQuality": "4K",
+    "videoType": "Horizontal"
   }'
 ```
 
-#### Check Job Status
+**Parameters:**
 
-```bash
-curl http://localhost:5000/api/v1/jobs/<jobId>
+- `text` (string, **required**): Text to convert to speech (max 2500 chars by default)
+- `language` (string, optional): TTS language code (default: from config)
+- `voice` (string, optional): Voice identifier (default: from config)
+- `speechRate` (float, optional): Speed multiplier 0.5-2.0 (default: 1.0)
+- `videoQuality` (string, optional): "4K", "Full HD", "HD", etc.
+- `videoType` (string, optional): "Horizontal" or "Vertical"
+
+**Success Response:** 202 Accepted
+
+```json
+{
+  "jobId": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+}
 ```
 
-#### Download Result
+**Error Response (Missing text):** 400 Bad Request
 
-```bash
-curl -O http://localhost:5000/api/v1/jobs/<jobId>/result
+```json
+{
+  "error": "Text is required"
+}
 ```
 
-#### Use Audio Tools
+**Error Response (Text too long):** 400 Bad Request
 
-```bash
-# Example: Reduce Noise
-curl -X POST http://localhost:5000/api/v1/reduce-noise \
-  -F "audioFile=@input.mp3" \
-  -F "noiseReduction=20"
-
-# Example: Mix Audio
-curl -X POST http://localhost:5000/api/v1/mix-audio \
-  -F "audioFiles=@audio1.mp3" \
-  -F "audioFiles=@audio2.mp3" \
-  -F "volumes=1.0,0.8"
-
-# Example: Transcribe
-curl -X POST http://localhost:5000/api/v1/transcribe-audio \
-  -F "audioFile=@voice.mp3" \
-  -F "language=en" \
-  -F "outputFormat=txt"
+```json
+{
+  "error": "Text exceeds maximum length of 2500 characters"
+}
 ```
+
+**Use Cases:**
+
+- **Content Creation:** Generate YouTube shorts, Instagram reels, TikTok videos
+- **Education:** Create lesson videos from scripts
+- **Marketing:** Automate promotional video production
+- **Accessibility:** Add voiceovers to text content
 
 ---
 
-## 🔌 API Reference
+#### GET `/api/v1/jobs` — List all jobs
 
-### Video Generation API
-
-#### POST `/api/v1/jobs`
-
-Submit a new video generation job.
+Retrieve all video generation jobs with their current status.
 
 **Request:**
 
+```bash
+curl http://localhost:5000/api/v1/jobs
+```
+
+**Response:** 200 OK
+
 ```json
 {
-  "text": "Your text content",
+  "jobs": [
+    {
+      "jobId": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+      "status": "completed",
+      "text": "Hello world!",
+      "language": "en-us",
+      "voice": "af_nova",
+      "speechRate": 1.0,
+      "videoQuality": "4K",
+      "videoType": "Horizontal",
+      "createdAt": "2025-12-14 10:30:00",
+      "isCompleted": true
+    },
+    {
+      "jobId": "b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7",
+      "status": "processing",
+      "text": "Welcome to our channel...",
+      "language": "en-us",
+      "voice": "am_michael",
+      "speechRate": 0.9,
+      "videoQuality": "Full HD",
+      "videoType": "Vertical",
+      "createdAt": "2025-12-14 10:35:00",
+      "isCompleted": false
+    },
+    {
+      "jobId": "c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8",
+      "status": "queued",
+      "text": "Coming soon...",
+      "language": "es-es",
+      "voice": "e_diosa",
+      "speechRate": 1.0,
+      "videoQuality": "HD",
+      "videoType": "Horizontal",
+      "createdAt": "2025-12-14 10:40:00",
+      "isCompleted": false
+    }
+  ]
+}
+```
+
+**Status Values:**
+
+- `queued` - Job waiting to be processed
+- `processing` - Currently generating video
+- `completed` - Video ready for download
+- `failed` - Error occurred during processing
+
+**Use Case:** Monitor job queue, display status dashboard, track processing history.
+
+---
+
+#### GET `/api/v1/jobs/<jobId>` — Get job details and current status
+
+Retrieve detailed information and status for a specific job.
+
+**Request:**
+
+```bash
+curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+```
+
+**Response (Completed):** 200 OK
+
+```json
+{
+  "jobId": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+  "status": "completed",
+  "text": "Hello world!",
   "language": "en-us",
   "voice": "af_nova",
   "speechRate": 1.0,
-  "videoType": "Horizontal",
-  "videoQuality": "4K"
-}
-```
-
-**Response (202 Accepted):**
-
-```json
-{
-  "jobId": "abc123def456..."
-}
-```
-
-#### GET `/api/v1/jobs/<jobId>`
-
-Get job status and metadata.
-
-**Response (200 OK):**
-
-```json
-{
-  "jobId": "abc123def456...",
-  "status": "completed",
-  "text": "Your text...",
-  "language": "en-us",
-  "voice": "af_nova",
-  "videoType": "Horizontal",
   "videoQuality": "4K",
-  "createdAt": "2025-12-10 10:30:00"
+  "videoType": "Horizontal",
+  "createdAt": "2025-12-14 10:30:00"
 }
 ```
 
-#### GET `/api/v1/jobs/<jobId>/result`
+**Response (Processing):** 200 OK
 
-Download the final video file.
+```json
+{
+  "jobId": "b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7",
+  "status": "processing",
+  "text": "Welcome to our channel...",
+  "language": "en-us",
+  "voice": "am_michael",
+  "speechRate": 0.9,
+  "videoQuality": "Full HD",
+  "videoType": "Vertical",
+  "createdAt": "2025-12-14 10:35:00"
+}
+```
 
-**Response:** Video file (binary)
+**Error Response:** 404 Not Found
 
-#### DELETE `/api/v1/jobs/<jobId>`
+```json
+{
+  "error": "Job not found"
+}
+```
 
-Delete a job and associated files.
+**Polling Example (Bash):**
 
-#### GET `/api/v1/languages`
+```bash
+#!/bin/bash
+JOB_ID="a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+while true; do
+  STATUS=$(curl -s http://localhost:5000/api/v1/jobs/$JOB_ID | jq -r '.status')
+  echo "Status: $STATUS"
+  if [ "$STATUS" = "completed" ] || [ "$STATUS" = "failed" ]; then
+    break
+  fi
+  sleep 5
+done
+```
 
-Get available TTS languages.
+**Use Case:** Poll job status until completion, update UI with progress.
 
-#### GET `/api/v1/voices`
+---
 
-Get available TTS voices.
+#### POST `/api/v1/jobs/triggerRemaining` — Trigger queue processing
 
-#### GET `/api/v1/videoTypes`
+Manually trigger processing of queued jobs (usually automatic).
 
-Get available video types (Horizontal, Vertical).
+**Request:**
 
-#### GET `/api/v1/videoQualities`
+```bash
+curl -X POST http://localhost:5000/api/v1/jobs/triggerRemaining
+```
 
-Get available video qualities (4K, Full HD, etc.).
+**Response:** 200 OK
+
+```json
+{
+  "message": "Triggered processing for remaining queued jobs."
+}
+```
+
+**Use Case:** Restart job processing after server restart or manual intervention.
+
+---
+
+#### GET `/api/v1/jobs/<jobId>/result` — Download completed video
+
+Download the final processed video file.
+
+**Request:**
+
+```bash
+curl -O http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result
+```
+
+**Request (with custom filename):**
+
+```bash
+curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result \
+  --output my-video.mp4
+```
+
+**Success Response:** 200 OK
+
+- Content-Type: video/mp4
+- Content-Disposition: attachment
+- Body: Binary video file
+
+**Error Response (Not Ready):** 400 Bad Request
+
+```json
+{
+  "error": "Job not completed yet"
+}
+```
+
+**Error Response (Not Found):** 404 Not Found
+
+```json
+{
+  "error": "Job not found"
+}
+```
+
+**Complete Workflow Example:**
+
+```bash
+# 1. Create job
+RESPONSE=$(curl -s -X POST http://localhost:5000/api/v1/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello world!","videoType":"Vertical","videoQuality":"4K"}')
+JOB_ID=$(echo $RESPONSE | jq -r '.jobId')
+echo "Job created: $JOB_ID"
+
+# 2. Wait for completion
+while true; do
+  STATUS=$(curl -s http://localhost:5000/api/v1/jobs/$JOB_ID | jq -r '.status')
+  echo "Status: $STATUS"
+  if [ "$STATUS" = "completed" ]; then
+    break
+  fi
+  sleep 5
+done
+
+# 3. Download result
+curl -O http://localhost:5000/api/v1/jobs/$JOB_ID/result
+echo "Video downloaded!"
+```
+
+**Use Case:** Automated video generation and download pipeline.
+
+---
+
+#### DELETE `/api/v1/jobs/<jobId>` — Delete a job
+
+Remove a specific job and all associated files.
+
+**Request:**
+
+```bash
+curl -X DELETE http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+```
+
+**Success Response:** 200 OK
+
+```json
+{
+  "message": "Job data deleted successfully"
+}
+```
+
+**Error Response:** 404 Not Found
+
+```json
+{
+  "error": "Job not found"
+}
+```
+
+**Use Case:** Clean up old jobs, free disk space, remove unwanted content.
+
+---
+
+#### DELETE `/api/v1/jobs/all` — Delete all jobs
+
+Remove all jobs and associated files (use with caution).
+
+**Request:**
+
+```bash
+curl -X DELETE http://localhost:5000/api/v1/jobs/all
+```
+
+**Success Response:** 200 OK
+
+```json
+{
+  "message": "All job data deleted successfully"
+}
+```
+
+**Use Case:** Reset system, free all storage, development testing.
+
+**⚠️ Warning:** This permanently deletes all video generation jobs and files.
+
+### File Download
+
+- GET `/api/v1/download/<filename>` — Download any file produced by processing
+    - 200: returns file as attachment
+    - 404: `{ "error": "File not found" }`
+    - 403: `{ "error": "File is not accessible" }`
 
 ### Audio Tools API
 
-All audio tool endpoints follow this pattern:
+Below are the audio processing endpoints. All upload endpoints use `multipart/form-data` unless otherwise noted. The
+returned payload usually includes a downloadable link and filename.
 
-**Request:** POST `/api/v1/<tool-name>`
+Analysis:
 
+- POST `/api/v1/audio-duration`
+    - Form: `audioFile` (file)
+    - 200: `{ "duration": <seconds(float)> }`
+
+- POST `/api/v1/audio-size`
+    - Form: `audioFile` (file)
+    - 200: `{ "size": "<bytes|KB|MB|GB>" }`
+
+- POST `/api/v1/check-silence`
+    - Form: `audioFile` (file)
+    - 200: `{ "isSilent": <bool> }`
+
+- POST `/api/v1/analyze-audio`
+    - Form: `audioFile` (file)
+    - 200: `{ ...analysis fields... }`
+
+Generation & Visualization:
+
+- POST `/api/v1/generate-silent-audio` (JSON)
+    - Body: `{ "silentDuration": <float>, "silentFormat": ".wav|.mp3|.ogg" }`
+    - 200: `{ "link": "/api/v1/download/<file>", "filename": "<file>" }`
+
+- POST `/api/v1/generate-waveform`
+    - Form: `audioFile` (file), `width` (int, default 1280), `height` (int, default 240), `colors` (string, default "
+      blue")
+    - 200: download link to PNG
+
+- POST `/api/v1/generate-spectrum`
+    - Form: `audioFile` (file), `width` (int, default 1280), `height` (int, default 720), `colorScheme` (string,
+      default "rainbow")
+    - 200: download link to MP4
+
+Conversion & Normalization:
+
+- POST `/api/v1/normalize-audio`
+    - Form: `audioFile` (file), `normalizeBitrate` (e.g., `256k`), `normalizeSampleRate` (int), `normalizeFilter` (
+      `loudnorm|dynaudnorm|acompressor|volumedetect`)
+    - 200: download link
+
+- POST `/api/v1/convert-audio`
+    - Form: `audioFile` (file), `outputFormat` (`mp3|wav|ogg`), `bitrate` (`256k`), `sampleRate` (int), `channels` (
+      1|2), optional trim: `startTime`, `endTime`
+    - 200: download link
+
+Editing & Effects:
+
+- POST `/api/v1/change-volume`
+    - Form: `audioFile` (file), `volume` (float, default 1.0)
+    - 200: download link
+
+- POST `/api/v1/change-speed`
+    - Form: `audioFile` (file), `speed` (float, default 1.0; large values are internally chained for atempo)
+    - 200: download link
+
+- POST `/api/v1/reverse-audio`
+    - Form: `audioFile` (file)
+    - 200: download link
+
+- POST `/api/v1/extract-audio`
+    - Form: `videoFile` (file)
+    - 200: download link to extracted mp3
+    - 400: if video has no audio stream
+
+- POST `/api/v1/concat-audio`
+    - Form: `audioFiles` (file[]) multiple uploads
+    - 200: download link
+
+- POST `/api/v1/split-audio`
+    - Form: `audioFile` (file), `segmentDuration` (float seconds)
+    - 200: download link to a ZIP of segments
+
+- POST `/api/v1/fade-audio`
+    - Form: `audioFile` (file), `fadeIn` (float), `fadeOut` (float)
+    - 200: download link
+
+- POST `/api/v1/remove-vocals`
+    - Form: `audioFile` (file)
+    - 200: download link (center-channel removal)
+
+- POST `/api/v1/equalize-audio`
+    - Form: `audioFile` (file), `freq` (float), `width` (float), `gain` (float)
+    - 200: download link
+
+- POST `/api/v1/mix-audio`
+    - Form: `audioFiles` (file[]) 2+ files, `volumes` (comma-separated floats, optional), `duration` ("longest" or
+      other)
+    - 200: download link
+
+- POST `/api/v1/reduce-noise`
+    - Form: `audioFile` (file), `noiseReduction` (int, default 20)
+    - 200: download link
+
+- POST `/api/v1/remove-silence`
+    - Form: `audioFile` (file), `threshold` (int dB, default -50), `duration` (float seconds, default 0.5)
+    - 200: download link
+
+- POST `/api/v1/enhance-audio`
+    - Form: `audioFile` (file), `bassGain` (int), `trebleGain` (int)
+    - 200: download link
+
+- POST `/api/v1/compress-audio`
+    - Form: `audioFile` (file), `threshold` (int), `ratio` (int), `attack` (int ms), `release` (int ms), `makeupGain` (
+      int)
+    - 200: download link
+
+- POST `/api/v1/convert-channels`
+    - Form: `audioFile` (file), `targetChannels` (int 1=mono, 2=stereo)
+    - 200: download link
+
+- POST `/api/v1/loop-audio`
+    - Form: `audioFile` (file), `loopCount` (int), `totalDuration` (float optional)
+    - 200: download link
+
+- POST `/api/v1/shift-pitch`
+    - Form: `audioFile` (file), `semitones` (int)
+    - 200: download link
+
+- POST `/api/v1/add-echo`
+    - Form: `audioFile` (file), `delay` (int ms), `decay` (float)
+    - 200: download link
+
+- POST `/api/v1/adjust-stereo`
+    - Form: `audioFile` (file), `width` (float)
+    - 200: download link
+
+- POST `/api/v1/crossfade-audio`
+    - Form: `firstAudio` (file), `secondAudio` (file), `duration` (int seconds)
+    - 200: download link
+
+- POST `/api/v1/transcribe-audio`
+    - Form: `audioFile` (file), `language` (string), `outputFormat` (`txt|json|srt`)
+    - 200: `{ "transcription": "..." }` for txt; `{ "srt": "..." }` for srt; JSON for detailed output
+
+### Common Errors
+
+- 400: Bad request (missing file, invalid parameters)
+- 403: File not accessible
+- 404: Not found (job or file)
+- 500: Internal processing error
+
+---
+
+## 📖 Comprehensive API Examples & Demonstrations
+
+Complete examples and demonstrations for all 43 API endpoints. Each example includes request/response pairs, use cases,
+and production-ready code.
+
+### Quick Examples (cmd.exe)
+
+**Create a video generation job:**
+
+```cmd
+curl -X POST http://localhost:5000/api/v1/jobs -H "Content-Type: application/json" -d "{\"text\":\"Hello from API\"}"
 ```
-multipart/form-data with:
-- audioFile: Audio file upload
-- Other parameters: Tool-specific settings
+
+**Check server readiness:**
+
+```cmd
+curl http://localhost:5000/api/v1/ready
 ```
 
-**Response (200 OK):**
+**Get audio duration:**
 
-```json
-{
-  "link": "/api/v1/download/filename.ext",
-  "filename": "filename.ext"
+```cmd
+curl -X POST http://localhost:5000/api/v1/audio-duration -F "audioFile=@Assets\Audios\example.mp3"
+```
+
+**Normalize audio:**
+
+```cmd
+curl -X POST http://localhost:5000/api/v1/normalize-audio -F "audioFile=@podcast.mp3" -F "normalizeFilter=loudnorm"
+```
+
+**Generate waveform:**
+
+```cmd
+curl -X POST http://localhost:5000/api/v1/generate-waveform -F "audioFile=@music.mp3" -F "width=1920" -F "height=300"
+```
+
+**Transcribe audio:**
+
+```cmd
+curl -X POST http://localhost:5000/api/v1/transcribe-audio -F "audioFile=@interview.mp3" -F "language=en" -F "outputFormat=txt"
+```
+
+**Download a result file:**
+
+```cmd
+curl -O http://localhost:5000/api/v1/download/your_file.mp3
+```
+
+### Python Examples
+
+**Complete Video Generation Workflow:**
+
+```python
+import requests
+import time
+
+# 1. Create job
+payload = {
+  "text"        : "Welcome to our automated video generation tutorial!",
+  "language"    : "en-us",
+  "voice"       : "af_nova",
+  "videoType"   : "Vertical",
+  "videoQuality": "4K"
 }
+
+response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
+job_id = response.json()['jobId']
+print(f"Job created: {job_id}")
+
+# 2. Monitor status
+while True:
+  response = requests.get(f'http://localhost:5000/api/v1/jobs/{job_id}')
+  status = response.json()['status']
+  print(f"Status: {status}")
+
+  if status == 'completed':
+    break
+  elif status == 'failed':
+    print("Job failed!")
+    exit(1)
+
+  time.sleep(5)
+
+# 3. Download result
+response = requests.get(f'http://localhost:5000/api/v1/jobs/{job_id}/result', stream=True)
+with open('my_video.mp4', 'wb') as f:
+  for chunk in response.iter_content(chunk_size=8192):
+    f.write(chunk)
+
+print("✓ Video downloaded: my_video.mp4")
 ```
 
-**Error Response (400/500):**
+**Audio Processing Pipeline:**
 
-```json
-{
-  "error": "Error description"
-}
+```python
+import requests
+
+
+def process_podcast(audio_file):
+  """Normalize, reduce noise, and transcribe"""
+
+  # 1. Normalize
+  with open(audio_file, 'rb') as f:
+    response = requests.post(
+      'http://localhost:5000/api/v1/normalize-audio',
+      files={'audioFile': f},
+      data={'normalizeFilter': 'loudnorm'}
+    )
+
+  result = response.json()
+  normalized_url = f"http://localhost:5000{result['link']}"
+
+  # Download normalized audio
+  audio = requests.get(normalized_url).content
+  with open('normalized.mp3', 'wb') as f:
+    f.write(audio)
+
+  # 2. Reduce noise
+  with open('normalized.mp3', 'rb') as f:
+    response = requests.post(
+      'http://localhost:5000/api/v1/reduce-noise',
+      files={'audioFile': f},
+      data={'noiseReduction': 25}
+    )
+
+  result = response.json()
+  clean_url = f"http://localhost:5000{result['link']}"
+
+  # Download clean audio
+  audio = requests.get(clean_url).content
+  with open('clean.mp3', 'wb') as f:
+    f.write(audio)
+
+  # 3. Transcribe
+  with open('clean.mp3', 'rb') as f:
+    response = requests.post(
+      'http://localhost:5000/api/v1/transcribe-audio',
+      files={'audioFile': f},
+      data={'language': 'en', 'outputFormat': 'txt'}
+    )
+
+  transcript = response.json()['transcription']
+  with open('transcript.txt', 'w') as f:
+    f.write(transcript)
+
+  print("✓ Podcast processed: clean.mp3, transcript.txt")
+
+
+process_podcast('raw_podcast.mp3')
+```
+
+**Batch Video Generation:**
+
+```python
+import requests
+
+scripts = [
+  "Learn Python in 60 seconds...",
+  "JavaScript tips for beginners...",
+  "Web development basics..."
+]
+
+jobs = []
+for i, script in enumerate(scripts):
+  payload = {
+    "text"        : script,
+    "videoType"   : "Vertical",
+    "videoQuality": "Full HD"
+  }
+
+  response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
+  job_id = response.json()['jobId']
+  jobs.append((i, job_id))
+  print(f"Created job {i + 1}: {job_id}")
+
+print(f"✓ Created {len(jobs)} video jobs")
 ```
 
 ---
 
 ## 🧪 Testing
 
-### Run Test Suite
+### Run Test Suite (Windows cmd)
 
-```bash
-# Test all audio tools
-python tests/TestAudioTools.py
+```cmd
+:: Activate virtualenv if created
+call .venv\Scripts\activate
 
-# Run specific tests
-python -m pytest tests/TestAudioTools.py::AudioToolsTester::test_reduce_noise
+:: Run all tests
+python -m pytest -q
+
+:: Run specific tests
+python -m pytest tests\TestAudioEndpoints.py::test_server_status_and_ready -q
 ```
 
-### Manual Testing Checklist
-
-- [ ] Video generation from text
-- [ ] Audio file upload and processing
-- [ ] Job status tracking
-- [ ] File downloads
-- [ ] Error handling
-- [ ] API endpoint responses
-- [ ] UI responsiveness
-- [ ] Large file handling
-
----
-
-## 🗣️ Supported TTS Voices & Languages
-
-### Available Languages
-
-| Language | Code | Example Voice |
-|----------|------|----------------|
-| English (US) | `en-us` | af_nova |
-| English (UK) | `en-gb` | bf_emma |
-| Spanish | `es-es` | e_diosa |
-| French | `fr-fr` | f_ailette |
-| German | `de-de` | d_barbora |
-| Japanese | `ja-jp` | j_michiko |
-| Chinese (Mandarin) | `zh-cn` | z_zoe |
-| Portuguese (Brazilian) | `pt-br` | p_ana |
-
-### Popular Voices
-
-**English (US) - `en-us`:**
-- `af_nova` - Professional, neutral
-- `af_bella` - Warm, friendly
-- `af_sarah` - Clear, articulate
-- `am_michael` - Deep, authoritative
-- `am_adam` - Casual, conversational
-
-Get full voice list via API:
-```bash
-curl http://localhost:5000/api/v1/voices
-```
-
----
-
-## 📺 Video Qualities & Resolutions
-
-### Supported Resolutions
-
-| Quality | Resolution | Bitrate | Aspect Ratio | Use Case |
-|---------|-----------|---------|--------------|----------|
-| **4K** | 3840×2160 | 5000k | 16:9 (H) / 9:16 (V) | Premium, archival |
-| **Full HD** | 1920×1080 | 4000k | 16:9 (H) / 9:16 (V) | YouTube, streaming |
-| **HD** | 1280×720 | 3000k | 16:9 (H) / 9:16 (V) | Web, mobile |
-| **480p** | 854×480 | 2000k | 16:9 (H) / 9:16 (V) | Mobile, low bandwidth |
-| **360p** | 640×360 | 1500k | 16:9 (H) / 9:16 (V) | Preview, thumbnail |
-
-### Aspect Ratios
-
-- **Horizontal (16:9):** YouTube, Vimeo, Facebook, Twitch
-- **Vertical (9:16):** TikTok, Instagram Reels, YouTube Shorts, Snapchat
-
----
-
-## ⚙️ Configuration Guide
-
-### Environment Variables
-
-Set configuration via environment variables (overrides configs.yaml):
-
-```bash
-# Server Configuration
-export API_PORT=5000
-export API_MAX_JOBS=1
-export API_MAX_TEXT_LENGTH=6500
-export API_TIMEOUT=10
-
-# TTS Configuration
-export TTS_LANGUAGE=en-us
-export TTS_VOICE=af_nova
-export TTS_SPEECH_RATE=1.0
-
-# Whisper Configuration
-export WHISPER_MODEL=turbo
-export WHISPER_LANGUAGE=en
-
-# Video Configuration
-export VIDEO_TYPE=Horizontal
-export VIDEO_QUALITY=4K
-
-# Logging
-export VERBOSE=true
-```
-
-### Modifying configs.yaml
-
-Edit `configs.yaml` directly for persistent configuration:
-
-```yaml
-api:
-  maxJobs: 2              # Process 2 videos simultaneously
-  maxTextLength: 10000    # Allow longer text input
-  port: 8000              # Run on different port
-  
-tts:
-  voice: "af_bella"       # Default voice
-  speechRate: 0.9         # Slower speech
-
-ffmpeg:
-  videoBitrate: "8000k"   # Higher quality
-  audioCodec: "libvorbis" # Different codec
-```
-
-After modifying, restart the server:
-```bash
-python Server.py
-```
-
----
-
-## 🚀 Batch Processing & Scaling
-
-### Submit Multiple Jobs
-
-```python
-import requests
-import json
-
-# Submit 5 jobs
-for i in range(5):
-    response = requests.post(
-        'http://localhost:5000/api/v1/jobs',
-        json={
-            'text': f'Video number {i+1}',
-            'language': 'en-us',
-            'voice': 'af_nova',
-            'videoType': 'Horizontal',
-            'videoQuality': '4K'
-        }
-    )
-    job_id = response.json()['jobId']
-    print(f'Job {i+1} submitted: {job_id}')
-```
-
-### Check All Jobs Status
-
-```bash
-# Get job history
-curl http://localhost:5000/api/v1/jobs
-
-# Poll specific job
-curl http://localhost:5000/api/v1/jobs/<jobId>
-```
-
-### Configuration for Batch Processing
-
-```yaml
-# In configs.yaml for production scaling
-api:
-  maxJobs: 4              # Process 4 videos in parallel
-  maxTimeout: 120         # Allow 2 minutes per job
-```
-
----
-
-## 💡 Performance Tips & Optimization
-
-### Memory Optimization
-
-```python
-# Reduce model size in whisper
-# Use "base" instead of "turbo" for faster processing
-configs['whisper']['modelName'] = 'base'
-
-# Reduce video quality for faster encoding
-videoQuality = 'HD'  # Instead of '4K'
-```
-
-### Speed Optimization
-
-```yaml
-# In configs.yaml
-ffmpeg:
-  videoBitrate: "2000k"   # Lower bitrate = faster encoding
-  fps: 24                 # 24fps instead of 30fps
-  videoCodec: "libx265"   # H.265 codec (slower encoding, better quality)
-
-whisper:
-  modelName: "base"       # Smaller model = faster
-```
-
-### Quality Optimization
-
-```yaml
-ffmpeg:
-  videoBitrate: "8000k"   # Higher bitrate = better quality
-  audioCodec: "libvorbis" # Better audio codec
-  pixelFormat: "yuv444p"  # Better color depth
-```
-
-### For Long Content
-
-- Split text into multiple jobs (one video per paragraph)
-- Use lower quality initially, re-encode with higher quality later
-- Process during off-peak hours if possible
-
----
-
-## 📋 Real-World Examples & Workflows
-
-### Example 1: YouTube Short Generator
-
-```bash
-# Generate 10 educational shorts automatically
-for i in {1..10}; do
-  TEXT="Learning concept $i: This is an educational video about topic $i"
-  curl -X POST http://localhost:5000/api/v1/jobs \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"text\": \"$TEXT\",
-      \"language\": \"en-us\",
-      \"voice\": \"af_nova\",
-      \"videoType\": \"Vertical\",
-      \"videoQuality\": \"Full HD\"
-    }"
-done
-```
-
-### Example 2: Podcast Video Generation
-
-```python
-# Convert podcast transcript to video
-podcast_text = """
-In today's episode, we discuss the future of AI.
-Artificial intelligence is transforming industries.
-[Full podcast transcript here...]
-"""
-
-response = requests.post(
-    'http://localhost:5000/api/v1/jobs',
-    json={
-        'text': podcast_text,
-        'language': 'en-us',
-        'voice': 'am_michael',  # Deep voice for authority
-        'videoType': 'Horizontal',
-        'videoQuality': 'Full HD',
-        'speechRate': 0.9  # Slightly slower
-    }
-)
-```
-
-### Example 3: Audio Processing Pipeline
-
-```bash
-# Enhance podcast audio
-curl -X POST http://localhost:5000/api/v1/reduce-noise \
-  -F "audioFile=@podcast.mp3" \
-  -F "noiseReduction=25"
-
-# Then compress for web
-curl -X POST http://localhost:5000/api/v1/compress-audio \
-  -F "audioFile=@denoised.mp3" \
-  -F "threshold=-20" \
-  -F "ratio=4"
-
-# Generate waveform visualization
-curl -X POST http://localhost:5000/api/v1/generate-waveform \
-  -F "audioFile=@compressed.mp3" \
-  --output waveform.png
-```
-
-### Example 4: Multi-Language Content
-
-```python
-languages = ['en-us', 'es-es', 'fr-fr', 'de-de']
-text = "Welcome to our global product launch"
-
-for lang in languages:
-    requests.post(
-        'http://localhost:5000/api/v1/jobs',
-        json={
-            'text': text,
-            'language': lang,
-            'videoType': 'Horizontal',
-            'videoQuality': '4K'
-        }
-    )
-```
-
----
-
-## 🔧 Advanced Configuration
-
-### Custom FFmpeg Filters
-
-Modify `configs.yaml` to use custom FFmpeg filters:
-
-```yaml
-ffmpeg:
-  # Custom audio normalization
-  normalizationFilter: "loudnorm=I=-16:TP=-1.5:LRA=11"
-  
-  # Custom caption styling
-  captionFont: "./Assets/Fonts/CustomFont/font.ttf"
-  captionTextBorderWidth: 3
-  captionTextColor: "yellow"
-  
-  # Advanced video codec settings
-  videoBitrate: "8000k"
-  videoCodec: "libx265"  # H.265 for better compression
-```
-
-### Custom Background Videos
-
-```bash
-# Add your background videos
-cp your_video.mp4 Assets/Videos/Horizontal\ Videos/
-cp vertical_video.mp4 Assets/Videos/Vertical\ Videos/
-
-# Restart server
-python Server.py
-```
-
-The system will automatically use available videos for video generation.
-
----
-
-## 🐛 Troubleshooting
-
-### FFmpeg Not Found
-
-```bash
-# Verify installation
-ffmpeg -version
-
-# Add to PATH if needed
-# Windows: Set environment variables
-# Linux/Mac: Check installation location
-```
-
-### Out of Memory
-
-- Reduce video quality to 'HD' or '480p'
-- Process smaller files
-- Increase available RAM or enable virtual memory
-- Check system resources: `free -h` (Linux) or Task Manager (Windows)
-- Reduce `maxJobs` in configuration
-
-### Timeout Errors
-
-- Increase `maxTimeout` in configs.yaml
-- Use smaller text input (max 6500 chars)
-- Check server CPU/memory usage
-- Try with lower video quality
-
-### File Not Found Errors
-
-- Verify file paths exist
-- Check file permissions: `chmod 644 filename`
-- Ensure Assets directory structure: `Assets/Videos/Horizontal Videos/` and `Assets/Videos/Vertical Videos/`
-- Confirm file extensions are supported
-
-### API Connection Issues
-
-- Verify server is running: `python Server.py`
-- Check port 5000 is available: `netstat -an | grep 5000` (Linux/Mac) or `netstat -ano | findstr :5000` (Windows)
-- Confirm network connectivity
-- Review firewall settings
-- Check localhost vs 0.0.0.0 binding
-
-### Audio Quality Issues
-
-- Check source file quality and format
-- Review FFmpeg compression settings
-- Verify TTS voice selection and speech rate
-- Inspect FFmpeg parameters in configs.yaml
-- Try different audio codec (libvorbis, aac, etc.)
-
-### Job Stays in 'Queued' State
-
-- Check `maxJobs` setting (default is 1, process sequentially)
-- Verify server is actually processing: check console output
-- Restart server: `python Server.py`
-- Check disk space availability
-
-### Video Generation Fails
-
-- Verify background videos exist in Assets/Videos/
-- Check if text is too long (max 6500 characters)
-- Confirm TTS voice is valid
-- Try with simpler text first
-- Check FFmpeg installation and dependencies
-
-### UI Not Loading
-
-- Verify Flask server started successfully
-- Check if port 5000 is in use
-- Clear browser cache (Ctrl+Shift+Delete)
-- Try different browser
-- Check browser console for JavaScript errors
-
----
-
-## 📱 Deploying to Production
-
-### Docker Deployment
-
-Create a `Dockerfile`:
-
-```dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-
-# Install FFmpeg
-RUN apt-get update && apt-get install -y ffmpeg
-
-# Copy files
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-# Create directories
-RUN mkdir -p Assets/Videos Assets/Audios Assets/Fonts Jobs
-
-# Expose port
-EXPOSE 5000
-
-# Run server
-CMD ["python", "Server.py"]
-```
-
-Build and run:
-
-```bash
-docker build -t text2video:latest .
-docker run -p 5000:5000 -v $(pwd)/Jobs:/app/Jobs text2video:latest
-```
-
-### Cloud Deployment
-
-**Heroku:**
-```bash
-heroku create your-app-name
-git push heroku main
-heroku config:set API_PORT=5000
-```
-
-**AWS/Google Cloud/Azure:**
-- Use Docker container from above
-- Set environment variables in cloud console
-- Mount persistent volume for Jobs directory
-- Scale horizontally with load balancer
-
-### Using Gunicorn for Production
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 Server:app
-```
-
----
-
-## 📊 Monitoring & Logging
-
-### Enable Detailed Logging
-
-```bash
-# Set verbose mode
-export VERBOSE=true
-python Server.py
-```
-
-### Monitor Job Processing
-
-```bash
-# Check active jobs
-curl http://localhost:5000/api/v1/ready
-
-# Get job status
-curl http://localhost:5000/api/v1/jobs/<jobId>
-
-# Check server health
-curl http://localhost:5000/api/v1/status
-```
-
-### View System Resources
-
-```bash
-# Linux/Mac
-top                    # CPU and memory
-df -h                  # Disk space
-du -sh Jobs/           # Jobs directory size
-
-# Windows
-tasklist              # Running processes
-systeminfo            # System info
-dir /s Jobs\          # Directory size
-```
-
----
-
-## 📖 Additional Resources
-
-For more detailed information, refer to these documentation files:
-
-- **AUDIO_TOOLS_QUICK_REFERENCE.md** - API endpoints and code examples
-- **AUDIO_TOOLS_IMPLEMENTATION.md** - Technical implementation details
-- **IMPLEMENTATION_SUMMARY.md** - Project overview and deployment
-- **COMPLETION_CHECKLIST.md** - Verification and testing results
-- **PROJECT_FINAL_REPORT.md** - Formal project report
-- **DOCUMENTATION_INDEX.md** - Complete documentation navigation
-
----
-
-## 🧪 Testing & Validation
-
-### Automated Testing
-
-```bash
-# Run all tests
-python -m pytest tests/ -v
-
-# Run specific test file
-python tests/TestAudioTools.py
-
-# Run with coverage
-python -m pytest tests/ --cov=. --cov-report=html
-```
-
-### Manual Testing Checklist
-
-- [ ] Server starts without errors
-- [ ] Web UI loads at localhost:5000
-- [ ] Can submit text-to-video job
-- [ ] Job status updates in real-time
-- [ ] Video generation completes successfully
-- [ ] Downloaded video plays correctly
-- [ ] Audio tools accept file uploads
-- [ ] Audio tools process files correctly
-- [ ] API endpoints return proper responses
-- [ ] Error handling works as expected
-- [ ] File downloads work correctly
-- [ ] Large files are handled properly
-
-### Load Testing
-
-```python
-import concurrent.futures
-import requests
-import time
-
-def submit_job():
-    response = requests.post(
-        'http://localhost:5000/api/v1/jobs',
-        json={
-            'text': 'Test video',
-            'language': 'en-us',
-            'voice': 'af_nova',
-            'videoType': 'Horizontal',
-            'videoQuality': 'HD'
-        }
-    )
-    return response.json()
-
-# Submit 10 jobs concurrently
-with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    futures = [executor.submit(submit_job) for _ in range(10)]
-    results = [f.result() for f in concurrent.futures.as_completed(futures)]
-    print(f'Submitted {len(results)} jobs')
-```
-
----
-
-## 🔐 Security Considerations
-
-### Input Validation
-
-The application validates:
-- Text length (max 6500 characters)
-- File upload sizes
-- File extensions (audio: .mp3, .wav, .ogg, .flac)
-- Language and voice parameters
-
-### Running Behind a Proxy
-
-For production, use a reverse proxy (nginx, Apache):
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-### Rate Limiting (Manual Implementation)
-
-To add rate limiting, modify `apiRoutes.py`:
-
-```python
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
-```
-
----
-
-## 🛠️ Development & Contribution
-
-### Project Structure for Developers
-
-```
-Text2Video-Generation-Suite/
-├── Server.py                    # Main entry point
-├── apiRoutes.py                 # REST API routes
-├── routes.py                    # Web UI routes
-│
-├── Helpers/
-│   ├── VideoCreatorHelper.py   # Video assembly
-│   ├── TextToSpeechHelper.py   # TTS integration
-│   ├── WhisperTranscribeHelper.py # Speech-to-text
-│   ├── FFMPEGHelper.py         # Media processing
-│   ├── TextHelper.py           # Text utilities
-│   └── WebHelpers.py           # Web utilities
-│
-├── Config/
-│   ├── configs.yaml            # Configuration file
-│   └── ConfigsSettings.py      # Config parser
-│
-├── Assets/
-│   ├── Videos/                 # Background videos
-│   ├── Audios/                 # Test audio files
-│   └── Fonts/                  # Caption fonts
-│
-└── tests/                       # Test suites
-```
-
-### Setting Up Development Environment
-
-```bash
-# Clone repository
-git clone https://github.com/HossamBalaha/Text2Video-Generation-Suite.git
-cd Text2Video-Generation-Suite
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dev dependencies
-pip install -r requirements.txt
-pip install pytest pytest-cov black flake8
-
-# Run tests
-pytest tests/ -v
-
-# Code formatting
-black . --line-length=100
-
-# Linting
-flake8 .
-```
-
-### Adding New Audio Tools
-
-1. Implement in `FFMPEGHelper.py`:
-```python
-def MyNewTool(self, audioFile, parameter1, parameter2):
-    """
-    Description of the tool.
-    
-    Args:
-        audioFile: Path to audio file
-        parameter1: First parameter
-        parameter2: Second parameter
-    
-    Returns:
-        Path to output file
-    """
-    # Implementation here
-    pass
-```
-
-2. Add API endpoint in `apiRoutes.py`:
-```python
-@apiBp.route("/api/v1/my-new-tool", methods=["POST"])
-def MyNewTool():
-    # Handle request
-    pass
-```
-
-3. Add web UI card in `templates/audioTools.html`
-
-4. Add test in `tests/TestAudioTools.py`
-
-### Contributing Guidelines
-
-1. **Fork the repository**
-2. **Create a feature branch:** `git checkout -b feature/my-feature`
-3. **Make your changes and commit:** `git commit -m "Add my feature"`
-4. **Push to the branch:** `git push origin feature/my-feature`
-5. **Submit a pull request**
-
-### Code Style
-
-- Follow PEP 8 guidelines
-- Use type hints where possible
-- Add docstrings to functions
-- Keep functions under 50 lines
-- Write meaningful commit messages
+Tests use Flask's test client and do not require the server to be running.
 
 ---
 
@@ -1486,6 +1462,7 @@ def MyNewTool():
 This project is licensed under the **MIT License**. See [LICENSE](LICENSE) file for full details.
 
 **Summary:**
+
 - ✅ Free to use, modify, and distribute
 - ✅ No warranty provided
 - ✅ Attribution appreciated but not required
@@ -1500,7 +1477,7 @@ If you use this project in academic work or publications, please cite:
   author = {Hossam Magdy Balaha},
   title = {Audio-Captioned Automated Transcription & Video Generation Suite},
   year = {2025},
-  url = {https://github.com/HossamBalaha/Text2Video-Generation-Suite},
+  url = {https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite},
   version = {2.0.0}
 }
 ```
@@ -1509,22 +1486,22 @@ Or in APA format:
 
 ```
 Balaha, H. M. (2025). Audio-Captioned Automated Transcription & Video Generation Suite (v2.0.0). 
-Retrieved from https://github.com/HossamBalaha/Text2Video-Generation-Suite
+Retrieved from https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite
 ```
 
 ### Third-Party Libraries
 
 This project uses and acknowledges:
 
-| Library | Purpose | License |
-|---------|---------|---------|
-| **OpenAI Whisper** | Speech-to-text transcription | MIT |
-| **Kokoro TTS** | Text-to-speech synthesis | Apache 2.0 |
-| **FFmpeg** | Multimedia processing | LGPL/GPL |
-| **Flask** | Web framework | BSD |
-| **PyTorch** | Deep learning | BSD |
-| **Pillow** | Image processing | HPND |
-| **NumPy** | Numerical computing | BSD |
+| Library            | Purpose                      | License    |
+|--------------------|------------------------------|------------|
+| **OpenAI Whisper** | Speech-to-text transcription | MIT        |
+| **Kokoro TTS**     | Text-to-speech synthesis     | Apache 2.0 |
+| **FFmpeg**         | Multimedia processing        | LGPL/GPL   |
+| **Flask**          | Web framework                | BSD        |
+| **PyTorch**        | Deep learning                | BSD        |
+| **Pillow**         | Image processing             | HPND       |
+| **NumPy**          | Numerical computing          | BSD        |
 
 ---
 
@@ -1533,13 +1510,17 @@ This project uses and acknowledges:
 ### Getting Help
 
 **Documentation:**
+
 - 📖 [README.md](README.md) - Complete project documentation
-- 📋 [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) - Documentation navigation
 
 **Communication:**
-- 🐛 [GitHub Issues](https://github.com/HossamBalaha/Text2Video-Generation-Suite/issues) - Report bugs
-- 💡 [GitHub Discussions](https://github.com/HossamBalaha/Text2Video-Generation-Suite/discussions) - Ask questions
-- 📧 Contact via GitHub profile
+
+-
+🐛 [GitHub Issues](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/issues) -
+Report bugs
+-
+💡 [GitHub Discussions](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/discussions) -
+Ask questions
 
 ### Support the Project
 
@@ -1551,27 +1532,19 @@ If you find this project helpful:
 - 🤝 **Contribute code** via pull requests
 - ☕ **Support the author:** [Buy Me a Coffee](https://coff.ee/hossammbalaha)
 
-### Community Guidelines
-
-- Be respectful and constructive
-- Search existing issues before creating new ones
-- Provide detailed information when reporting bugs
-- Follow the code of conduct
-
----
-
-## 📞 Author & Contact
+### Author & Contact
 
 **Hossam Magdy Balaha**
 
-| Platform | Link |
-|----------|------|
-| **GitHub** | [HossamBalaha](https://github.com/HossamBalaha) |
+| Platform      | Link                                                      |
+|---------------|-----------------------------------------------------------|
+| **GitHub**    | [HossamBalaha](https://github.com/HossamBalaha)           |
 | **Portfolio** | [hossambalaha.github.io](https://hossambalaha.github.io/) |
-| **Support** | [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha) |
+| **Support**   | [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)        |
 
 **Project Repository:**
-- [Text2Video-Generation-Suite](https://github.com/HossamBalaha/Text2Video-Generation-Suite)
+
+- [Audio-Captioned-Automated-Transcription-Video-Generation-Suite](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite)
 
 ---
 
@@ -1589,71 +1562,56 @@ Special thanks to:
 
 ---
 
-## 📈 Roadmap & Future Plans
-
-### Current Version (2.0.0)
-- ✅ 30 audio processing tools
-- ✅ Text-to-video generation with captions
-- ✅ REST API with comprehensive endpoints
-- ✅ Web UI with job management
-- ✅ N8N integration support
-
-### Planned Features (Q1 2026)
-- 🔲 Batch processing with queue management
-- 🔲 GPU acceleration support
-- 🔲 Multi-GPU support
-- 🔲 Advanced scheduling and automation
-- 🔲 Database integration for job persistence
-- 🔲 User authentication and management
-- 🔲 Webhook notifications
-- 🔲 Video subtitle overlays with styling
-- 🔲 Music generation integration
-- 🔲 Custom model fine-tuning
-
-### Planned Features (Q2-Q3 2026)
-- 🔲 Mobile app (iOS/Android)
-- 🔲 Desktop app (Windows/Mac/Linux)
-- 🔲 Collaboration features
-- 🔲 Advanced analytics and reporting
-- 🔲 Plugin/extension system
-
----
-
 ## ❓ FAQ
 
 ### Q: Can I use this commercially?
+
 **A:** Yes! The MIT license allows commercial use. Attribution is appreciated but not required.
 
 ### Q: What's the maximum text length?
+
 **A:** Default is 6500 characters, configurable in `configs.yaml`. Longer text will take more time to process.
 
 ### Q: Can I customize the TTS voices?
+
 **A:** You can choose from available Kokoro voices. Custom fine-tuning is possible but requires additional setup.
 
 ### Q: Does it support multiple languages?
+
 **A:** Yes! It supports 8+ languages via Kokoro TTS and Whisper for transcription.
 
 ### Q: Can I run this on Windows/Mac?
+
 **A:** Yes! Python 3.10+ and FFmpeg work on all major operating systems.
 
 ### Q: How long does video generation take?
+
 **A:** Typically 2-10 minutes depending on:
+
 - Text length (30 seconds = ~1 minute processing)
 - Video quality (4K slower than HD)
 - System specs (CPU/GPU)
 - Current server load
 
 ### Q: Can I use my own background videos?
-**A:** Yes! Place custom videos in `Assets/Videos/Horizontal Videos/` or `Vertical Videos/` and they'll be automatically available.
+
+**A:** Yes! Place custom videos in `Assets/Videos/Horizontal Videos/` or `Vertical Videos/` and they'll be automatically
+available.
 
 ### Q: What are the system requirements?
+
 **A:** Minimum: Python 3.10, 4GB RAM, 10GB disk space. Recommended: 8GB+ RAM, SSD, dedicated GPU.
 
 ### Q: Can I integrate with N8N?
+
 **A:** Yes! Use the REST API endpoints directly in N8N HTTP Request nodes. See N8N Integration section above.
 
 ### Q: How do I report bugs?
-**A:** Open an issue on [GitHub Issues](https://github.com/HossamBalaha/Text2Video-Generation-Suite/issues) with:
+
+**A:** Open an issue
+on [GitHub Issues](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/issues)
+with:
+
 - Detailed description
 - Steps to reproduce
 - Expected vs actual behavior
@@ -1661,21 +1619,8 @@ Special thanks to:
 - Error logs
 
 ### Q: Can I contribute?
+
 **A:** Yes! Fork the repo, make changes, and submit a pull request. See Contributing section above.
-
----
-
-## 📊 Project Statistics
-
-- **Total Audio Tools:** 30
-- **Supported Languages:** 8+
-- **API Endpoints:** 30+
-- **Web Pages:** 4
-- **Lines of Code:** 5000+
-- **Python Version:** 3.10+
-- **Dependencies:** 15
-- **Test Coverage:** Growing
-- **Documentation Pages:** 5+
 
 ---
 
@@ -1684,11 +1629,10 @@ Special thanks to:
 Share your success stories! Have you created something amazing with this project?
 
 - 📧 Email: [Contact via GitHub](https://github.com/HossamBalaha)
-- 🐦 Tweet: [@HossamBalaha](https://twitter.com/HossamBalaha)
 - ⭐ Star and share this project!
 
 ---
 
-**Ready to create professional videos at scale? Start now at `http://localhost:5000` 🚀**
+**Ready to create professional videos at scale? Start now 🚀**
 
-*Last Updated: December 10, 2025 | Version: 2.0.0*
+*Last Updated: December 14, 2025*

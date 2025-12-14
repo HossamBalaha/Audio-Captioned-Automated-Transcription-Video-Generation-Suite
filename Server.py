@@ -124,7 +124,8 @@ with open("configs.yaml", "r") as configFile:
 
 # Get the verbose setting from the config.
 VERBOSE = configs.get("verbose", False)
-PORT = configs.get("port", 5000)
+# Read port from the nested api config (matches configs.yaml)
+PORT = int(configs.get("api", {}).get("port", 5000))
 MAX_JOBS = configs["api"].get("maxJobs", 1)
 STORE_PATH = configs.get("storePath", "./Jobs")
 MAX_TIMEOUT = configs["api"].get("maxTimeout", 10)
