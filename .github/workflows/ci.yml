@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  push: {}
-  pull_request: {}
-  workflow_dispatch: {}
+  push: { }
+  pull_request: { }
+  workflow_dispatch: { }
 
 jobs:
   unit-tests:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          python tools/SmokeAudioTests.py
+          python tests/SmokeAudioTests.py
 
       - name: Upload server log (for debugging)
         if: failure()

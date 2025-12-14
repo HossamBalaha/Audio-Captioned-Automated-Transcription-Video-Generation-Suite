@@ -1,22 +1,4 @@
-"""
-Smoke tests for audio endpoints (end-to-end against a running server).
-This script will:
-- Wait for the server to be ready at http://127.0.0.1:5000
-- Create small test audio files (WAV) programmatically
-- Call each audio endpoint and verify success responses and downloadable outputs when provided
-
-Run: python tools/smoke_audio_tests.py
-"""
-import io
-import os
-import sys
-import time
-import wave
-import struct
-import math
-import tempfile
-import requests
-import shutil
+import io, os, sys, time, wave, struct, math, tempfile, requests, shutil
 
 HOST = os.environ.get("T2V_HOST", "http://127.0.0.1:5000")
 TIMEOUT = 120

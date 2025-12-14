@@ -544,7 +544,7 @@ Base URL: `http://localhost:<port>` where `<port>` matches `configs.yaml` (`api.
 
 #### GET `/api/v1/status` — Health check
 
-Check if the server is running and responsive.
+**Purpose:** Verify server is running and responsive.
 
 **Request:**
 
@@ -560,13 +560,13 @@ curl http://localhost:5000/api/v1/status
 }
 ```
 
-**Use Case:** Monitor server availability in production or automated health checks.
+**Use Cases:** Health monitoring, load balancer checks, uptime verification
 
 ---
 
-#### GET `/api/v1/ready` — Capacity check for job queue
+#### GET `/api/v1/ready` — Capacity check
 
-Check if the server can accept new video generation jobs based on current queue capacity.
+**Purpose:** Check if server can accept new video generation jobs.
 
 **Request:**
 
@@ -574,7 +574,7 @@ Check if the server can accept new video generation jobs based on current queue 
 curl http://localhost:5000/api/v1/ready
 ```
 
-**Response when ready:** 200 OK
+**Response (Ready):** 200 OK
 
 ```json
 {
@@ -582,7 +582,7 @@ curl http://localhost:5000/api/v1/ready
 }
 ```
 
-**Response when busy:** 503 Service Unavailable
+**Response (Busy):** 503 Service Unavailable
 
 ```json
 {
@@ -591,13 +591,13 @@ curl http://localhost:5000/api/v1/ready
 }
 ```
 
-**Use Case:** Before submitting a job, check capacity to avoid queuing delays. Useful in batch processing workflows.
+**Use Cases:** Pre-flight checks before job submission, batch processing, queue management
 
 ---
 
 #### GET `/api/v1/languages` — Available TTS languages
 
-Get the list of all supported text-to-speech languages.
+**Purpose:** Get all supported text-to-speech languages.
 
 **Request:**
 
@@ -622,15 +622,15 @@ curl http://localhost:5000/api/v1/languages
 }
 ```
 
-**Use Case:** Populate language dropdown in UI or validate user-provided language codes.
+**Use Cases:** Populate UI dropdowns, validate user input, language selection
 
 ---
 
 #### GET `/api/v1/voices?type=list|dict` — Available voices
 
-Get available TTS voices. Use `type=list` for a flat array or `type=dict` for voices grouped by language.
+**Purpose:** Get TTS voices as list or grouped by language.
 
-**Request (List):**
+**Request (List format):**
 
 ```bash
 curl "http://localhost:5000/api/v1/voices?type=list"
@@ -652,7 +652,7 @@ curl "http://localhost:5000/api/v1/voices?type=list"
 }
 ```
 
-**Request (Dictionary):**
+**Request (Dictionary format):**
 
 ```bash
 curl "http://localhost:5000/api/v1/voices?type=dict"
@@ -686,13 +686,17 @@ curl "http://localhost:5000/api/v1/voices?type=dict"
 }
 ```
 
-**Use Case:** Build language-specific voice selectors in your application UI.
+**Parameters:**
+
+- `type` (string, optional): "list" or "dict" format (default: "list")
+
+**Use Cases:** Build language-specific voice selectors, voice preview features, content localization
 
 ---
 
 #### GET `/api/v1/videoTypes` — Available video aspect types
 
-Get supported video aspect ratios (horizontal/vertical).
+**Purpose:** Get supported video aspect ratios.
 
 **Request:**
 
@@ -711,13 +715,13 @@ curl http://localhost:5000/api/v1/videoTypes
 }
 ```
 
-**Use Case:** Determine which aspect ratios are available for video generation.
+**Use Cases:** Platform-specific generation (YouTube vs TikTok), UI option display
 
 ---
 
 #### GET `/api/v1/videoQualities` — Available video qualities
 
-Get supported video quality/resolution options.
+**Purpose:** Get supported video resolutions.
 
 **Request:**
 
@@ -739,17 +743,13 @@ curl http://localhost:5000/api/v1/videoQualities
 }
 ```
 
-**Use Case:** Present quality options to users or select appropriate quality based on bandwidth/storage.
+**Use Cases:** Quality selector UI, bandwidth-based selection, storage optimization
 
 ### Video Generation API
 
-Submit text to generate a captioned video with synthesized speech.
+#### POST `/api/v1/jobs` — Create text-to-video job
 
----
-
-#### POST `/api/v1/jobs` — Create a new text-to-video job
-
-Submit text for video generation with optional customization.
+**Purpose:** Submit text for automated video generation.
 
 **Request (Minimal):**
 
@@ -759,19 +759,13 @@ curl -X POST http://localhost:5000/api/v1/jobs \
   -d '{"text":"Hello world!"}'
 ```
 
-**Request (Windows cmd.exe):**
-
-```cmd
-curl -X POST http://localhost:5000/api/v1/jobs -H "Content-Type: application/json" -d "{\"text\":\"Hello world!\"}"
-```
-
-**Request (Full Options):**
+**Request (Full options):**
 
 ```bash
 curl -X POST http://localhost:5000/api/v1/jobs \
   -H "Content-Type: application/json" \
   -d '{
-    "text": "Welcome to our product launch. This video demonstrates the key features.",
+    "text": "Welcome to our product launch.",
     "language": "en-us",
     "voice": "af_nova",
     "speechRate": 1.0,
@@ -782,7 +776,7 @@ curl -X POST http://localhost:5000/api/v1/jobs \
 
 **Parameters:**
 
-- `text` (string, **required**): Text to convert to speech (max 2500 chars by default)
+- `text` (string, required): Text to convert to speech (max 2500 chars)
 - `language` (string, optional): TTS language code (default: from config)
 - `voice` (string, optional): Voice identifier (default: from config)
 - `speechRate` (float, optional): Speed multiplier 0.5-2.0 (default: 1.0)
@@ -813,18 +807,13 @@ curl -X POST http://localhost:5000/api/v1/jobs \
 }
 ```
 
-**Use Cases:**
-
-- **Content Creation:** Generate YouTube shorts, Instagram reels, TikTok videos
-- **Education:** Create lesson videos from scripts
-- **Marketing:** Automate promotional video production
-- **Accessibility:** Add voiceovers to text content
+**Use Cases:** Content creation for YouTube/TikTok, education videos, product demos, voiceovers
 
 ---
 
 #### GET `/api/v1/jobs` — List all jobs
 
-Retrieve all video generation jobs with their current status.
+**Purpose:** Retrieve all video generation jobs with current status.
 
 **Request:**
 
@@ -860,37 +849,20 @@ curl http://localhost:5000/api/v1/jobs
       "videoType": "Vertical",
       "createdAt": "2025-12-14 10:35:00",
       "isCompleted": false
-    },
-    {
-      "jobId": "c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8",
-      "status": "queued",
-      "text": "Coming soon...",
-      "language": "es-es",
-      "voice": "e_diosa",
-      "speechRate": 1.0,
-      "videoQuality": "HD",
-      "videoType": "Horizontal",
-      "createdAt": "2025-12-14 10:40:00",
-      "isCompleted": false
     }
   ]
 }
 ```
 
-**Status Values:**
+**Status values:** queued, processing, completed, failed
 
-- `queued` - Job waiting to be processed
-- `processing` - Currently generating video
-- `completed` - Video ready for download
-- `failed` - Error occurred during processing
-
-**Use Case:** Monitor job queue, display status dashboard, track processing history.
+**Use Cases:** Monitor job queue, display status dashboard, track history
 
 ---
 
-#### GET `/api/v1/jobs/<jobId>` — Get job details and current status
+#### GET `/api/v1/jobs/<jobId>` — Get job details
 
-Retrieve detailed information and status for a specific job.
+**Purpose:** Get detailed information and status for a specific job.
 
 **Request:**
 
@@ -914,22 +886,6 @@ curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 }
 ```
 
-**Response (Processing):** 200 OK
-
-```json
-{
-  "jobId": "b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7",
-  "status": "processing",
-  "text": "Welcome to our channel...",
-  "language": "en-us",
-  "voice": "am_michael",
-  "speechRate": 0.9,
-  "videoQuality": "Full HD",
-  "videoType": "Vertical",
-  "createdAt": "2025-12-14 10:35:00"
-}
-```
-
 **Error Response:** 404 Not Found
 
 ```json
@@ -938,28 +894,13 @@ curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 }
 ```
 
-**Polling Example (Bash):**
-
-```bash
-#!/bin/bash
-JOB_ID="a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
-while true; do
-  STATUS=$(curl -s http://localhost:5000/api/v1/jobs/$JOB_ID | jq -r '.status')
-  echo "Status: $STATUS"
-  if [ "$STATUS" = "completed" ] || [ "$STATUS" = "failed" ]; then
-    break
-  fi
-  sleep 5
-done
-```
-
-**Use Case:** Poll job status until completion, update UI with progress.
+**Use Cases:** Poll job status, update UI progress, monitor processing
 
 ---
 
 #### POST `/api/v1/jobs/triggerRemaining` — Trigger queue processing
 
-Manually trigger processing of queued jobs (usually automatic).
+**Purpose:** Manually trigger processing of queued jobs.
 
 **Request:**
 
@@ -975,13 +916,13 @@ curl -X POST http://localhost:5000/api/v1/jobs/triggerRemaining
 }
 ```
 
-**Use Case:** Restart job processing after server restart or manual intervention.
+**Use Cases:** Restart processing after server restart, manual queue management
 
 ---
 
 #### GET `/api/v1/jobs/<jobId>/result` — Download completed video
 
-Download the final processed video file.
+**Purpose:** Download the final processed video file.
 
 **Request:**
 
@@ -989,7 +930,7 @@ Download the final processed video file.
 curl -O http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result
 ```
 
-**Request (with custom filename):**
+**Request (Custom filename):**
 
 ```bash
 curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result \
@@ -999,10 +940,9 @@ curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result \
 **Success Response:** 200 OK
 
 - Content-Type: video/mp4
-- Content-Disposition: attachment
 - Body: Binary video file
 
-**Error Response (Not Ready):** 400 Bad Request
+**Error Response (Not ready):** 400 Bad Request
 
 ```json
 {
@@ -1010,7 +950,7 @@ curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result \
 }
 ```
 
-**Error Response (Not Found):** 404 Not Found
+**Error Response (Not found):** 404 Not Found
 
 ```json
 {
@@ -1018,38 +958,13 @@ curl http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/result \
 }
 ```
 
-**Complete Workflow Example:**
-
-```bash
-# 1. Create job
-RESPONSE=$(curl -s -X POST http://localhost:5000/api/v1/jobs \
-  -H "Content-Type: application/json" \
-  -d '{"text":"Hello world!","videoType":"Vertical","videoQuality":"4K"}')
-JOB_ID=$(echo $RESPONSE | jq -r '.jobId')
-echo "Job created: $JOB_ID"
-
-# 2. Wait for completion
-while true; do
-  STATUS=$(curl -s http://localhost:5000/api/v1/jobs/$JOB_ID | jq -r '.status')
-  echo "Status: $STATUS"
-  if [ "$STATUS" = "completed" ]; then
-    break
-  fi
-  sleep 5
-done
-
-# 3. Download result
-curl -O http://localhost:5000/api/v1/jobs/$JOB_ID/result
-echo "Video downloaded!"
-```
-
-**Use Case:** Automated video generation and download pipeline.
+**Use Cases:** Download completed videos, automated workflows, integration with publishing platforms
 
 ---
 
-#### DELETE `/api/v1/jobs/<jobId>` — Delete a job
+#### DELETE `/api/v1/jobs/<jobId>` — Delete job
 
-Remove a specific job and all associated files.
+**Purpose:** Remove a specific job and all associated files.
 
 **Request:**
 
@@ -1057,7 +972,7 @@ Remove a specific job and all associated files.
 curl -X DELETE http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 ```
 
-**Success Response:** 200 OK
+**Response:** 200 OK
 
 ```json
 {
@@ -1073,13 +988,13 @@ curl -X DELETE http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p
 }
 ```
 
-**Use Case:** Clean up old jobs, free disk space, remove unwanted content.
+**Use Cases:** Clean up old jobs, free disk space, manage job history
 
 ---
 
 #### DELETE `/api/v1/jobs/all` — Delete all jobs
 
-Remove all jobs and associated files (use with caution).
+**Purpose:** Remove all jobs and associated files (use with caution).
 
 **Request:**
 
@@ -1087,7 +1002,7 @@ Remove all jobs and associated files (use with caution).
 curl -X DELETE http://localhost:5000/api/v1/jobs/all
 ```
 
-**Success Response:** 200 OK
+**Response:** 200 OK
 
 ```json
 {
@@ -1095,169 +1010,57 @@ curl -X DELETE http://localhost:5000/api/v1/jobs/all
 }
 ```
 
-**Use Case:** Reset system, free all storage, development testing.
+**⚠️ Warning:** Permanently deletes all video generation jobs and files.
 
-**⚠️ Warning:** This permanently deletes all video generation jobs and files.
+**Use Cases:** System reset, development testing, storage cleanup
 
 ### File Download
 
-- GET `/api/v1/download/<filename>` — Download any file produced by processing
-    - 200: returns file as attachment
-    - 404: `{ "error": "File not found" }`
-    - 403: `{ "error": "File is not accessible" }`
+#### GET `/api/v1/download/<filename>` — Download processed file
 
-### Audio Tools API
+**Purpose:** Retrieve any file produced by audio/video processing or job results.
 
-Below are the audio processing endpoints. All upload endpoints use `multipart/form-data` unless otherwise noted. The
-returned payload usually includes a downloadable link and filename.
+**Request:**
 
-Analysis:
+```bash
+curl -O http://localhost:5000/api/v1/download/your_file.mp3
+```
 
-- POST `/api/v1/audio-duration`
-    - Form: `audioFile` (file)
-    - 200: `{ "duration": <seconds(float)> }`
+**Response:** 200 OK
 
-- POST `/api/v1/audio-size`
-    - Form: `audioFile` (file)
-    - 200: `{ "size": "<bytes|KB|MB|GB>" }`
+- Body: binary file contents
+- Headers: `Content-Type` based on file, `Content-Disposition: attachment`
 
-- POST `/api/v1/check-silence`
-    - Form: `audioFile` (file)
-    - 200: `{ "isSilent": <bool> }`
+**Error Responses:**
 
-- POST `/api/v1/analyze-audio`
-    - Form: `audioFile` (file)
-    - 200: `{ ...analysis fields... }`
+- 404 Not Found
 
-Generation & Visualization:
+```json
+{
+  "error": "File not found"
+}
+```
 
-- POST `/api/v1/generate-silent-audio` (JSON)
-    - Body: `{ "silentDuration": <float>, "silentFormat": ".wav|.mp3|.ogg" }`
-    - 200: `{ "link": "/api/v1/download/<file>", "filename": "<file>" }`
+- 403 Forbidden
 
-- POST `/api/v1/generate-waveform`
-    - Form: `audioFile` (file), `width` (int, default 1280), `height` (int, default 240), `colors` (string, default "
-      blue")
-    - 200: download link to PNG
+```json
+{
+  "error": "File is not accessible"
+}
+```
 
-- POST `/api/v1/generate-spectrum`
-    - Form: `audioFile` (file), `width` (int, default 1280), `height` (int, default 720), `colorScheme` (string,
-      default "rainbow")
-    - 200: download link to MP4
+**Use Cases:**
 
-Conversion & Normalization:
-
-- POST `/api/v1/normalize-audio`
-    - Form: `audioFile` (file), `normalizeBitrate` (e.g., `256k`), `normalizeSampleRate` (int), `normalizeFilter` (
-      `loudnorm|dynaudnorm|acompressor|volumedetect`)
-    - 200: download link
-
-- POST `/api/v1/convert-audio`
-    - Form: `audioFile` (file), `outputFormat` (`mp3|wav|ogg`), `bitrate` (`256k`), `sampleRate` (int), `channels` (
-      1|2), optional trim: `startTime`, `endTime`
-    - 200: download link
-
-Editing & Effects:
-
-- POST `/api/v1/change-volume`
-    - Form: `audioFile` (file), `volume` (float, default 1.0)
-    - 200: download link
-
-- POST `/api/v1/change-speed`
-    - Form: `audioFile` (file), `speed` (float, default 1.0; large values are internally chained for atempo)
-    - 200: download link
-
-- POST `/api/v1/reverse-audio`
-    - Form: `audioFile` (file)
-    - 200: download link
-
-- POST `/api/v1/extract-audio`
-    - Form: `videoFile` (file)
-    - 200: download link to extracted mp3
-    - 400: if video has no audio stream
-
-- POST `/api/v1/concat-audio`
-    - Form: `audioFiles` (file[]) multiple uploads
-    - 200: download link
-
-- POST `/api/v1/split-audio`
-    - Form: `audioFile` (file), `segmentDuration` (float seconds)
-    - 200: download link to a ZIP of segments
-
-- POST `/api/v1/fade-audio`
-    - Form: `audioFile` (file), `fadeIn` (float), `fadeOut` (float)
-    - 200: download link
-
-- POST `/api/v1/remove-vocals`
-    - Form: `audioFile` (file)
-    - 200: download link (center-channel removal)
-
-- POST `/api/v1/equalize-audio`
-    - Form: `audioFile` (file), `freq` (float), `width` (float), `gain` (float)
-    - 200: download link
-
-- POST `/api/v1/mix-audio`
-    - Form: `audioFiles` (file[]) 2+ files, `volumes` (comma-separated floats, optional), `duration` ("longest" or
-      other)
-    - 200: download link
-
-- POST `/api/v1/reduce-noise`
-    - Form: `audioFile` (file), `noiseReduction` (int, default 20)
-    - 200: download link
-
-- POST `/api/v1/remove-silence`
-    - Form: `audioFile` (file), `threshold` (int dB, default -50), `duration` (float seconds, default 0.5)
-    - 200: download link
-
-- POST `/api/v1/enhance-audio`
-    - Form: `audioFile` (file), `bassGain` (int), `trebleGain` (int)
-    - 200: download link
-
-- POST `/api/v1/compress-audio`
-    - Form: `audioFile` (file), `threshold` (int), `ratio` (int), `attack` (int ms), `release` (int ms), `makeupGain` (
-      int)
-    - 200: download link
-
-- POST `/api/v1/convert-channels`
-    - Form: `audioFile` (file), `targetChannels` (int 1=mono, 2=stereo)
-    - 200: download link
-
-- POST `/api/v1/loop-audio`
-    - Form: `audioFile` (file), `loopCount` (int), `totalDuration` (float optional)
-    - 200: download link
-
-- POST `/api/v1/shift-pitch`
-    - Form: `audioFile` (file), `semitones` (int)
-    - 200: download link
-
-- POST `/api/v1/add-echo`
-    - Form: `audioFile` (file), `delay` (int ms), `decay` (float)
-    - 200: download link
-
-- POST `/api/v1/adjust-stereo`
-    - Form: `audioFile` (file), `width` (float)
-    - 200: download link
-
-- POST `/api/v1/crossfade-audio`
-    - Form: `firstAudio` (file), `secondAudio` (file), `duration` (int seconds)
-    - 200: download link
-
-- POST `/api/v1/transcribe-audio`
-    - Form: `audioFile` (file), `language` (string), `outputFormat` (`txt|json|srt`)
-    - 200: `{ "transcription": "..." }` for txt; `{ "srt": "..." }` for srt; JSON for detailed output
-
-### Common Errors
-
-- 400: Bad request (missing file, invalid parameters)
-- 403: File not accessible
-- 404: Not found (job or file)
-- 500: Internal processing error
+- Programmatically download processed audio (normalized, enhanced, converted)
+- Retrieve visualization outputs (waveform PNG, spectrum MP4)
+- Fetch final text2video job result MP4s
+- Integrate with automation pipelines to save artifacts
 
 ---
 
 ## 📖 Comprehensive API Examples & Demonstrations
 
-Complete examples and demonstrations for all 43 API endpoints. Each example includes request/response pairs, use cases,
+Complete examples and demonstrations for all API endpoints. Each example includes request/response pairs, use cases,
 and production-ready code.
 
 ### Quick Examples (cmd.exe)
@@ -1322,25 +1125,25 @@ payload = {
 }
 
 response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
-job_id = response.json()['jobId']
-print(f"Job created: {job_id}")
+jobId = response.json()['jobId']
+print(f"Job created: {jobId}")
 
 # 2. Monitor status
 while True:
-  response = requests.get(f'http://localhost:5000/api/v1/jobs/{job_id}')
+  response = requests.get(f'http://localhost:5000/api/v1/jobs/{jobId}')
   status = response.json()['status']
   print(f"Status: {status}")
 
-  if status == 'completed':
+  if (status == 'completed'):
     break
-  elif status == 'failed':
+  elif (status == 'failed'):
     print("Job failed!")
     exit(1)
 
   time.sleep(5)
 
 # 3. Download result
-response = requests.get(f'http://localhost:5000/api/v1/jobs/{job_id}/result', stream=True)
+response = requests.get(f'http://localhost:5000/api/v1/jobs/{jobId}/result', stream=True)
 with open('my_video.mp4', 'wb') as f:
   for chunk in response.iter_content(chunk_size=8192):
     f.write(chunk)
@@ -1354,11 +1157,11 @@ print("✓ Video downloaded: my_video.mp4")
 import requests
 
 
-def process_podcast(audio_file):
+def processPodcast(audioFile):
   """Normalize, reduce noise, and transcribe"""
 
   # 1. Normalize
-  with open(audio_file, 'rb') as f:
+  with open(audioFile, 'rb') as f:
     response = requests.post(
       'http://localhost:5000/api/v1/normalize-audio',
       files={'audioFile': f},
@@ -1366,10 +1169,10 @@ def process_podcast(audio_file):
     )
 
   result = response.json()
-  normalized_url = f"http://localhost:5000{result['link']}"
+  normalizedUrl = f"http://localhost:5000{result['link']}"
 
   # Download normalized audio
-  audio = requests.get(normalized_url).content
+  audio = requests.get(normalizedUrl).content
   with open('normalized.mp3', 'wb') as f:
     f.write(audio)
 
@@ -1382,10 +1185,10 @@ def process_podcast(audio_file):
     )
 
   result = response.json()
-  clean_url = f"http://localhost:5000{result['link']}"
+  cleanUrl = f"http://localhost:5000{result['link']}"
 
   # Download clean audio
-  audio = requests.get(clean_url).content
+  audio = requests.get(cleanUrl).content
   with open('clean.mp3', 'wb') as f:
     f.write(audio)
 
@@ -1404,7 +1207,7 @@ def process_podcast(audio_file):
   print("✓ Podcast processed: clean.mp3, transcript.txt")
 
 
-process_podcast('raw_podcast.mp3')
+processPodcast('raw_podcast.mp3')
 ```
 
 **Batch Video Generation:**
@@ -1427,9 +1230,9 @@ for i, script in enumerate(scripts):
   }
 
   response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
-  job_id = response.json()['jobId']
-  jobs.append((i, job_id))
-  print(f"Created job {i + 1}: {job_id}")
+  jobId = response.json()['jobId']
+  jobs.append((i, jobId))
+  print(f"Created job {i + 1}: {jobId}")
 
 print(f"✓ Created {len(jobs)} video jobs")
 ```
@@ -1516,9 +1319,12 @@ This project uses and acknowledges:
 **Communication:**
 
 -
+
 🐛 [GitHub Issues](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/issues) -
 Report bugs
+
 -
+
 💡 [GitHub Discussions](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/discussions) -
 Ask questions
 
