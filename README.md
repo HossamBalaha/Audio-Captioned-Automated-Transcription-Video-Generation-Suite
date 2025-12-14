@@ -1,5 +1,6 @@
 # 🎬 Audio-Captioned Automated Transcription & Video Generation Suite
 
+[![CI](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/workflows/CI/badge.svg)](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/actions)
 [![Repo Size](https://img.shields.io/github/repo-size/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite?style=flat-square)](https://github.com/HossamBalaha)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/status-Active-brightgreen?style=flat-square)](#)
