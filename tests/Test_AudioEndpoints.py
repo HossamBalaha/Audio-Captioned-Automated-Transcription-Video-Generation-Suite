@@ -369,3 +369,142 @@ def Test_FadeRemoveVocalsEqualize(client):
   rv = client.post("/api/v1/equalize-audio", content_type="multipart/form-data", data=data)
   # Acceptable status: success or environment error.
   assert (rv.status_code in (200, 400, 500))
+
+
+# Test invalid voices type parameter to exercise 400 status.
+def Test_VoicesInvalidType(client):
+  # Request voices with invalid type.
+  rv = client.get("/api/v1/voices?type=unknown")
+  # Assert bad request.
+  assert (rv.status_code == 400)
+  # Parse JSON response.
+  data = rv.get_json()
+  # Assert error message.
+  assert ("error" in data)
+
+
+# Test POST /jobs with invalid JSON body (not JSON).
+def Test_PostJobInvalidJson(client):
+  # Submit with wrong content type.
+  rv = client.post("/api/v1/jobs", data="not-json", content_type="text/plain")
+  # Expect 400 bad request.
+  assert (rv.status_code == 400)
+
+
+# Test POST /jobs with missing text.
+def Test_PostJobMissingText(client):
+  # Submit empty text field.
+  rv = client.post("/api/v1/jobs", json={"text": ""})
+  # Expect 400 bad request.
+  assert (rv.status_code == 400)
+
+
+# Test POST /jobs with too long text.
+def Test_PostJobTooLongText(client):
+  # Create an overlong text.
+  longText = "x" * 10000
+  # Submit overlong text.
+  rv = client.post("/api/v1/jobs", json={"text": longText})
+  # Expect 400 bad request.
+  assert (rv.status_code == 400)
+
+
+# Test GET /jobs/<jobId> with a non-existent id.
+def Test_GetJobNotFound(client):
+  # Use a random ID.
+  rv = client.get("/api/v1/jobs/ffffffffffffffffffffffffffffffff")
+  # Expect 404 not found.
+  assert (rv.status_code == 404)
+
+
+# Helpers to simulate job states for result endpoint.
+def _writeJson(path, obj):
+  # Write JSON file.
+  import json
+  with open(path, "w") as f:
+    # Dump object.
+    json.dump(obj, f)
+
+
+# Test GET /jobs/<jobId>/result error scenarios.
+def Test_JobResultErrors(client):
+  # Access app config.
+  storePath = app.config.get("STORE_PATH")
+  # Create a fake job id.
+  jobId = "deadbeefdeadbeefdeadbeefdeadbeef"
+  # 1) Not found job.
+  rv = client.get(f"/api/v1/jobs/{jobId}/result")
+  # Expect 404.
+  assert (rv.status_code == 404)
+
+  # Prepare job directory.
+  import os
+  jobDir = os.path.join(storePath, jobId)
+  # Ensure directory exists.
+  os.makedirs(jobDir, exist_ok=True)
+
+  # 2) Job not completed yet (status queued).
+  jobData = {
+    "status"    : "queued", "text": "t", "language": "en-us", "voice": "af_nova",
+    "speechRate": 1.0, "videoQuality": None, "videoType": None, "createdAt": "now"
+  }
+  # Write job.json with queued.
+  _writeJson(os.path.join(jobDir, "job.json"), jobData)
+  # Register job in history as queued.
+  app.config["JOB_HISTORY_OBJ"].updateStatus(jobId, "queued")
+  # Request result.
+  rv = client.get(f"/api/v1/jobs/{jobId}/result")
+  # Expect 400.
+  assert (rv.status_code == 400)
+
+  # 3) Invalid JSON in job.json.
+  badPath = os.path.join(jobDir, "job.json")
+  # Overwrite malformed JSON.
+  with open(badPath, "w") as f:
+    # Write invalid json.
+    f.write("{ invalid json ")
+  # Mark completed in history to bypass status check.
+  app.config["JOB_HISTORY_OBJ"].updateStatus(jobId, "completed")
+  # Request result.
+  rv = client.get(f"/api/v1/jobs/{jobId}/result")
+  # Expect 500.
+  assert (rv.status_code == 500)
+
+  # 4) Valid JSON but processed video missing.
+  goodData = {
+    "status"    : "completed", "text": "t", "language": "en-us", "voice": "af_nova",
+    "speechRate": 1.0, "videoQuality": None, "videoType": None, "createdAt": "now"
+  }
+  # Write valid json.
+  _writeJson(badPath, goodData)
+  # Ensure no video file exists.
+  for ext in ("mp4", "mov", "mkv"):
+    # Build path.
+    fp = os.path.join(jobDir, f"{jobId}_Final.{ext}")
+    # Remove if exists.
+    if (os.path.exists(fp)):
+      # Remove file.
+      os.remove(fp)
+  # Request result.
+  rv = client.get(f"/api/v1/jobs/{jobId}/result")
+  # Expect 404.
+  assert (rv.status_code == 404)
+
+  # 5) Empty video file triggers 500.
+  videoPath = os.path.join(jobDir, f"{jobId}_Final.mp4")
+  # Create empty file.
+  with open(videoPath, "wb") as f:
+    # Write nothing.
+    f.write(b"")
+  # Request result.
+  rv = client.get(f"/api/v1/jobs/{jobId}/result")
+  # Expect 500 due to empty file.
+  assert (rv.status_code == 500)
+
+
+# Test download not-found case.
+def Test_DownloadNotFound(client):
+  # Request a non-existing file.
+  rv = client.get("/api/v1/download/this_file_should_not_exist.xyz")
+  # Expect 404.
+  assert (rv.status_code == 404)

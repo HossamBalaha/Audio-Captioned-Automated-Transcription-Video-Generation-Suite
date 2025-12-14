@@ -1251,7 +1251,7 @@ def compressAudio():
   try:
     isDone = asyncio.run(
       FFMPEGHelper().CompressAudio(tempPath, outPath, threshold=threshold, ratio=ratio, attack=attack,
-                                    release=release, makeupGain=makeupGain))
+                                   release=release, makeupGain=makeupGain))
     if (os.path.exists(tempPath)):
       os.remove(tempPath)
     if (not isDone or not os.path.exists(outPath)):
@@ -1624,7 +1624,9 @@ def transcribeAudio():
         os.remove(tempPath)
       except Exception:
         pass
-    return jsonify({"error": "Error transcribing audio"}), 500
+    return jsonify({
+      "error": "Error transcribing audio. Error: " + str(e)
+    }), 500
 
 
 def formatSRTTime(seconds):

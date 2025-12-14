@@ -4,7 +4,7 @@ torchaudio==2.7.1+cu128
 numpy<2
 kokoro>=0.9.4
 soundfile>=0.13.1
-openai-whisper>=20231117
+openai-whisper>=20250625
 ffmpeg-python>=0.2.0
 tqdm>=4.67.1
 Pillow>=11.3.0
