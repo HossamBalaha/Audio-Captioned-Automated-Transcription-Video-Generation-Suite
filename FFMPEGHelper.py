@@ -1748,23 +1748,31 @@ class FFMPEGHelper(object):
       bool: True if spectrum generation was successful, False otherwise.
     '''
 
-    spectrumFilter = f"[0:a]showspectrum=s={width}x{height}:mode=combined:color={colorScheme}[v]"
+    # Create spectrum filter without unsupported 'rate' option, then add fps/format in chain.
+    spectrumFilter = f"[0:a]showspectrum=s={width}x{height}:mode=combined:color={colorScheme}[vs]; [vs]fps=30,format=yuv420p[v]"
 
+    # Build ffmpeg command for spectrum video generation (video + original audio).
     ffmpegCommand = [
       "ffmpeg",
+      "-hide_banner", "-loglevel", "error",
       "-i", audioFilePath,
       "-filter_complex", spectrumFilter,
       "-map", "[v]",
-      "-map", "0:a",
+      "-map", "0:a:0?",
       "-c:v", configs["ffmpeg"].get("videoCodec", "libx264"),
-      "-c:a", configs["ffmpeg"].get("audioCodec", "libmp3lame"),
+      "-c:a", configs["ffmpeg"].get("spectrumAudioCodec", "aac"),
+      "-b:a", configs["ffmpeg"].get("audioBitrate", "192k"),
       "-preset", "fast",
+      "-r", "30",
+      "-pix_fmt", configs["ffmpeg"].get("pixelFormat", "yuv420p"),
+      "-movflags", "+faststart",
+      "-shortest",
       "-y",
       outputFilePath
     ]
 
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "GenerateSpectrum")
-    if (success):
+    if (success and os.path.exists(outputFilePath) and os.path.getsize(outputFilePath) > 0):
       if (VERBOSE):
         print(f"Spectrum generation completed successfully: {outputFilePath}")
       return True

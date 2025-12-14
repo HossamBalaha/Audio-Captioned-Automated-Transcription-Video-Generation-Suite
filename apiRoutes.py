@@ -1624,9 +1624,7 @@ def transcribeAudio():
         os.remove(tempPath)
       except Exception:
         pass
-    return jsonify({
-      "error": "Error transcribing audio. Error: " + str(e)
-    }), 500
+    return jsonify({"error": "Error transcribing audio."}), 500
 
 
 def formatSRTTime(seconds):
