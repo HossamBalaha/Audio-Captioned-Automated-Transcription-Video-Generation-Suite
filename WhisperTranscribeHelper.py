@@ -5,8 +5,6 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 1st, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -16,8 +14,11 @@ import shutup
 shutup.please()  # This function call suppresses unnecessary warnings.
 
 # Import necessary libraries for the text-to-speech system.
-import torch, os, time, whisper, yaml
+import torch, os, time, whisper, yaml, logging
 from FFMPEGHelper import FFMPEGHelper
+
+# Use module logger so messages go through Python's logging system and appear with Flask output.
+logger = logging.getLogger(__name__)
 
 with open("configs.yaml", "r") as configFile:
   # Load the configuration from the YAML file.
@@ -40,10 +41,10 @@ class WhisperTranscribeHelper(object):
     self.device = "cuda" if (torch.cuda.is_available()) else "cpu"
     if (self.device == "cuda"):
       # Print the name of the GPU being used.
-      print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+      logger.info(f"Using GPU: {torch.cuda.get_device_name(0)}")
     else:
       # Indicate that the CPU is being used.
-      print("Using CPU for transcription.")
+      logger.info("Using CPU for transcription.")
 
   def GetAvailableModels(self):
     """Return a list of available Whisper models."""

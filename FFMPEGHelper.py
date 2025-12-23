@@ -5,15 +5,16 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
-import ffmpeg, subprocess, tempfile, yaml, os, random, asyncio, re
+import ffmpeg, subprocess, tempfile, yaml, os, random, asyncio, re, logging
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from TextHelper import EscapeText
+
+# Use module logger so messages go through Python's logging system and appear with Flask output.
+logger = logging.getLogger(__name__)
 
 with open("configs.yaml", "r") as configFile:
   configs = yaml.safe_load(configFile)
@@ -46,8 +47,8 @@ class FFMPEGHelper(object):
       return duration
     except ffmpeg.Error as e:
       if (VERBOSE):
-        print("Function `GetFileDuration` encountered an error:")
-        print(f"Error getting file duration: {e.stderr}")
+        logger.info("Function `GetFileDuration` encountered an error:")
+        logger.info(f"Error getting file duration: {e.stderr}")
       return None
 
   def GetFilesDuration(self, filePaths):
@@ -69,7 +70,7 @@ class FFMPEGHelper(object):
         totalDuration += duration
       else:
         if (VERBOSE):
-          print(f"Could not get duration for file: {filePath}")
+          logger.info(f"Could not get duration for file: {filePath}")
           return None
     return totalDuration
 
@@ -89,8 +90,8 @@ class FFMPEGHelper(object):
       return os.path.getsize(filePath)
     except Exception as e:
       if (VERBOSE):
-        print("Function `GetFileSize` encountered an error:")
-        print(f"Error getting file size: {str(e)}")
+        logger.info("Function `GetFileSize` encountered an error:")
+        logger.info(f"Error getting file size: {str(e)}")
       return None
 
   def GetFileDimensions(self, filePath):
@@ -114,12 +115,12 @@ class FFMPEGHelper(object):
         return (width, height)
       else:
         if (VERBOSE):
-          print("No video stream found in the file.")
+          logger.info("No video stream found in the file.")
         return None
     except ffmpeg.Error as e:
       if (VERBOSE):
-        print("Function `GetFileDimensions` encountered an error:")
-        print(f"Error getting video dimensions: {e.stderr}")
+        logger.info("Function `GetFileDimensions` encountered an error:")
+        logger.info(f"Error getting video dimensions: {e.stderr}")
       return None
 
   def IsFileSilent(self, filePath):
@@ -147,7 +148,7 @@ class FFMPEGHelper(object):
 
       if (audioStream is None):
         if (VERBOSE):
-          print("No audio stream found in the video file.")
+          logger.info("No audio stream found in the video file.")
         return True  # No audio = silent.
 
       # Use ffmpeg to get the average volume of the audio stream.
@@ -171,22 +172,22 @@ class FFMPEGHelper(object):
 
       if (meanVolume is not None):
         if (VERBOSE):
-          print(f"Mean Volume: {meanVolume} dB")
+          logger.info(f"Mean Volume: {meanVolume} dB")
         # Convert dB to a linear scale for comparison.
         meanVolume = 10 ** (meanVolume / 20)  # Convert dB to linear scale.
         if (VERBOSE):
-          print(f"Mean Volume (linear scale): {meanVolume}")
+          logger.info(f"Mean Volume (linear scale): {meanVolume}")
         # Check if the mean volume is below the threshold.
         isSilent = (meanVolume < configs["ffmpeg"]["isSilentThreshold"])
         return isSilent
       else:
         if (VERBOSE):
-          print("Could not determine the mean volume from the audio stream.")
+          logger.info("Could not determine the mean volume from the audio stream.")
         return False
     except ffmpeg.Error as e:
       if (VERBOSE):
-        print("Function `IsFileSilent` encountered an error:")
-        print(f"Error checking if video is silent: {e.stderr}")
+        logger.info("Function `IsFileSilent` encountered an error:")
+        logger.info(f"Error checking if video is silent: {e.stderr}")
       return False
 
   def HasAudioStream(self, filePath):
@@ -209,8 +210,8 @@ class FFMPEGHelper(object):
       return False
     except ffmpeg.Error as e:
       if (VERBOSE):
-        print("Function `HasAudioStream` encountered an error:")
-        print(f"Error checking audio stream: {e.stderr}")
+        logger.info("Function `HasAudioStream` encountered an error:")
+        logger.info(f"Error checking audio stream: {e.stderr}")
       return False
 
   async def _ExecuteFFmpegCommand(self, command, functionName=""):
@@ -229,7 +230,7 @@ class FFMPEGHelper(object):
 
     try:
       if (VERBOSE):
-        print(f"Executing command for `{functionName}`:\n{command}")
+        logger.info(f"Executing command for `{functionName}`:\n{command}")
       process = await asyncio.create_subprocess_exec(
         *command,
         stdout=subprocess.PIPE,
@@ -238,17 +239,17 @@ class FFMPEGHelper(object):
       stdout, stderr = await process.communicate()
       if (process.returncode != 0):
         if (VERBOSE):
-          print(f"Function `{functionName}` encountered an error:")
-          print(f"Error executing command: {stderr.decode()}")
+          logger.info(f"Function `{functionName}` encountered an error:")
+          logger.info(f"Error executing command: {stderr.decode()}")
         return False, process
       else:
         if (VERBOSE):
-          print(f"Command `{functionName}` executed successfully.")
+          logger.info(f"Command `{functionName}` executed successfully.")
         return True, process
     except Exception as e:
       if (VERBOSE):
-        print(f"Function `{functionName}` encountered an error:")
-        print(f"Error executing command: {str(e)}")
+        logger.info(f"Function `{functionName}` encountered an error:")
+        logger.info(f"Error executing command: {str(e)}")
       return False, None
 
   async def NormalizeAudio(
@@ -310,11 +311,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "NormalizeAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio normalization completed successfully: {outputFilePath}")
+        logger.info(f"Audio normalization completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Audio normalization failed for: {audioFilePath}")
+        logger.info(f"Audio normalization failed for: {audioFilePath}")
       return False
 
   async def GenerateSilentAudio(
@@ -366,11 +367,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "GenerateSilentAudio")
     if (success):
       if (VERBOSE):
-        print(f"Silent audio generated successfully: {outputFilePath}")
+        logger.info(f"Silent audio generated successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to generate silent audio for: {outputFilePath}")
+        logger.info(f"Failed to generate silent audio for: {outputFilePath}")
       return False
 
   async def TrimAudio(
@@ -408,11 +409,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "TrimAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio trimmed successfully: {outputFilePath}")
+        logger.info(f"Audio trimmed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to trim audio: {audioFilePath}")
+        logger.info(f"Failed to trim audio: {audioFilePath}")
       return False
 
   async def TrimVideo(
@@ -454,11 +455,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "TrimVideo")
     if (success):
       if (VERBOSE):
-        print(f"Video trimmed successfully: {outputFilePath}")
+        logger.info(f"Video trimmed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to trim video: {videoFilePath}")
+        logger.info(f"Failed to trim video: {videoFilePath}")
       return False
 
   async def ScaleVideo(
@@ -503,11 +504,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "ScaleVideo")
     if (success):
       if (VERBOSE):
-        print(f"Video scaled successfully: {outputFilePath}")
+        logger.info(f"Video scaled successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to scale video: {randomVideoPath}")
+        logger.info(f"Failed to scale video: {randomVideoPath}")
       return False
 
   async def TrimScaleVideo(
@@ -558,11 +559,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "TrimScaleVideo")
     if (success):
       if (VERBOSE):
-        print(f"Video trimmed and scaled successfully: {outputFilePath}")
+        logger.info(f"Video trimmed and scaled successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to trim and scale video: {randomVideoPath}")
+        logger.info(f"Failed to trim and scale video: {randomVideoPath}")
       return False
 
   async def ConcatAudioFiles(
@@ -671,7 +672,7 @@ class FFMPEGHelper(object):
         return False
     except Exception as e:
       if (VERBOSE):
-        print(f"Unexpected error in `ConcatAudioFiles`: {str(e)}")
+        logger.info(f"Unexpected error in `ConcatAudioFiles`: {str(e)}")
       return False
 
   async def ConcatVideoFiles(
@@ -733,15 +734,15 @@ class FFMPEGHelper(object):
       success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "ConcatVideoFiles")
       if (success):
         if (VERBOSE):
-          print(f"Video concatenation completed successfully: {outputFilePath}")
+          logger.info(f"Video concatenation completed successfully: {outputFilePath}")
         return True
       else:
         if (VERBOSE):
-          print(f"Video concatenation failed for: {videoFilePaths}")
+          logger.info(f"Video concatenation failed for: {videoFilePaths}")
         return False
     except Exception as e:
       if (VERBOSE):
-        print(f"Unexpected error in `ConcatVideoFiles`: {str(e)}")
+        logger.info(f"Unexpected error in `ConcatVideoFiles`: {str(e)}")
       return False
 
   async def TrimConcatVideoFiles(
@@ -849,15 +850,15 @@ class FFMPEGHelper(object):
         success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "TrimConcatVideoFiles")
       if (success):
         if (VERBOSE):
-          print(f"Video concatenation with trimming completed successfully: {outputFilePath}")
+          logger.info(f"Video concatenation with trimming completed successfully: {outputFilePath}")
         return True
       else:
         if (VERBOSE):
-          print(f"Video concatenation with trimming failed for: {videoFilePaths}")
+          logger.info(f"Video concatenation with trimming failed for: {videoFilePaths}")
         return False
     except Exception as e:
       if (VERBOSE):
-        print(f"Unexpected error in `TrimConcatVideoFiles`: {str(e)}")
+        logger.info(f"Unexpected error in `TrimConcatVideoFiles`: {str(e)}")
       return False
 
   async def MergeAudioVideoFiles(
@@ -897,11 +898,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "MergeAudioVideoFiles")
     if (success):
       if (VERBOSE):
-        print(f"Audio and video merged successfully: {outputFilePath}")
+        logger.info(f"Audio and video merged successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to merge audio and video files: {videoFilePath}, {audioFilePath}")
+        logger.info(f"Failed to merge audio and video files: {videoFilePath}, {audioFilePath}")
       return False
 
   def GetCharactersWidth(self, size, baseFontSize):
@@ -930,7 +931,7 @@ class FFMPEGHelper(object):
     except Exception as e:
       font = ImageFont.load_default()
       if (VERBOSE):
-        print(f"Font '{fontPath}' not found: {e}, using default font.")
+        logger.info(f"Font '{fontPath}' not found: {e}, using default font.")
 
     # Create image and draw context
     img = Image.new("RGB", (1, 1))
@@ -948,7 +949,7 @@ class FFMPEGHelper(object):
         charWidths[char] = width
       except:
         if (VERBOSE):
-          print(f"Failed to measure width for character '{char}', using fallback width.")
+          logger.info(f"Failed to measure width for character '{char}', using fallback width.")
         charWidths[char] = fallbackWidth
 
     return charWidths
@@ -978,7 +979,7 @@ class FFMPEGHelper(object):
     dimensions = self.GetFileDimensions(videoFilePath)
     if (dimensions is None):
       if (VERBOSE):
-        print(f"Failed to get video dimensions for: {videoFilePath}")
+        logger.info(f"Failed to get video dimensions for: {videoFilePath}")
       return False
     videoWidth, videoHeight = dimensions
 
@@ -1014,9 +1015,9 @@ class FFMPEGHelper(object):
       captionTextBorderWidthHighlighted = str(captionTextBorderWidthHighlighted)
 
     if (VERBOSE):
-      print(f"Caption font size: {fontSize}")
-      print(f"Caption text border width: {captionTextBorderWidth}")
-      print(f"Caption text border width highlighted: {captionTextBorderWidthHighlighted}")
+      logger.info(f"Caption font size: {fontSize}")
+      logger.info(f"Caption text border width: {captionTextBorderWidth}")
+      logger.info(f"Caption text border width highlighted: {captionTextBorderWidthHighlighted}")
 
     captionPositionOffset = configs["ffmpeg"].get("captionPositionOffset", "15%")  # Offset for caption position.
     if (isinstance(captionPositionOffset, str) and captionPositionOffset.endswith("%")):
@@ -1050,12 +1051,12 @@ class FFMPEGHelper(object):
 
     totalNumberOfWords = sum(len(caption.get("words", [])) for caption in captionsList)
     if (VERBOSE):
-      print(f"Total number of words to process: {totalNumberOfWords}")
+      logger.info(f"Total number of words to process: {totalNumberOfWords}")
 
     # Get character widths for the font.
     charWidths = self.GetCharactersWidth(videoWidth, baseFontSize)
     if (VERBOSE):
-      print(f"Character widths for font '{fontType}': {charWidths}")
+      logger.info(f"Character widths for font '{fontType}': {charWidths}")
 
     # Escape font path for ffmpeg.
     escapedFontType = fontType.replace(':', '\\:')
@@ -1097,7 +1098,7 @@ class FFMPEGHelper(object):
         xPos = startX + currentX
 
         if (VERBOSE):
-          print(f"Processing word: {word}, start: {start}, end: {end}")
+          logger.info(f"Processing word: {word}, start: {start}, end: {end}")
 
         # Update current X position for next word.
         currentX += sum([
@@ -1121,7 +1122,7 @@ class FFMPEGHelper(object):
           # Enable this text throughout the video.
           "enable='between(t\\," + str(firstStart) + "\\," + str(lastEnd) + ")'"
         )
-        print(normalFilter)
+        logger.info(normalFilter)
         drawtextFilters.append(normalFilter)
 
         # 2. Highlighted text (visible only during its time window).
@@ -1172,13 +1173,12 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "AddCaptionsToVideo")
     if (success):
       if (VERBOSE):
-        print(f"Captions added successfully to video: {outputFilePath}")
+        logger.info(f"Captions added successfully to video: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Failed to add captions to video: {videoFilePath}")
+        logger.info(f"Failed to add captions to video: {videoFilePath}")
       return False
-
 
   async def MixAudioFiles(
     self,
@@ -1204,7 +1204,7 @@ class FFMPEGHelper(object):
     try:
       if (len(audioFilePaths) < 2):
         if (VERBOSE):
-          print("At least 2 audio files are required for mixing.")
+          logger.info("At least 2 audio files are required for mixing.")
         return False
 
       # Build input arguments.
@@ -1218,7 +1218,7 @@ class FFMPEGHelper(object):
         volumes = [1.0] * len(audioFilePaths)
       elif (len(volumes) != len(audioFilePaths)):
         if (VERBOSE):
-          print("Number of volume levels must match number of audio files.")
+          logger.info("Number of volume levels must match number of audio files.")
         return False
 
       # Build amix filter with volumes.
@@ -1243,15 +1243,15 @@ class FFMPEGHelper(object):
       success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "MixAudioFiles")
       if (success):
         if (VERBOSE):
-          print(f"Audio mixing completed successfully: {outputFilePath}")
+          logger.info(f"Audio mixing completed successfully: {outputFilePath}")
         return True
       else:
         if (VERBOSE):
-          print(f"Audio mixing failed for: {audioFilePaths}")
+          logger.info(f"Audio mixing failed for: {audioFilePaths}")
         return False
     except Exception as e:
       if (VERBOSE):
-        print(f"Unexpected error in `MixAudioFiles`: {str(e)}")
+        logger.info(f"Unexpected error in `MixAudioFiles`: {str(e)}")
       return False
 
   async def ReduceNoise(
@@ -1287,11 +1287,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "ReduceNoise")
     if (success):
       if (VERBOSE):
-        print(f"Noise reduction completed successfully: {outputFilePath}")
+        logger.info(f"Noise reduction completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Noise reduction failed for: {audioFilePath}")
+        logger.info(f"Noise reduction failed for: {audioFilePath}")
       return False
 
   async def RemoveSilence(
@@ -1332,11 +1332,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "RemoveSilence")
     if (success):
       if (VERBOSE):
-        print(f"Silence removal completed successfully: {outputFilePath}")
+        logger.info(f"Silence removal completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Silence removal failed for: {audioFilePath}")
+        logger.info(f"Silence removal failed for: {audioFilePath}")
       return False
 
   async def EnhanceAudio(
@@ -1386,11 +1386,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "EnhanceAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio enhancement completed successfully: {outputFilePath}")
+        logger.info(f"Audio enhancement completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Audio enhancement failed for: {audioFilePath}")
+        logger.info(f"Audio enhancement failed for: {audioFilePath}")
       return False
 
   async def CompressAudio(
@@ -1436,11 +1436,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "CompressAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio compression completed successfully: {outputFilePath}")
+        logger.info(f"Audio compression completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Audio compression failed for: {audioFilePath}")
+        logger.info(f"Audio compression failed for: {audioFilePath}")
       return False
 
   async def ConvertChannels(
@@ -1476,11 +1476,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "ConvertChannels")
     if (success):
       if (VERBOSE):
-        print(f"Channel conversion completed successfully: {outputFilePath}")
+        logger.info(f"Channel conversion completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Channel conversion failed for: {audioFilePath}")
+        logger.info(f"Channel conversion failed for: {audioFilePath}")
       return False
 
   async def LoopAudio(
@@ -1509,7 +1509,7 @@ class FFMPEGHelper(object):
       originalDuration = self.GetFileDuration(audioFilePath)
       if (originalDuration is None):
         if (VERBOSE):
-          print("Could not determine audio duration for looping.")
+          logger.info("Could not determine audio duration for looping.")
         return False
       loopCount = int(totalDuration / originalDuration) + 1
 
@@ -1532,11 +1532,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "LoopAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio looping completed successfully: {outputFilePath}")
+        logger.info(f"Audio looping completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Audio looping failed for: {audioFilePath}")
+        logger.info(f"Audio looping failed for: {audioFilePath}")
       return False
 
   async def ShiftPitch(
@@ -1585,11 +1585,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "ShiftPitch")
     if (success):
       if (VERBOSE):
-        print(f"Pitch shifting completed successfully: {outputFilePath}")
+        logger.info(f"Pitch shifting completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Pitch shifting failed for: {audioFilePath}")
+        logger.info(f"Pitch shifting failed for: {audioFilePath}")
       return False
 
   async def AddEcho(
@@ -1629,11 +1629,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "AddEcho")
     if (success):
       if (VERBOSE):
-        print(f"Echo effect added successfully: {outputFilePath}")
+        logger.info(f"Echo effect added successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Adding echo failed for: {audioFilePath}")
+        logger.info(f"Adding echo failed for: {audioFilePath}")
       return False
 
   async def AdjustStereoWidth(
@@ -1674,11 +1674,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "AdjustStereoWidth")
     if (success):
       if (VERBOSE):
-        print(f"Stereo width adjustment completed successfully: {outputFilePath}")
+        logger.info(f"Stereo width adjustment completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Stereo width adjustment failed for: {audioFilePath}")
+        logger.info(f"Stereo width adjustment failed for: {audioFilePath}")
       return False
 
   async def GenerateWaveform(
@@ -1718,11 +1718,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "GenerateWaveform")
     if (success):
       if (VERBOSE):
-        print(f"Waveform generation completed successfully: {outputFilePath}")
+        logger.info(f"Waveform generation completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Waveform generation failed for: {audioFilePath}")
+        logger.info(f"Waveform generation failed for: {audioFilePath}")
       return False
 
   async def GenerateSpectrum(
@@ -1774,11 +1774,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "GenerateSpectrum")
     if (success and os.path.exists(outputFilePath) and os.path.getsize(outputFilePath) > 0):
       if (VERBOSE):
-        print(f"Spectrum generation completed successfully: {outputFilePath}")
+        logger.info(f"Spectrum generation completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Spectrum generation failed for: {audioFilePath}")
+        logger.info(f"Spectrum generation failed for: {audioFilePath}")
       return False
 
   async def CrossfadeAudio(
@@ -1819,11 +1819,11 @@ class FFMPEGHelper(object):
     success, process = await self._ExecuteFFmpegCommand(ffmpegCommand, "CrossfadeAudio")
     if (success):
       if (VERBOSE):
-        print(f"Audio crossfade completed successfully: {outputFilePath}")
+        logger.info(f"Audio crossfade completed successfully: {outputFilePath}")
       return True
     else:
       if (VERBOSE):
-        print(f"Audio crossfade failed for: {firstAudioPath}, {secondAudioPath}")
+        logger.info(f"Audio crossfade failed for: {firstAudioPath}, {secondAudioPath}")
       return False
 
   def AnalyzeAudio(self, audioFilePath):
@@ -1844,18 +1844,18 @@ class FFMPEGHelper(object):
 
       if (audioStream is None):
         if (VERBOSE):
-          print("No audio stream found in file.")
+          logger.info("No audio stream found in file.")
         return None
 
       analysis = {
-        "codec": audioStream.get("codec_name", "unknown"),
-        "format": probe["format"].get("format_name", "unknown"),
-        "duration": float(probe["format"].get("duration", 0)),
-        "bitrate": int(probe["format"].get("bit_rate", 0)),
-        "sampleRate": int(audioStream.get("sample_rate", 0)),
-        "channels": int(audioStream.get("channels", 0)),
+        "codec"        : audioStream.get("codec_name", "unknown"),
+        "format"       : probe["format"].get("format_name", "unknown"),
+        "duration"     : float(probe["format"].get("duration", 0)),
+        "bitrate"      : int(probe["format"].get("bit_rate", 0)),
+        "sampleRate"   : int(audioStream.get("sample_rate", 0)),
+        "channels"     : int(audioStream.get("channels", 0)),
         "channelLayout": audioStream.get("channel_layout", "unknown"),
-        "size": int(probe["format"].get("size", 0)),
+        "size"         : int(probe["format"].get("size", 0)),
       }
 
       # Get metadata if available.
@@ -1865,7 +1865,7 @@ class FFMPEGHelper(object):
       return analysis
     except Exception as e:
       if (VERBOSE):
-        print(f"Error analyzing audio: {str(e)}")
+        logger.info(f"Error analyzing audio: {str(e)}")
       return None
 
 

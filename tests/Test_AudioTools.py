@@ -1,3 +1,13 @@
+'''
+========================================================================
+        ╦ ╦┌─┐┌─┐┌─┐┌─┐┌┬┐  ╔╦╗┌─┐┌─┐┌┬┐┬ ┬  ╔╗ ┌─┐┬  ┌─┐┬ ┬┌─┐
+        ╠═╣│ │└─┐└─┐├─┤│││  ║║║├─┤│ ┬ ││└┬┘  ╠╩╗├─┤│  ├─┤├─┤├─┤
+        ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
+========================================================================
+# Author: Hossam Magdy Balaha
+# Permissions and Citation: Refer to the README file.
+'''
+
 import pytest, requests, json
 from pathlib import Path
 from typing import Tuple, Dict, Any

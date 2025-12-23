@@ -5,18 +5,19 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Aug 2025
-# Last Modification Date: Aug 18th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
-import os, json, time, hashlib, asyncio
+import os, json, time, hashlib, asyncio, logging
 from flask import Blueprint, jsonify, current_app, request, send_file
 from WebHelpers import *
 from TextToSpeechHelper import TextToSpeechHelper
 from FFMPEGHelper import FFMPEGHelper
 
 apiBp = Blueprint("api", __name__)
+
+# Use module logger so messages go through Python's logging system and appear with Flask output.
+logger = logging.getLogger(__name__)
 
 
 @apiBp.route("/api/v1/status", methods=["GET"])
@@ -131,7 +132,7 @@ def PostJob():
     return jsonify({"error": f"Text exceeds maximum length of {maxTextLength} characters"}), 400
 
   if (VERBOSE):
-    print(f"Creating a new job with text: {text[:50]}...")
+    logger.info(f"Creating a new job with text: {text[:50]}...")
 
   os.makedirs(STORE_PATH, exist_ok=True)
   currentTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -164,7 +165,7 @@ def PostJob():
     QUEUE_WATCHER.start()
   else:
     if (VERBOSE):
-      print("Queue watcher is already running or not initialized.")
+      logger.info("Queue watcher is already running or not initialized.")
 
   return jsonify({"jobId": jobId}), 202
 
@@ -478,7 +479,7 @@ def normalizeAudio():
     outputPath = os.path.join(current_app.config["STORE_PATH"], f"{uniqueFilename}_normalized{usedExtension}")
     if (os.path.exists(outputPath)):
       os.remove(outputPath)
-    print(audioCodec, audioFormat, normalizeBitrate, normalizeSampleRate, normalizeFilter)
+    logger.info(audioCodec, audioFormat, normalizeBitrate, normalizeSampleRate, normalizeFilter)
     # Normalize the audio file using FFMPEG.
     isDone = asyncio.run(
       FFMPEGHelper().NormalizeAudio(

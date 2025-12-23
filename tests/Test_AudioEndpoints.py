@@ -1,3 +1,13 @@
+'''
+========================================================================
+        ╦ ╦┌─┐┌─┐┌─┐┌─┐┌┬┐  ╔╦╗┌─┐┌─┐┌┬┐┬ ┬  ╔╗ ┌─┐┬  ┌─┐┬ ┬┌─┐
+        ╠═╣│ │└─┐└─┐├─┤│││  ║║║├─┤│ ┬ ││└┬┘  ╠╩╗├─┤│  ├─┤├─┤├─┤
+        ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
+========================================================================
+# Author: Hossam Magdy Balaha
+# Permissions and Citation: Refer to the README file.
+'''
+
 import io, os, sys, tempfile, wave, struct, math, json, time, pytest
 
 # Try to import the Flask app from Server.py; if import fails, skip all tests.

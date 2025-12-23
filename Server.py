@@ -5,8 +5,6 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 18th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -51,12 +49,12 @@ def ProcessJob(jobId):
     videoType = jobData.get("videoType", None)
 
     if (VERBOSE):
-      print(
+      logger.info(
         f"Processing job {jobId} with language: {language}, "
         f"voice: {voice}, speech rate: {speechRate}, "
         f"video quality: {videoQuality}, video type: {videoType}"
       )
-      print(f"Text: {text[:50]}...")
+      logger.info(f"Text: {text[:50]}...")
 
     if (not videoCreator):
       # Initialize the video creator helper if not already done.
@@ -80,7 +78,7 @@ def ProcessJob(jobId):
 
     # If the video was generated successfully, update the job status.
     if (VERBOSE):
-      print(f"Video generated successfully for job {jobId} with ID: {videoID}")
+      logger.info(f"Video generated successfully for job {jobId} with ID: {videoID}")
     jobHistoryObj.updateStatus(jobId, "completed")
     UpdateJobStatus(jobId, "completed")
 
@@ -90,7 +88,7 @@ def ProcessJob(jobId):
   except Exception as e:
     # If an error occurs, update the job status to failed.
     if (VERBOSE):
-      print(f"Error processing job {jobId}: {str(e)}")
+      logger.exception(f"Error processing job {jobId}: {str(e)}")
     jobHistoryObj.updateStatus(jobId, "failed")
     UpdateJobStatus(jobId, "failed")
     return jsonify({"error": f"Failed to process job {jobId}: {str(e)}"}), 500
@@ -116,7 +114,7 @@ def UpdateJobStatus(jobId, status):
     json.dump(jobData, f)
 
   if (VERBOSE):
-    print(f"Job {jobId} status updated to: {status}")
+    logger.info(f"Job {jobId} status updated to: {status}")
 
 
 with open("configs.yaml", "r") as configFile:
@@ -181,22 +179,35 @@ if __name__ == "__main__":
           UpdateJobStatus(jobId, "queued")
       except Exception as e:
         if (VERBOSE):
-          print(f"Error loading job {jobId}: {str(e)}")
+          logger.exception(f"Error loading job {jobId}: {str(e)}")
     else:
       JOB_HISTORY_OBJ.updateStatus(jobId, "unknown")
 
   if (VERBOSE):
-    print(f"Loaded {len(JOB_HISTORY_OBJ)} jobs from the store path: {STORE_PATH}")
+    logger.info(f"Loaded {len(JOB_HISTORY_OBJ)} jobs from the store path: {STORE_PATH}")
     for jobId, status in JOB_HISTORY_OBJ.items():
-      print(f"Loaded job {jobId} with status: {status}")
+      logger.info(f"Loaded job {jobId} with status: {status}")
 
   QUEUE_WATCHER.start()  # Start the queue watcher thread to monitor job statuses.
 
   # Start the Flask application.
-  app.run(
-    host="0.0.0.0",  # Listen on all interfaces.
-    port=PORT,  # Use the port specified in the configuration.
-    debug=VERBOSE,  # Enable debug mode if verbose is set.
-    # threaded=True,  # Allow multiple requests to be handled simultaneously.
-    # use_reloader=False,  # Disable the reloader to avoid issues with threading.
-  )
+  # If the environment variable T2V_NO_RELOADER is set to '1', disable the reloader so
+  # the original process does not exit (useful when launching from a batch file).
+  noReloader = os.environ.get("T2V_NO_RELOADER", "0") == "1"
+  if (noReloader):
+    if (VERBOSE):
+      logger.info("Starting Flask without reloader (T2V_NO_RELOADER=1).")
+    app.run(
+      host="0.0.0.0",
+      port=PORT,
+      debug=VERBOSE,
+      use_reloader=False,
+    )
+  else:
+    app.run(
+      host="0.0.0.0",  # Listen on all interfaces.
+      port=PORT,  # Use the port specified in the configuration.
+      debug=VERBOSE,  # Enable debug mode if verbose is set.
+      # threaded=True,  # Allow multiple requests to be handled simultaneously.
+      # use_reloader=False,  # Disable the reloader to avoid issues with threading.
+    )

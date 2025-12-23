@@ -5,12 +5,13 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Aug 4th, 2025
-# Last Modification Date: Aug 5th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
-import threading, time, signal
+import threading, time, logging
+
+# Use module logger so messages go through Python's logging system and appear with Flask output.
+logger = logging.getLogger(__name__)
 
 
 class JobStatusHistory(object):
@@ -76,15 +77,15 @@ class QueueWatcher(threading.Thread):
       isBusy = noOfBeingProcessedJobs >= self.maxJobs
 
       if (not isBusy):
-        print(f"QueueWatcher: Processing jobs. Currently {noOfBeingProcessedJobs} jobs being processed.")
+        logger.info(f"QueueWatcher: Processing jobs. Currently {noOfBeingProcessedJobs} jobs being processed.")
         if (not self.running):
-          print("QueueWatcher: Stopping thread as requested.")
+          logger.info("QueueWatcher: Stopping thread as requested.")
           break
 
         # Process the next job if available
         for jobId, status in self.jobHistoryObj.items():
           if (status == "queued"):
-            print(f"QueueWatcher: Processing job {jobId}.")
+            logger.info(f"QueueWatcher: Processing job {jobId}.")
             self.func(jobId)
             break
 
@@ -92,7 +93,7 @@ class QueueWatcher(threading.Thread):
       time.sleep(1)
       self.counter += 1
       if (self.counter >= self.timout):
-        print("QueueWatcher: No jobs to process. Sleeping for a while...")
+        logger.info("QueueWatcher: No jobs to process. Sleeping for a while...")
         break
 
-    print("QueueWatcher: Exiting run loop.")
+    logger.info("QueueWatcher: Exiting run loop.")

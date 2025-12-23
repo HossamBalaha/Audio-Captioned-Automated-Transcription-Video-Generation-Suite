@@ -5,8 +5,6 @@
         ╩ ╩└─┘└─┘└─┘┴ ┴┴ ┴  ╩ ╩┴ ┴└─┘─┴┘ ┴   ╚═╝┴ ┴┴─┘┴ ┴┴ ┴┴ ┴
 ========================================================================
 # Author: Hossam Magdy Balaha
-# Initial Creation Date: Jun 2025
-# Last Modification Date: Aug 10th, 2025
 # Permissions and Citation: Refer to the README file.
 '''
 
@@ -16,12 +14,15 @@ import shutup
 
 shutup.please()  # This function call suppresses unnecessary warnings.
 
-import ffmpeg, os, time, random, yaml, hashlib, asyncio
+import ffmpeg, os, time, random, yaml, hashlib, asyncio, logging
 import numpy as np
 from WhisperTranscribeHelper import WhisperTranscribeHelper
 from TextToSpeechHelper import TextToSpeechHelper
 from TextHelper import CleanText
 from FFMPEGHelper import *
+
+# Use module logger so messages go through Python's logging system and appear with Flask output.
+logger = logging.getLogger(__name__)
 
 with open("configs.yaml", "r") as configFile:
   # Load the configuration from the YAML file.
@@ -146,7 +147,7 @@ class VideoCreatorHelper(object):
       # Create a unique hash ID for the text.
       uniqueHashID = hashlib.md5(text.encode() + currentTime.encode()).hexdigest()
       if (VERBOSE):
-        print(f"Unique Hash ID for the text: {uniqueHashID}")
+        logger.info(f"Unique Hash ID for the text: {uniqueHashID}")
 
     storageFolder = configs.get("storePath", "./Jobs")  # Get the storage path from the configuration.
     storageFolder = os.path.abspath(storageFolder)  # Ensure the storage folder is an absolute path.
@@ -156,19 +157,19 @@ class VideoCreatorHelper(object):
 
     # Escaping text for safe processing.
     if (VERBOSE):
-      print(f"Escaping text for processing: {text}")
+      logger.info(f"Escaping text for processing: {text}")
     # Escape special characters in the text for safe processing.
     text = CleanText(text)
 
     if (VERBOSE):
-      print(f"Processed text: {text}")
-      print(f"Working path: {workingPath}")
-      print(f"Unique Hash ID: {uniqueHashID}")
-      print(f"Language: {language}, Voice: {voice}, Speech Rate: {speechRate}")
+      logger.info(f"Processed text: {text}")
+      logger.info(f"Working path: {workingPath}")
+      logger.info(f"Unique Hash ID: {uniqueHashID}")
+      logger.info(f"Language: {language}, Voice: {voice}, Speech Rate: {speechRate}")
 
     if (not text or len(text.strip()) == 0):
       if (VERBOSE):
-        print("No text provided for transcription after cleaning. Exiting.")
+        logger.info("No text provided for transcription after cleaning. Exiting.")
       return False, None
 
     # Get the transcription with timing.
@@ -183,36 +184,36 @@ class VideoCreatorHelper(object):
     # Merge the transcribed audios into one.
     if (not dataList or (len(dataList) == 0)):
       if (VERBOSE):
-        print("No transcriptions available. Exiting.")
+        logger.info("No transcriptions available. Exiting.")
       return False, None
 
     if (VERBOSE):
-      print(f"Total transcriptions: {len(dataList)}")
+      logger.info(f"Total transcriptions: {len(dataList)}")
       for i, (generatedText, phonemes, audio, audioFilePath, transcription) in enumerate(dataList):
-        print(f"Transcription {i + 1}:")
-        print(f"- Generated Text: {generatedText}")
-        print(f"- Audio File Path: {audioFilePath}")
-        print(f"- Transcription: {transcription}")
+        logger.info(f"Transcription {i + 1}:")
+        logger.info(f"- Generated Text: {generatedText}")
+        logger.info(f"- Audio File Path: {audioFilePath}")
+        logger.info(f"- Transcription: {transcription}")
 
     captionWords = []
     # Add word-level captions to the video.
     timeOffset = 0.0  # Initialize time offset for captions.
     for i, (generatedText, phonemes, audio, audioFilePath, transcription) in enumerate(dataList):
       if (VERBOSE):
-        print(f"Processing transcription {i + 1} with audio file: {audioFilePath}")
-        print(f"Transcription: {transcription} | Duration: {transcription['duration']:.2f} seconds")
-        print()
+        logger.info(f"Processing transcription {i + 1} with audio file: {audioFilePath}")
+        logger.info(f"Transcription: {transcription} | Duration: {transcription['duration']:.2f} seconds")
+        logger.info("")
       # Create captions for each segment.
       for segment in transcription["segments"]:
         if (VERBOSE):
-          print(f"Processing segment {i + 1}: {segment['text']}")
-          print(f"Segment start: {segment['start']}, end: {segment['end']}")
-          print()
+          logger.info(f"Processing segment {i + 1}: {segment['text']}")
+          logger.info(f"Segment start: {segment['start']}, end: {segment['end']}")
+          logger.info("")
         # segmentStart = segment["start"]  # Start time of the segment.
         words = segment["words"]  # Get the words in the segment.
         for word in words:
           if (VERBOSE):
-            print(
+            logger.info(
               f"Word: {word['word']} | Start: {word['start']:.2f} | End: {word['end']:.2f} | Start': "
               f"{timeOffset + word['start']:.2f} | End': "
               f"{timeOffset + word['end']:.2f}"
@@ -228,7 +229,7 @@ class VideoCreatorHelper(object):
       # Update the time offset with the end time of the last segment.
       timeOffset += transcription["duration"]
     if (VERBOSE):
-      print(f"Total captions generated: {len(captionWords)}")
+      logger.info(f"Total captions generated: {len(captionWords)}")
 
     # Determine video quality and type; and hence we can determine width and height.
     availableVideoQualities = configs["video"].get("availableQualities", [])
@@ -240,7 +241,7 @@ class VideoCreatorHelper(object):
     if (not videoType or (videoType not in availableVideoTypes)):
       videoType = availableVideoTypes[0]
     if (VERBOSE):
-      print(f"Video Quality: {videoQuality}, Video Type: {videoType}")
+      logger.info(f"Video Quality: {videoQuality}, Video Type: {videoType}")
     width, height = availableVideoQualities[qualityKeys.index(videoQuality)][1]
     if (videoType == "Vertical"):
       width, height = height, width
@@ -258,10 +259,10 @@ class VideoCreatorHelper(object):
     charactersWidth = FFMPEGHelper().GetCharactersWidth(width, captionFontSize)
 
     if (VERBOSE):
-      print(f"Video dimensions: {width}x{height}")
-      print(f"Caption reserved width: {captionReservedWidth}")
-      print(f"Caption font size: {captionFontSize}")
-      print(f"Characters width mapping: {charactersWidth}")
+      logger.info(f"Video dimensions: {width}x{height}")
+      logger.info(f"Caption reserved width: {captionReservedWidth}")
+      logger.info(f"Caption font size: {captionFontSize}")
+      logger.info(f"Characters width mapping: {charactersWidth}")
 
     # Loop through the caption words and create a caption string. Process N words at a time.
     captionsList = []  # List to store caption strings.
@@ -275,11 +276,11 @@ class VideoCreatorHelper(object):
         currentWord = captionWords[i]["word"].upper()
         wordWidth = sum([charactersWidth.get(char, 0) for char in currentWord])
         if (VERBOSE):
-          print(f"Word: {currentWord}, Width: {wordWidth}, Current Total Width: {currentWidth}")
+          logger.info(f"Word: {currentWord}, Width: {wordWidth}, Current Total Width: {currentWidth}")
         # Check if the current word alone exceeds the reserved width.
         if (wordWidth > captionReservedWidth):
           if (VERBOSE):
-            print(f"Single word '{currentWord}' exceeds caption reserved width. Skipping this word.")
+            logger.info(f"Single word '{currentWord}' exceeds caption reserved width. Skipping this word.")
           break
         # Check if adding the current word along with the previous words exceeds the reserved width.
         if (currentWidth + wordWidth <= captionReservedWidth):
@@ -288,8 +289,8 @@ class VideoCreatorHelper(object):
         else:
           break
       if (VERBOSE):
-        print(f"Words from index {counter} to {i} fit in the caption width.")
-        print(f"Current width used: {currentWidth}, Reserved width: {captionReservedWidth}")
+        logger.info(f"Words from index {counter} to {i} fit in the caption width.")
+        logger.info(f"Current width used: {currentWidth}, Reserved width: {captionReservedWidth}")
       firstWordIndex = counter
       lastWordIndex = i
       text = " ".join([word["word"] for word in captionWords[firstWordIndex:lastWordIndex]])
@@ -309,8 +310,8 @@ class VideoCreatorHelper(object):
         counter += 1
 
     if (VERBOSE):
-      print(f"Total caption strings generated: {len(captionsList)}")
-      print(captionsList)
+      logger.info(f"Total caption strings generated: {len(captionsList)}")
+      logger.info(captionsList)
 
     # Get the audio format from the configuration.
     audioFormat = configs["ffmpeg"].get("audioFormat", "mp3")
@@ -319,7 +320,7 @@ class VideoCreatorHelper(object):
     mergedAudioPath = os.path.join(workingPath, f"{uniqueHashID}_Merged.{audioFormat}")
     inputAudioFiles = [audioFilePath for _, _, _, audioFilePath, _ in dataList]
     if (VERBOSE):
-      print(f"Input audio files: {inputAudioFiles}")
+      logger.info(f"Input audio files: {inputAudioFiles}")
     isDone = asyncio.run(
       self.ffmpegHelper.ConcatAudioFiles(
         inputAudioFiles,
@@ -328,15 +329,15 @@ class VideoCreatorHelper(object):
     )
     if (not isDone):
       if (VERBOSE):
-        print("Failed to merge audio files. Exiting.")
+        logger.info("Failed to merge audio files. Exiting.")
       return False, None
 
     audioDuration = self.ffmpegHelper.GetFileDuration(mergedAudioPath)
     if (VERBOSE):
-      print(f"Merged audio file created at {mergedAudioPath} with duration {audioDuration:.2f} seconds.")
+      logger.info(f"Merged audio file created at {mergedAudioPath} with duration {audioDuration:.2f} seconds.")
     if (audioDuration <= 0):
       if (VERBOSE):
-        print("Merged audio file has zero duration. Exiting.")
+        logger.info("Merged audio file has zero duration. Exiting.")
       return False, None
 
     maxLengthPerVideo = configs["video"].get("maxLengthPerVideo", 5)  # Maximum length of each video segment.
@@ -344,11 +345,11 @@ class VideoCreatorHelper(object):
     availableVideos = self.GetCurrentVideosList(videoType=videoType)
     requiredNoOfVideos = int(audioDuration / maxLengthPerVideo) + 1  # Calculate the number of videos needed.
     if (VERBOSE):
-      print(f"Required number of videos: {requiredNoOfVideos} for audio duration {audioDuration:.2f} seconds.")
+      logger.info(f"Required number of videos: {requiredNoOfVideos} for audio duration {audioDuration:.2f} seconds.")
 
     if (requiredNoOfVideos <= 0):
       if (VERBOSE):
-        print("No videos required for the given audio duration. Exiting.")
+        logger.info("No videos required for the given audio duration. Exiting.")
       return False, None
     elif (requiredNoOfVideos > len(availableVideos)):
       while (requiredNoOfVideos > len(availableVideos)):
@@ -356,7 +357,7 @@ class VideoCreatorHelper(object):
         newVideos = self.GetCurrentVideosList(videoType)
         if (not newVideos):
           if (VERBOSE):
-            print("No more videos available to add. Exiting.")
+            logger.info("No more videos available to add. Exiting.")
           return False, None
         availableVideos.extend(newVideos)
 
@@ -366,8 +367,8 @@ class VideoCreatorHelper(object):
     # Get the absolute paths of the video files to concatenate.
     videoFilePaths = [os.path.abspath(videoFilePath) for videoFilePath, _ in availableVideos[:requiredNoOfVideos]]
     if (VERBOSE):
-      print(portionedOutputVideoPath)
-      print(videoFilePaths)
+      logger.info(portionedOutputVideoPath)
+      logger.info(videoFilePaths)
 
     isDone = asyncio.run(
       self.ffmpegHelper.TrimConcatVideoFiles(
@@ -381,10 +382,10 @@ class VideoCreatorHelper(object):
     )
     if (not isDone):
       if (VERBOSE):
-        print("Failed to create video portion. Exiting.")
+        logger.info("Failed to create video portion. Exiting.")
       return False, None
     if (VERBOSE):
-      print(f"Video portion created at {portionedOutputVideoPath} with duration {audioDuration:.2f} seconds.")
+      logger.info(f"Video portion created at {portionedOutputVideoPath} with duration {audioDuration:.2f} seconds.")
 
     outputNoCaptionPath = os.path.join(workingPath, f"{uniqueHashID}_NoCaptions.{videoFormat}")
     isDone = asyncio.run(
@@ -396,10 +397,10 @@ class VideoCreatorHelper(object):
     )
     if (not isDone):
       if (VERBOSE):
-        print("Failed to merge audio and video files. Exiting.")
+        logger.info("Failed to merge audio and video files. Exiting.")
       return False, None
     if (VERBOSE):
-      print("Merged audio and video files successfully.")
+      logger.info("Merged audio and video files successfully.")
 
     # Add captions to the video using FFmpeg.
     captionedVideoPath = os.path.join(workingPath, f"{uniqueHashID}_Final.{videoFormat}")
@@ -414,13 +415,13 @@ class VideoCreatorHelper(object):
     )
     if (not isDone):
       if (VERBOSE):
-        print("Failed to add captions to the video. Exiting.")
+        logger.info("Failed to add captions to the video. Exiting.")
       return False, None
     if (VERBOSE):
-      print(f"Video with captions created at {captionedVideoPath}.")
+      logger.info(f"Video with captions created at {captionedVideoPath}.")
 
     if (VERBOSE):
-      print("We are good.")
+      logger.info("We are good.")
 
     # Clean up temporary files if needed.
     try:
@@ -434,12 +435,12 @@ class VideoCreatorHelper(object):
           os.remove(audioFilePath.replace("Normalized_", ""))
     except Exception as e:
       if (VERBOSE):
-        print(f"Error cleaning up temporary files: {e}")
+        logger.info(f"Error cleaning up temporary files: {e}")
 
     # Get the file name from the path.
     fileNameOnly = os.path.basename(captionedVideoPath)
     if (VERBOSE):
-      print(f"Generated video file name: {fileNameOnly}")
+      logger.info(f"Generated video file name: {fileNameOnly}")
     # Return True indicating the video was generated successfully, along with the file name.
     return True, fileNameOnly
 

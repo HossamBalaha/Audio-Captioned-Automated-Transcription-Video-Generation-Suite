@@ -2,10 +2,11 @@
 
 [![CI](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/workflows/CI/badge.svg)](https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite/actions)
 [![Repo Size](https://img.shields.io/github/repo-size/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite?style=flat-square)](https://github.com/HossamBalaha)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](#)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](README.md)
 [![Status](https://img.shields.io/badge/status-Active-brightgreen?style=flat-square)](#)
-[![License](https://img.shields.io/github/license/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite?style=flat-square)](LICENSE)
-[![Support Me](https://img.shields.io/badge/Support-☕%20Buy%20Me%20a%20Coffee-yellow?style=flat-square)](https://coff.ee/hossammbalaha)
+[![Dependencies](https://img.shields.io/badge/Dependencies-numpy%20%7C%20torch%20%7C%20pandas-lightgrey.svg)](requirements.txt)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue?style=flat-square)](LICENSE)
+[![Support Me](https://img.shields.io/badge/Support-☕%20Buy%20Me%20a%20Coffee-yellow?style=flat-square)](https://coff.ee/hossambalaha)
 
 A comprehensive, modular suite to automatically generate captioned videos from text or audio using Whisper, Kokoro TTS,
 FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for professional-grade media automation.
@@ -13,7 +14,7 @@ FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for profess
 **Author:** Hossam Magdy Balaha  
 **GitHub:** [https://github.com/HossamBalaha](https://github.com/HossamBalaha)  
 **CV:** [hossambalaha.github.io](https://hossambalaha.github.io/)  
-**Support:** [☕ Buy Me a Coffee](https://coff.ee/hossammbalaha)  
+**Support:** [☕ Buy Me a Coffee](https://coff.ee/hossambalaha)  
 **Status:** Active Development
 
 ---
@@ -24,21 +25,20 @@ FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for profess
 - [✨ Key Features](#-key-features)
 - [🚀 Quick Start (5 Minutes)](#-quick-start-5-minutes)
 - [🎨 Web Interface](#-web-interface)
-- [🤖 N8N Integration](#-n8n-integration--applicability)
-- [🎵 Audio Tools (30 Tools)](#-audio-tools-comprehensive-suite)
+- [🤖 N8N Integration & Applicability](#-n8n-integration--applicability)
+- [🎵 Audio Tools: Comprehensive Suite](#-audio-tools-comprehensive-suite)
 - [📁 Project Structure](#-project-structure)
-- [⚙️ Prerequisites](#️-prerequisites)
-- [🛠️ Installation & Setup](#️-installation--setup)
+- [⚙️ Prerequisites](#-prerequisites)
+- [🛠️ Installation & Setup](#-installation--setup)
 - [🎯 Usage Instructions](#-usage-instructions)
 - [🔌 API Reference](#-api-reference)
-- [📖 Comprehensive API Examples](#-comprehensive-api-examples--demonstrations)
+- [📖 Comprehensive API Examples & Demonstrations](#-comprehensive-api-examples--demonstrations)
 - [🧪 Testing](#-testing)
-- [🗣️ Supported TTS Voices & Languages](#️-supported-tts-voices--languages)
-- [📺 Video Qualities & Resolutions](#-video-qualities--resolutions)
 - [📄 License & Attribution](#-license--attribution)
 - [💬 Support & Community](#-support--community)
-- [📞 Author & Contact](#-author--contact)
+- [🙏 Acknowledgments](#-acknowledgments)
 - [❓ FAQ](#-faq)
+- [🎯 Success Stories](#-success-stories)
 
 ---
 
@@ -148,6 +148,8 @@ Modern, user-friendly interface built with Flask and Bootstrap for seamless inte
 
 Overview page with quick access to main features and project introduction.
 
+![Index](static/images/Index.png)
+
 ### 📝 Text to Video
 
 Generate videos from text input with customizable:
@@ -156,6 +158,8 @@ Generate videos from text input with customizable:
 - Video type (horizontal/vertical)
 - Quality settings (4K, Full HD, etc.)
 - Real-time job submission and tracking
+
+![T2V Job Creation](static/images/T2V%20Job%20Creation.png)
 
 ### 📊 T2V Jobs Management
 
@@ -166,6 +170,8 @@ Track and manage all video generation jobs:
 - Download final videos
 - Job history
 
+![Text to Video Jobs Management](static/images/Text%20to%20Video%20%28T2V%29%20Jobs%20Management.png)
+
 ### 🎵 Audio Tools
 
 Access all 30 audio processing tools:
@@ -174,6 +180,8 @@ Access all 30 audio processing tools:
 - Modal dialogs with form inputs
 - Real-time processing with status indicators
 - Automatic download on completion
+
+![Audio Tools](static/images/Audio%20Tools.png)
 
 ---
 
@@ -1240,72 +1248,89 @@ print(f"✓ Created {len(jobs)} video jobs")
 
 ---
 
-## 🧪 Testing
+## 🧭 Running the Server and Tests (helper batch files)
 
-### Run Test Suite (Windows cmd)
+This repository includes two Windows helper scripts to make local development and testing easier:
 
-```cmd
-:: Activate virtualenv if created
-call .venv\Scripts\activate
+- `StartServer.bat`: interactive helper to create/activate an environment and start the Flask server in the current
+  console.
+- `RunTests.bat`: interactive helper which mirrors `StartServer.bat` for environment setup and runs the test suite (
+  pytest) with output forwarded to the console.
 
-:: Run all tests
-python -m pytest -q
+Both scripts aim to behave consistently so you can reproduce the same environment when running the server and when
+running tests.
 
-:: Run specific tests
-python -m pytest tests\TestAudioEndpoints.py::test_server_status_and_ready -q
+### Key behaviors
+
+- Both scripts offer the same menu-driven choices:
+    1) Create a new conda env
+    2) Activate an existing conda env (optionally install requirements)
+    3) Install requirements with pip in the current environment
+    4) Skip environment setup and run directly
+
+- When running inside a conda environment, the scripts use the `conda run -n <env> --no-capture-output` mode to ensure
+  stdout/stderr from the Python process (including background threads and logging) is forwarded to your console.
+
+- Python is executed with the `-u` flag (unbuffered) so output from threads and prints appears immediately.
+
+- The `T2V_NO_RELOADER` environment variable is set when starting the server to disable Flask's auto-reloader; this
+  prevents the parent process from exiting and makes console output consistent when you start the server from the batch
+  file.
+
+### Usage examples
+
+Run interactive helpers (from the repo root in cmd.exe):
+
+```bat
+StartServer.bat
+RunTests.bat
 ```
 
-Tests use Flask's test client and do not require the server to be running.
+Example non-interactive invocation for tests (if you prefer a direct command):
+
+```bat
+conda run -n t2v-env --no-capture-output cmd /C "python -u -m pytest"
+```
+
+Example non-interactive invocation for server (direct run without the helper script):
+
+```bat
+set T2V_NO_RELOADER=1
+python -u Server.py
+```
+
+### Troubleshooting
+
+- If you still do not see background/thread output in the console when running under conda, try running the commands
+  from an Anaconda Prompt and ensure `conda` is on your PATH. Older versions of conda might not support
+  `--no-capture-output`; if so, activate the environment interactively and run `python -u Server.py` or
+  `python -u -m pytest`.
+
+- If tests fail with import errors (e.g., missing packages), install dependencies:
+
+```bat
+pip install -r requirements.txt
+```
+
+or inside a conda environment:
+
+```bat
+conda run -n <env> pip install -r requirements.txt
+```
 
 ---
 
 ## 📄 License & Attribution
 
-### License
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) file for full details.
+If you use or distribute this project (or derivatives) for non-commercial purposes, please include the following
+attribution in your documentation or about page:
 
-**Summary:**
+Courtesy of Hossam Magdy Balaha —
+https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite
 
-- ✅ Free to use, modify, and distribute
-- ✅ No warranty provided
-- ✅ Attribution appreciated but not required
-- ✅ Can be used in commercial projects
-
-### Citation
-
-If you use this project in academic work or publications, please cite:
-
-```bibtex
-@software{balaha2025text2video,
-  author = {Hossam Magdy Balaha},
-  title = {Audio-Captioned Automated Transcription & Video Generation Suite},
-  year = {2025},
-  url = {https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite},
-  version = {2.0.0}
-}
-```
-
-Or in APA format:
-
-```
-Balaha, H. M. (2025). Audio-Captioned Automated Transcription & Video Generation Suite (v2.0.0). 
-Retrieved from https://github.com/HossamBalaha/Audio-Captioned-Automated-Transcription-Video-Generation-Suite
-```
-
-### Third-Party Libraries
-
-This project uses and acknowledges:
-
-| Library            | Purpose                      | License    |
-|--------------------|------------------------------|------------|
-| **OpenAI Whisper** | Speech-to-text transcription | MIT        |
-| **Kokoro TTS**     | Text-to-speech synthesis     | Apache 2.0 |
-| **FFmpeg**         | Multimedia processing        | LGPL/GPL   |
-| **Flask**          | Web framework                | BSD        |
-| **PyTorch**        | Deep learning                | BSD        |
-| **Pillow**         | Image processing             | HPND       |
-| **NumPy**          | Numerical computing          | BSD        |
+For commercial licensing or permissions, contact the author via the repository.
 
 ---
 
