@@ -536,6 +536,9 @@ Server will start at: `http://localhost:5000`
 
 ## 🔌 API Reference
 
+<details>
+<summary>API Reference (click to expand)</summary>
+
 This API is versioned under `/api/v1`. All responses are JSON unless a file is returned. Upload endpoints expect
 multipart/form-data. Error responses include an `error` field describing the issue.
 
@@ -1065,6 +1068,8 @@ curl -O http://localhost:5000/api/v1/download/your_file.mp3
 - Fetch final text2video job result MP4s
 - Integrate with automation pipelines to save artifacts
 
+</details>
+
 ---
 
 ## 📖 Comprehensive API Examples & Demonstrations
@@ -1133,27 +1138,27 @@ payload = {
   "videoQuality": "4K"
 }
 
-response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
-jobId = response.json()['jobId']
+response = requests.post("http://localhost:5000/api/v1/jobs", json=payload)
+jobId = response.json()["jobId"]
 print(f"Job created: {jobId}")
 
 # 2. Monitor status
 while True:
-  response = requests.get(f'http://localhost:5000/api/v1/jobs/{jobId}')
-  status = response.json()['status']
+  response = requests.get(f"http://localhost:5000/api/v1/jobs/{jobId}")
+  status = response.json()["status"]
   print(f"Status: {status}")
 
-  if (status == 'completed'):
+  if (status == "completed"):
     break
-  elif (status == 'failed'):
+  elif (status == "failed"):
     print("Job failed!")
     exit(1)
 
   time.sleep(5)
 
 # 3. Download result
-response = requests.get(f'http://localhost:5000/api/v1/jobs/{jobId}/result', stream=True)
-with open('my_video.mp4', 'wb') as f:
+response = requests.get(f"http://localhost:5000/api/v1/jobs/{jobId}/result", stream=True)
+with open("MyVideo.mp4", "wb") as f:
   for chunk in response.iter_content(chunk_size=8192):
     f.write(chunk)
 
@@ -1170,53 +1175,53 @@ def processPodcast(audioFile):
   """Normalize, reduce noise, and transcribe"""
 
   # 1. Normalize
-  with open(audioFile, 'rb') as f:
+  with open(audioFile, "rb") as f:
     response = requests.post(
-      'http://localhost:5000/api/v1/normalize-audio',
-      files={'audioFile': f},
-      data={'normalizeFilter': 'loudnorm'}
+      "http://localhost:5000/api/v1/normalize-audio",
+      files={"audioFile": f},
+      data={"normalizeFilter": "loudnorm"}
     )
 
   result = response.json()
-  normalizedUrl = f"http://localhost:5000{result['link']}"
+  normalizedUrl = f"http://localhost:5000{result["link"]}"
 
   # Download normalized audio
   audio = requests.get(normalizedUrl).content
-  with open('normalized.mp3', 'wb') as f:
+  with open("Normalized.mp3", "wb") as f:
     f.write(audio)
 
   # 2. Reduce noise
-  with open('normalized.mp3', 'rb') as f:
+  with open("Normalized.mp3", "rb") as f:
     response = requests.post(
-      'http://localhost:5000/api/v1/reduce-noise',
-      files={'audioFile': f},
-      data={'noiseReduction': 25}
+      "http://localhost:5000/api/v1/reduce-noise",
+      files={"audioFile": f},
+      data={"noiseReduction": 25}
     )
 
   result = response.json()
-  cleanUrl = f"http://localhost:5000{result['link']}"
+  cleanUrl = f"http://localhost:5000{result["link"]}"
 
   # Download clean audio
   audio = requests.get(cleanUrl).content
-  with open('clean.mp3', 'wb') as f:
+  with open("Clean.mp3", "wb") as f:
     f.write(audio)
 
   # 3. Transcribe
-  with open('clean.mp3', 'rb') as f:
+  with open("Clean.mp3", "rb") as f:
     response = requests.post(
-      'http://localhost:5000/api/v1/transcribe-audio',
-      files={'audioFile': f},
-      data={'language': 'en', 'outputFormat': 'txt'}
+      "http://localhost:5000/api/v1/transcribe-audio",
+      files={"audioFile": f},
+      data={"language": "en", "outputFormat": "txt"}
     )
 
-  transcript = response.json()['transcription']
-  with open('transcript.txt', 'w') as f:
+  transcript = response.json()["transcription"]
+  with open("Transcript.txt", "w") as f:
     f.write(transcript)
 
   print("✓ Podcast processed: clean.mp3, transcript.txt")
 
 
-processPodcast('raw_podcast.mp3')
+processPodcast("raw_podcast.mp3")
 ```
 
 **Batch Video Generation:**
@@ -1238,8 +1243,8 @@ for i, script in enumerate(scripts):
     "videoQuality": "Full HD"
   }
 
-  response = requests.post('http://localhost:5000/api/v1/jobs', json=payload)
-  jobId = response.json()['jobId']
+  response = requests.post("http://localhost:5000/api/v1/jobs", json=payload)
+  jobId = response.json()["jobId"]
   jobs.append((i, jobId))
   print(f"Created job {i + 1}: {jobId}")
 
