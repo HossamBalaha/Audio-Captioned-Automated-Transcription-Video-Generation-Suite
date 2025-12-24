@@ -33,7 +33,7 @@ FFmpeg, and a Flask API. Includes 30 advanced audio processing tools for profess
 - [🎯 Usage Instructions](#-usage-instructions)
 - [🔌 API Reference](#-api-reference)
 - [📖 Comprehensive API Examples & Demonstrations](#-comprehensive-api-examples--demonstrations)
-- [🧪 Testing](#-testing)
+- [🧭 Running the Server and Tests](#-running-the-server-and-tests)
 - [📄 License & Attribution](#-license--attribution)
 - [💬 Support & Community](#-support--community)
 - [🙏 Acknowledgments](#-acknowledgments)
@@ -1022,51 +1022,59 @@ curl -X DELETE http://localhost:5000/api/v1/jobs/all
 }
 ```
 
-**⚠️ Warning:** Permanently deletes all video generation jobs and files.
+---
 
-**Use Cases:** System reset, development testing, storage cleanup
+#### DELETE `/api/v1/jobs/<jobId>/cancel` — Cancel job
 
-### File Download
-
-#### GET `/api/v1/download/<filename>` — Download processed file
-
-**Purpose:** Retrieve any file produced by audio/video processing or job results.
+**Purpose:** Request cancellation for a job. If queued, job is cancelled immediately; if processing, a cancel flag is
+set.
 
 **Request:**
 
 ```bash
-curl -O http://localhost:5000/api/v1/download/your_file.mp3
+curl -X DELETE http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/cancel
+```
+
+**Responses:**
+
+- 200: { "message": "Job canceled" }
+- 202: { "message": "Cancellation requested" }
+- 404: { "error": "Job not found" }
+
+---
+
+#### POST `/api/v1/jobs/<jobId>/retry` — Retry job
+
+**Purpose:** Re-queue a non-completed job. Increments retry counter.
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/retry
 ```
 
 **Response:** 200 OK
 
-- Body: binary file contents
-- Headers: `Content-Type` based on file, `Content-Disposition: attachment`
-
-**Error Responses:**
-
-- 404 Not Found
-
 ```json
 {
-  "error": "File not found"
+  "message": "Job re-queued",
+  "retries": 1
 }
 ```
 
-- 403 Forbidden
+---
 
-```json
-{
-  "error": "File is not accessible"
-}
+#### GET `/api/v1/jobs/<jobId>/metadata` — Download job metadata (job.json)
+
+**Purpose:** Download the stored job metadata file for inspection or debugging.
+
+**Request:**
+
+```bash
+curl -O http://localhost:5000/api/v1/jobs/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/metadata
 ```
 
-**Use Cases:**
-
-- Programmatically download processed audio (normalized, enhanced, converted)
-- Retrieve visualization outputs (waveform PNG, spectrum MP4)
-- Fetch final text2video job result MP4s
-- Integrate with automation pipelines to save artifacts
+**Response:** 200 OK (file attachment) or 404 if not found
 
 </details>
 
@@ -1126,10 +1134,9 @@ curl -O http://localhost:5000/api/v1/download/your_file.mp3
 **Complete Video Generation Workflow:**
 
 ```python
-import requests
-import time
+import requests, time
 
-# 1. Create job
+# 1. Create job.
 payload = {
   "text"        : "Welcome to our automated video generation tutorial!",
   "language"    : "en-us",
@@ -1142,7 +1149,7 @@ response = requests.post("http://localhost:5000/api/v1/jobs", json=payload)
 jobId = response.json()["jobId"]
 print(f"Job created: {jobId}")
 
-# 2. Monitor status
+# 2. Monitor status.
 while True:
   response = requests.get(f"http://localhost:5000/api/v1/jobs/{jobId}")
   status = response.json()["status"]
@@ -1156,13 +1163,13 @@ while True:
 
   time.sleep(5)
 
-# 3. Download result
+# 3. Download result.
 response = requests.get(f"http://localhost:5000/api/v1/jobs/{jobId}/result", stream=True)
 with open("MyVideo.mp4", "wb") as f:
   for chunk in response.iter_content(chunk_size=8192):
     f.write(chunk)
 
-print("✓ Video downloaded: my_video.mp4")
+print("✓ Video downloaded: MyVideo.mp4")
 ```
 
 **Audio Processing Pipeline:**
@@ -1174,7 +1181,7 @@ import requests
 def processPodcast(audioFile):
   """Normalize, reduce noise, and transcribe"""
 
-  # 1. Normalize
+  # 1. Normalize.
   with open(audioFile, "rb") as f:
     response = requests.post(
       "http://localhost:5000/api/v1/normalize-audio",
@@ -1185,12 +1192,12 @@ def processPodcast(audioFile):
   result = response.json()
   normalizedUrl = f"http://localhost:5000{result["link"]}"
 
-  # Download normalized audio
+  # Download normalized audio.
   audio = requests.get(normalizedUrl).content
   with open("Normalized.mp3", "wb") as f:
     f.write(audio)
 
-  # 2. Reduce noise
+  # 2. Reduce noise.
   with open("Normalized.mp3", "rb") as f:
     response = requests.post(
       "http://localhost:5000/api/v1/reduce-noise",
@@ -1201,12 +1208,12 @@ def processPodcast(audioFile):
   result = response.json()
   cleanUrl = f"http://localhost:5000{result["link"]}"
 
-  # Download clean audio
+  # Download clean audio.
   audio = requests.get(cleanUrl).content
   with open("Clean.mp3", "wb") as f:
     f.write(audio)
 
-  # 3. Transcribe
+  # 3. Transcribe.
   with open("Clean.mp3", "rb") as f:
     response = requests.post(
       "http://localhost:5000/api/v1/transcribe-audio",
@@ -1221,7 +1228,7 @@ def processPodcast(audioFile):
   print("✓ Podcast processed: clean.mp3, transcript.txt")
 
 
-processPodcast("raw_podcast.mp3")
+processPodcast("RawPodcast.mp3")
 ```
 
 **Batch Video Generation:**
@@ -1248,12 +1255,12 @@ for i, script in enumerate(scripts):
   jobs.append((i, jobId))
   print(f"Created job {i + 1}: {jobId}")
 
-print(f"✓ Created {len(jobs)} video jobs")
+print(f"✓ Created {len(jobs)} video jobs.")
 ```
 
 ---
 
-## 🧭 Running the Server and Tests (helper batch files)
+## 🧭 Running the Server and Tests
 
 This repository includes two Windows helper scripts to make local development and testing easier:
 
