@@ -45,6 +45,19 @@ class VideoCreatorHelper(object):
     self.whisperHelper.SetModelName(configs["whisper"]["modelName"])
     self.ffmpegHelper = FFMPEGHelper()
 
+  def FormatSRTTime(self, seconds):
+    """Format a float seconds value into SRT timestamp HH:MM:SS,mmm."""
+    try:
+      totalMillis = int(float(seconds) * 1000)
+      hours = totalMillis // (3600 * 1000)
+      minutes = (totalMillis % (3600 * 1000)) // (60 * 1000)
+      secs = (totalMillis % (60 * 1000)) // 1000
+      millis = totalMillis % 1000
+      return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
+    except Exception:
+      # Fallback to zero timestamp on error.
+      return "00:00:00,000"
+
   def Text2Audio2TextTiming(
     self,
     text,

@@ -29,6 +29,25 @@ class FFMPEGHelper(object):
   This class provides methods to perform various video and audio processing tasks using FFMPEG.
   '''
 
+  def DetectFFmpegPath(self):
+    r'''Detect ffmpeg executable path on Windows or PATH.'''
+    candidates = []
+    # Check PATH.
+    for p in os.environ.get("PATH", "").split(os.pathsep):
+      exe = os.path.join(p, "ffmpeg.exe")
+      if os.path.isfile(exe):
+        candidates.append(exe)
+    # Common install locations.
+    common = [
+      r"C:\\ffmpeg\\bin\\ffmpeg.exe",
+      r"C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+      r"C:\\Program Files (x86)\\ffmpeg\\bin\\ffmpeg.exe",
+    ]
+    for exe in common:
+      if os.path.isfile(exe):
+        candidates.append(exe)
+    return candidates[0] if candidates else None
+
   def GetFileDuration(self, filePath):
     r'''
     Get the duration of a file in seconds.
@@ -214,7 +233,7 @@ class FFMPEGHelper(object):
         logger.info(f"Error checking audio stream: {e.stderr}")
       return False
 
-  async def _ExecuteFFmpegCommand(self, command, functionName=""):
+  async def _ExecuteFFmpegCommand(self, command, functionName="", logPath=None):
     r'''
     Execute an FFMPEG command asynchronously.
     This method runs the provided FFMPEG command and returns the result.
@@ -222,6 +241,7 @@ class FFMPEGHelper(object):
     Parameters:
       command (list): List of command arguments for FFMPEG.
       functionName (str): Name of the function calling this method (for logging).
+      logPath (str): Optional path to write ffmpeg stdout/stderr for debugging.
 
    Returns:
       bool: True if the command was successful, False otherwise.
@@ -237,10 +257,26 @@ class FFMPEGHelper(object):
         stderr=subprocess.PIPE
       )
       stdout, stderr = await process.communicate()
+      stdoutDecoded = (stdout.decode() if stdout else "")
+      stderrDecoded = (stderr.decode() if stderr else "")
+
+      # If a logPath is provided, persist stdout/stderr to that file for debugging and UI exposure.
+      try:
+        if logPath:
+          with open(logPath, "w", encoding="utf-8", errors="ignore") as lf:
+            lf.write(f"COMMAND: {' '.join(command)}\n\n")
+            lf.write("=== STDOUT ===\n")
+            lf.write(stdoutDecoded or "(no stdout)\n")
+            lf.write("\n=== STDERR ===\n")
+            lf.write(stderrDecoded or "(no stderr)\n")
+      except Exception:
+        # Non-fatal if logging fails.
+        pass
+
       if (process.returncode != 0):
         if (VERBOSE):
           logger.info(f"Function `{functionName}` encountered an error:")
-          logger.info(f"Error executing command: {stderr.decode()}")
+          logger.info(f"Error executing command: {stderrDecoded}")
         return False, process
       else:
         if (VERBOSE):
@@ -585,7 +621,7 @@ class FFMPEGHelper(object):
 
     try:
       # Create a temporary file with list of audio files (required for concat demuxer).
-      with tempfile.NamedTemporaryFile(mode="w", suffix='.txt', delete=False) as f:
+      with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
         for filePath in audioFilePaths:
           # Ensure we write absolute paths so ffmpeg can resolve them regardless of cwd.
           absPath = os.path.abspath(filePath)

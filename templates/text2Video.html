@@ -1,96 +1,231 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row mb-5">
-  <div class="col-md-12 mx-auto">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Create a New Text to Video (T2V) Job</h3>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-11">
+      <!-- Header -->
+      <div class="mb-5 text-center">
+        <h1 class="display-4 fw-bold mb-3 fs-2-5rem">
+          <i class="bi bi-film me-3 text-primary icon-2-5rem" aria-hidden="true"></i>Create Text to Video
+        </h1>
+        <p class="lead text-muted fs-1-125rem">
+          <i class="bi bi-magic text-info me-2 icon-1-25rem" aria-hidden="true"></i>
+          Transform your text into a professional video with synchronized audio and captions
+        </p>
       </div>
-      <div class="card-body">
-        <div class="alert alert-warning">
-          <strong>Warning:</strong>
-          Please notice that any punctuation marks in the text will be ignored and cleaned up
-          before processing.
+
+      <!-- Main Form Card -->
+      <div class="card border-0 shadow-lg">
+        <div class="card-header bg-gradient-primary py-4 px-5">
+          <h4 class="mb-0 text-white fs-1-5rem">
+            <i class="bi bi-pencil-square me-3 text-warning icon-1-5rem" aria-hidden="true"></i>Video Configuration
+          </h4>
         </div>
-        <div class="alert alert-info">
-          <strong>Note:</strong>
-          Please notice that you can add pauses in the text by adding triple dots (...) where you want the pause.
-          The length of the pause will depend on the voice you selected.
-          You can also add line breaks to create a pause.
-          <br><br>For example:<br>
-          <code class="bg-light p-2 d-block mt-2">
-            This is the first sentence...<br>
-            This is the second sentence......<br>
-            This is the third sentence.
-          </code>
-        </div>
-        <form id="ttsForm">
-          <div class="mb-3">
-            <label for="text" class="form-label">Text to Convert</label>
-            <div class="form-text mb-2 mt-0">Enter the text you want to convert.</div>
-            <textarea class="form-control" id="text" rows="5"></textarea>
-            <hr class="mb-0 pb-0">
+        <div class="card-body p-5">
+
+          <!-- Info Alerts -->
+          <div class="alert alert-info border-0 mb-4 shadow-sm p-4">
+            <h6 class="mb-2 fs-1rem">
+              <i class="bi bi-lightbulb-fill me-2 text-info icon-1-125rem" aria-hidden="true"></i>
+              <strong>Pro Tip:</strong>
+            </h6>
+            <p class="mb-0 fs-0-9375rem">Add pauses by using triple dots (...) in your text. Line breaks also create pauses.</p>
           </div>
 
-          <div class="row">
-            <div class="col-12">
-              <p>
-                Select the suitable voice according to the language you selected. For example,
-                if you selected American English, you should select an American English voice.
-                You will find the groups highlighted in the voice selection dropdown.
+          <div class="alert alert-warning border-0 mb-5 shadow-sm p-4">
+            <h6 class="mb-2 fs-1rem">
+              <i class="bi bi-exclamation-triangle-fill me-2 text-warning icon-1-125rem" aria-hidden="true"></i>
+              <strong>Note:</strong>
+            </h6>
+            <p class="mb-0 fs-0-9375rem">Punctuation marks will be automatically cleaned up during processing.</p>
+          </div>
+
+          <!-- Form -->
+          <form id="ttsForm">
+            <!-- Text Input Section -->
+            <div class="mb-5">
+              <h5 class="fw-bold mb-4 fs-1-25rem">
+                <i class="bi bi-file-text-fill me-2 text-primary" aria-hidden="true"></i>Text Content
+              </h5>
+              <label for="text" class="form-label fw-semibold mb-3 fs-1rem">
+                <i class="bi bi-pencil me-2 text-primary" aria-hidden="true"></i>Enter Your Text
+              </label>
+              <p class="text-muted mb-3 fs-0-9375rem">What would you like to convert to video? (Minimum 10 characters required)</p>
+              <textarea
+                  class="form-control"
+                  style="line-height: 1.6; padding: var(--spacing-md);"
+                  id="text"
+                  name="text"
+                  rows="8"
+                  placeholder="Type or paste your text here... Minimum 10 characters required."
+                  required
+                  minlength="10"
+                  maxlength="5000"
+                  aria-label="Text content for video"
+                  aria-describedby="charCount"
+              ></textarea>
+              <div class="char-count-wrapper mt-3">
+                <small class="form-text text-muted fs-0-875rem">
+                  <i class="bi bi-input-cursor-text text-muted me-1" aria-hidden="true"></i>
+                  <span id="charCount">0 characters</span> entered
+                </small>
+              </div>
+              <div class="char-count-bar mt-2">
+                <div class="char-count-progress" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <hr class="my-5">
+
+            <!-- Audio Settings Section -->
+            <div class="mb-5">
+              <h5 class="fw-bold mb-4 fs-1-25rem">
+                <i class="bi bi-speaker-fill me-2 text-success" aria-hidden="true"></i>Audio Settings
+              </h5>
+              <p class="text-muted mb-4 fs-0-9375rem">
+                <i class="bi bi-music-note me-2 text-success" aria-hidden="true"></i>
+                Choose the language and voice for your video
               </p>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md">
-              <div class="mb-3">
-                <label for="language" class="form-label">Language</label>
-                <select class="form-select" id="language"></select>
-              </div>
-            </div>
-            <div class="col-md">
-              <div class="mb-3">
-                <label for="voice" class="form-label">Voice</label>
-                <select class="form-select" id="voice"></select>
-              </div>
-            </div>
-            <div class="col-md">
-              <div class="mb-3">
-                <label for="speechRate" class="form-label">Audio Speech Rate (0.5x to 2x)</label>
-                <input type="range" class="form-range" id="speechRate" min="0.5" max="2" step="0.025" value="1.0">
-                <label id="speechRateValue" class="form-text">Current Rate: 1x</label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md">
-              <div class="mb-3">
-                <label for="voice" class="form-label">Video Quality</label>
-                <select class="form-select" id="videoQuality"></select>
-              </div>
-            </div>
-            <div class="col-md">
-              <div class="mb-3">
-                <label for="voice" class="form-label">Video Type</label>
-                <select class="form-select" id="videoType"></select>
-              </div>
-            </div>
-          </div>
 
-          <div class="row text-center">
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-play-circle"></i> Create the T2V  Job
-            </button>
-          </div>
-        </form>
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <label for="language" class="form-label fw-semibold mb-3 fs-1rem">
+                    <i class="bi bi-translate me-2 text-success" aria-hidden="true"></i>Language
+                  </label>
+                  <select class="form-select form-select-lg fs-1rem" id="language" name="language" required aria-label="Select audio language">
+                    <option value="">Select a language...</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="voice" class="form-label fw-semibold mb-3 fs-1rem">
+                    <i class="bi bi-mic-fill me-2 text-success" aria-hidden="true"></i>Voice
+                  </label>
+                  <select class="form-select form-select-lg fs-1rem" id="voice" name="voice" required aria-label="Select voice">
+                    <option value="">Select a voice...</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="speechRate" class="form-label fw-semibold mb-3 fs-1rem">
+                    <i class="bi bi-speedometer2 me-2 text-success" aria-hidden="true"></i>Speech Rate
+                    <span id="speechRateValue" class="badge bg-success ms-2 px-3 py-2 fs-0-9375rem">1.0x</span>
+                  </label>
+                  <input type="range" class="form-range speech-rate-slider" id="speechRate" name="speechRate" min="0.5" max="2" step="0.025" value="1.0" aria-label="Adjust speech rate">
+                  <div class="d-flex justify-content-between mt-2">
+                    <small class="text-muted fs-0-875rem"><i class="bi bi-dash-lg"></i> Slower</small>
+                    <small class="text-muted fs-0-875rem">Normal</small>
+                    <small class="text-muted fs-0-875rem">Faster <i class="bi bi-plus-lg"></i></small>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div id="result" class="mt-4 d-none">
-          <div class="alert alert-success">
-            <h5 class="text-center">Job Created Successfully!</h5>
-            <p class="text-center">Job ID: <strong id="jobId"></strong></p>
-            <div class="text-center">
-              <a href="/jobs" class="btn btn-success">View Jobs</a>
+            <hr class="my-5">
+
+            <!-- Video Settings Section -->
+            <div class="mb-5">
+              <h5 class="fw-bold mb-4 fs-1-25rem">
+                <i class="bi bi-camera-video-fill me-2 text-info" aria-hidden="true"></i>Video Settings
+              </h5>
+              <p class="text-muted mb-4 fs-0-9375rem">
+                <i class="bi bi-sliders me-2 text-info" aria-hidden="true"></i>
+                Choose the output quality and format
+              </p>
+
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label for="videoQuality" class="form-label fw-semibold mb-3 fs-1rem">
+                    <i class="bi bi-badge-hd me-2 text-info" aria-hidden="true"></i>Video Quality
+                  </label>
+                  <select class="form-select form-select-lg fs-1rem" id="videoQuality" name="videoQuality" required aria-label="Select video quality">
+                    <option value="">Select quality...</option>
+                  </select>
+                  <small class="form-text text-muted d-block mt-3 fs-0-875rem">
+                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>Higher quality = larger file size
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <label for="videoType" class="form-label fw-semibold mb-3 fs-1rem">
+                    <i class="bi bi-aspect-ratio me-2 text-info" aria-hidden="true"></i>Video Type
+                  </label>
+                  <select class="form-select form-select-lg fs-1rem" id="videoType" name="videoType" required aria-label="Select video type">
+                    <option value="">Select type...</option>
+                  </select>
+                  <small class="form-text text-muted d-block mt-3 fs-0-875rem">
+                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>Horizontal for widescreen, Vertical for mobile
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2 mb-4">
+              <button type="submit" class="btn btn-primary btn-lg fw-bold py-4 shadow fs-1-25rem" aria-label="Submit video creation form">
+                <i class="bi bi-play-circle-fill me-3 icon-1-5rem" aria-hidden="true"></i>Create Video Job
+              </button>
+            </div>
+            <p class="text-center text-muted fs-0-9375rem">
+              <i class="bi bi-clock-history text-muted me-2" aria-hidden="true"></i>
+              This will queue your job. Processing time depends on text length and system load.
+            </p>
+          </form>
+
+          <!-- Success Result -->
+          <div id="result" class="mt-5 d-none">
+            <div class="alert alert-success border-0 shadow-lg p-5">
+              <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-check-circle-fill me-3 text-success icon-3rem" aria-hidden="true"></i>
+                <h5 class="mb-0 fs-1-5rem">Job Created Successfully!</h5>
+              </div>
+              <p class="mb-4 fs-1-0625rem">
+                <i class="bi bi-info-circle text-success me-2" aria-hidden="true"></i>
+                Your video job has been queued and will start processing shortly.
+              </p>
+              <div class="card bg-light border-0 mb-4 p-4">
+                <small class="text-muted mb-2 fs-0-875rem">
+                  <i class="bi bi-tag-fill text-primary me-2" aria-hidden="true"></i>Job ID:
+                </small>
+                <p class="fw-bold font-monospace mb-0 fs-1-0625rem" id="jobId"></p>
+              </div>
+              <div class="d-grid gap-3">
+                <a href="/jobs" class="btn btn-success btn-lg py-3 fs-1-0625rem">
+                  <i class="bi bi-briefcase-fill me-2" aria-hidden="true"></i>View Your Jobs
+                </a>
+                <button id="createAnotherBtn" type="button" class="btn btn-outline-primary btn-lg py-3 fs-1-0625rem">
+                  <i class="bi bi-plus-circle-fill me-2" aria-hidden="true"></i>Create Another Video
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature List -->
+      <div class="row g-4 mt-5">
+        <div class="col-md-4">
+          <div class="card border-0 bg-light text-center shadow-sm">
+            <div class="card-body py-5 px-4">
+              <i class="bi bi-badge-cc-fill text-primary mb-3 icon-3rem" aria-hidden="true"></i>
+              <h6 class="fw-bold mb-2 text-primary fs-1-0625rem">Auto Captions</h6>
+              <p class="text-muted mb-0 fs-0-9375rem">Synchronized word-by-word captions</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 bg-light text-center shadow-sm">
+            <div class="card-body py-5 px-4">
+              <i class="bi bi-globe-americas text-success mb-3 icon-3rem" aria-hidden="true"></i>
+              <h6 class="fw-bold mb-2 text-success fs-1-0625rem">Multi-Language</h6>
+              <p class="text-muted mb-0 fs-0-9375rem">50+ languages supported</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 bg-light text-center shadow-sm">
+            <div class="card-body py-5 px-4">
+              <i class="bi bi-lightning-charge-fill text-info mb-3 icon-3rem" aria-hidden="true"></i>
+              <h6 class="fw-bold mb-2 text-info fs-1-0625rem">Fast Processing</h6>
+              <p class="text-muted mb-0 fs-0-9375rem">Queue-based background processing</p>
             </div>
           </div>
         </div>
@@ -127,9 +262,9 @@
 
     // Update speech rate value display.
     $("#speechRate").on("input change", function () {
-      $("#speechRateValue").text(`Current Rate: ${$(this).val()}x`);
+      $("#speechRateValue").text(`${$(this).val()}x`);
     });
-    $("#speechRateValue").text(`Current Rate: ${$("#speechRate").val()}x`);
+    $("#speechRateValue").text(`${$("#speechRate").val()}x`);
 
 
     $.get("/api/v1/voices?type=dict", function (data) {
@@ -284,6 +419,17 @@
           console.error("Error creating job:", xhr);
         }
       });
+    });
+
+    // Create Another Video button handler: hide result and reset form
+    $(document).on('click', '#createAnotherBtn', function () {
+      $('#result').addClass('d-none');
+      $('#ttsForm')[0].reset();
+      disableForm(false);
+      $('#text').focus();
+      // Reset character counter and progress if present
+      $('#charCount').text('0 characters');
+      $('.char-count-progress').css('width', '0%');
     });
   });
 </script>

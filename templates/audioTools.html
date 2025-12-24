@@ -1,334 +1,469 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row mt-4 justify-content-center">
-  <!-- Audio Duration Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="audioDuration"
-         data-bs-target="#durationModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-clock-history display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Get Audio Duration</h5>
-        <p class="card-text">Find out the length of your audio file (in seconds).</p>
+<div class="container-fluid py-5">
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-4">
+      <i class="bi bi-waveform me-3 text-info fs-1" aria-hidden="true"></i>Audio Tools
+    </h1>
+    <p class="lead text-muted fs-5">
+      <i class="bi bi-tools text-primary me-2 fs-4" aria-hidden="true"></i>
+      Professional audio processing and analysis tools
+    </p>
+  </div>
+
+  <div class="row justify-content-center g-4">
+    <!-- Audio Duration Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="audioDuration"
+           data-bs-target="#durationModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-clock-history display-5 option-icon mb-3 text-primary" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-primary">Audio Duration</h5>
+          <p class="card-text small">Analyze the length of your audio file in seconds.</p>
+          <span class="badge bg-primary text-white small mt-2">
+            <i class="bi bi-lightning-fill me-1" aria-hidden="true"></i>Instant
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Audio Size Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="audioSize"
-         data-bs-target="#sizeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-hdd display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Get Audio Size</h5>
-        <p class="card-text">Check the file size of your audio.</p>
+
+    <!-- Audio Size Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="audioSize"
+           data-bs-target="#sizeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-hdd-fill display-5 option-icon mb-3 text-success" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-success">Audio File Size</h5>
+          <p class="card-text small">Check the file size of your audio file.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-lightning-fill me-1" aria-hidden="true"></i>Instant
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Silence Detection Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="checkSilence"
-         data-bs-target="#silenceModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-volume-mute display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Check Silence</h5>
-        <p class="card-text">Detect if your audio file is silent.</p>
+
+    <!-- Silence Detection Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="checkSilence"
+           data-bs-target="#silenceModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-volume-mute-fill display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Check Silence</h5>
+          <p class="card-text small">Detect if your audio file is silent or muted.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-lightning-fill me-1" aria-hidden="true"></i>Instant
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Normalize Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="normalizeAudio"
-         data-bs-target="#normalizeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-sliders display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Normalize Audio</h5>
-        <p class="card-text">Make your audio volume consistent and clear.</p>
+
+    <!-- Normalize Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="normalizeAudio"
+           data-bs-target="#normalizeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-sliders display-5 option-icon mb-3 text-info" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-info">Normalize Audio</h5>
+          <p class="card-text small">Adjust volume levels for consistent audio quality.</p>
+          <span class="badge bg-info text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Generate Silent Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="generateSilent"
-         data-bs-target="#generateSilentModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-volume-off display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Generate Silent Audio</h5>
-        <p class="card-text">Create a silent audio file of any duration.</p>
+
+    <!-- Generate Silent Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="generateSilent" data-bs-target="#generateSilentModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-volume-off-fill display-5 option-icon mb-3 text-secondary" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-secondary">Generate Silent Audio</h5>
+          <p class="card-text small">Create a silent audio file of any duration.</p>
+          <span class="badge bg-secondary text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Convert Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="convertAudio"
-         data-bs-target="#convertModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-arrow-repeat display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Convert Audio</h5>
-        <p class="card-text">Change format, bitrate, sample rate, channels, or trim.</p>
+
+    <!-- Convert Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="convertAudio" data-bs-target="#convertModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-arrow-left-right display-5 option-icon mb-3 text-danger" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-danger">Convert Audio</h5>
+          <p class="card-text small">Change format, bitrate, sample rate, channels, or trim.</p>
+          <span class="badge bg-danger text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Change Volume Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="changeVolume"
-         data-bs-target="#volumeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-volume-up display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Change Volume</h5>
-        <p class="card-text">Amplify or attenuate your audio file.</p>
+
+    <!-- Change Volume Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="changeVolume" data-bs-target="#volumeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-volume-up-fill display-5 option-icon mb-3 text-primary" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-primary">Change Volume</h5>
+          <p class="card-text small">Amplify or attenuate your audio file.</p>
+          <span class="badge bg-primary text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Change Speed Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="changeSpeed"
-         data-bs-target="#speedModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-fast-forward display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Change Speed</h5>
-        <p class="card-text">Speed up or slow down your audio file.</p>
+
+    <!-- Change Speed Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="changeSpeed" data-bs-target="#speedModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-fast-forward-fill display-5 option-icon mb-3 text-success" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-success">Change Speed</h5>
+          <p class="card-text small">Speed up or slow down your audio file.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Reverse Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="reverseAudio"
-         data-bs-target="#reverseModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-arrow-counterclockwise display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Reverse Audio</h5>
-        <p class="card-text">Play your audio file backwards.</p>
+
+    <!-- Reverse Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="reverseAudio" data-bs-target="#reverseModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-arrow-counterclockwise display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Reverse Audio</h5>
+          <p class="card-text small">Play your audio file backwards.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Extract Audio from Video Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="extractAudio"
-         data-bs-target="#extractModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-film display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Extract Audio</h5>
-        <p class="card-text">Extract audio from a video file.</p>
+    <!-- Extract Audio from Video Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="extractAudio" data-bs-target="#extractModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-film display-5 option-icon mb-3 text-info" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-info">Extract Audio</h5>
+          <p class="card-text small">Extract audio from a video file.</p>
+          <span class="badge bg-info text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Concatenate Audios Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="concatAudios"
-         data-bs-target="#concatModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-link-45deg display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Concatenate Audios</h5>
-        <p class="card-text">Merge multiple audio files into one.</p>
+
+    <!-- Concatenate Audios Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="concatAudios" data-bs-target="#concatModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-link-45deg display-5 option-icon mb-3 text-success" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-success">Concatenate Audios</h5>
+          <p class="card-text small">Merge multiple audio files into one.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Split Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="splitAudio"
-         data-bs-target="#splitModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-scissors display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Split Audio</h5>
-        <p class="card-text">Divide audio into segments.</p>
+
+    <!-- Split Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="splitAudio" data-bs-target="#splitModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-scissors display-5 option-icon mb-3 text-danger" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-danger">Split Audio</h5>
+          <p class="card-text small">Divide audio into segments.</p>
+          <span class="badge bg-danger text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Fade In/Out Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="fadeAudio"
-         data-bs-target="#fadeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-brightness-alt-high display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Fade In/Out</h5>
-        <p class="card-text">Add fade in/out effects to audio.</p>
+
+    <!-- Fade In/Out Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="fadeAudio" data-bs-target="#fadeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-brightness-alt-high display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Fade In/Out</h5>
+          <p class="card-text small">Add fade in/out effects to audio.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Remove Vocals Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="removeVocals"
-         data-bs-target="#removeVocalsModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-person-x display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Remove Vocals</h5>
-        <p class="card-text">Remove vocals from your audio file.</p>
+
+    <!-- Remove Vocals Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="removeVocals" data-bs-target="#removeVocalsModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-person-x-fill display-5 option-icon mb-3 text-primary" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-primary">Remove Vocals</h5>
+          <p class="card-text small">Remove vocals from your audio file.</p>
+          <span class="badge bg-primary text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Equalizer/Filter Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="equalizerFilter"
-         data-bs-target="#equalizerModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-sliders2-vertical display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Equalizer/Filter</h5>
-        <p class="card-text">Apply equalizer or filter to audio.</p>
+
+    <!-- Equalizer/Filter Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="equalizerFilter" data-bs-target="#equalizerModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-sliders2-vertical display-5 option-icon mb-3 text-info" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-info">Equalizer/Filter</h5>
+          <p class="card-text small">Apply equalizer or filter to audio.</p>
+          <span class="badge bg-info text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Mix Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="mixAudio"
-         data-bs-target="#mixModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-music-note-list display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Mix Audio</h5>
-        <p class="card-text">Combine multiple audio tracks simultaneously.</p>
+
+    <!-- Mix Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="mixAudio" data-bs-target="#mixModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-music-note-list display-5 option-icon mb-3 text-success" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-success">Mix Audio</h5>
+          <p class="card-text small">Combine multiple audio tracks simultaneously.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Reduce Noise Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="reduceNoise"
-         data-bs-target="#reduceNoiseModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-shield-check display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Reduce Noise</h5>
-        <p class="card-text">Remove background noise from recordings.</p>
+
+    <!-- Reduce Noise Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="reduceNoise" data-bs-target="#reduceNoiseModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-shield-check display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Reduce Noise</h5>
+          <p class="card-text small">Remove background noise from recordings.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Remove Silence Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="removeSilence"
-         data-bs-target="#removeSilenceModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-volume-off-fill display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Remove Silence</h5>
-        <p class="card-text">Automatically detect and remove silent portions.</p>
+
+    <!-- Remove Silence Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="removeSilence" data-bs-target="#removeSilenceModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-volume-off-fill display-5 option-icon mb-3 text-danger"></i>
+          <h5 class="card-title fw-bold text-danger">Remove Silence</h5>
+          <p class="card-text small">Automatically detect and remove silent portions.</p>
+          <span class="badge bg-danger text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Enhance Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="enhanceAudio"
-         data-bs-target="#enhanceModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-music-note-beamed display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Enhance Audio</h5>
-        <p class="card-text">Boost bass and treble for better quality.</p>
+
+    <!-- Enhance Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="enhanceAudio" data-bs-target="#enhanceModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-music-note-beamed display-5 option-icon mb-3 text-info"></i>
+          <h5 class="card-title fw-bold text-info">Enhance Audio</h5>
+          <p class="card-text small">Boost bass and treble for better quality.</p>
+          <span class="badge bg-info text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Compress Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="compressAudio"
-         data-bs-target="#compressModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-soundwave display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Compress Audio</h5>
-        <p class="card-text">Apply dynamic range compression.</p>
+
+    <!-- Compress Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="compressAudio" data-bs-target="#compressModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-soundwave display-5 option-icon mb-3 text-secondary"></i>
+          <h5 class="card-title fw-bold text-secondary">Compress Audio</h5>
+          <p class="card-text small">Apply dynamic range compression.</p>
+          <span class="badge bg-secondary text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Convert Channels Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="convertChannelsCard"
-         data-bs-target="#channelsModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-arrows-expand display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Convert Channels</h5>
-        <p class="card-text">Convert between stereo and mono.</p>
+
+    <!-- Convert Channels Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="convertChannelsCard" data-bs-target="#channelsModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-arrows-expand display-5 option-icon mb-3 text-primary"></i>
+          <h5 class="card-title fw-bold text-primary">Convert Channels</h5>
+          <p class="card-text small">Convert between stereo and mono.</p>
+          <span class="badge bg-primary text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Loop Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="loopAudio"
-         data-bs-target="#loopModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-arrow-repeat display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Loop Audio</h5>
-        <p class="card-text">Create audio loops of specified duration.</p>
+
+    <!-- Loop Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="loopAudio" data-bs-target="#loopModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-arrow-repeat display-5 option-icon mb-3 text-success"></i>
+          <h5 class="card-title fw-bold text-success">Loop Audio</h5>
+          <p class="card-text small">Create audio loops of specified duration.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Shift Pitch Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="shiftPitch"
-         data-bs-target="#pitchModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-diagram-3 display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Shift Pitch</h5>
-        <p class="card-text">Change audio pitch without affecting speed.</p>
+
+    <!-- Shift Pitch Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="shiftPitch" data-bs-target="#pitchModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-diagram-3 display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Shift Pitch</h5>
+          <p class="card-text small">Change audio pitch without affecting speed.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Add Echo Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="addEcho"
-         data-bs-target="#echoModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-soundwave display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Add Echo</h5>
-        <p class="card-text">Add echo or delay effects to audio.</p>
+
+    <!-- Add Echo Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="addEcho" data-bs-target="#echoModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-soundwave display-5 option-icon mb-3 text-danger"></i>
+          <h5 class="card-title fw-bold text-danger">Add Echo</h5>
+          <p class="card-text small">Add echo or delay effects to audio.</p>
+          <span class="badge bg-danger text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Adjust Stereo Width Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="adjustStereo"
-         data-bs-target="#stereoModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-speaker display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Adjust Stereo Width</h5>
-        <p class="card-text">Control stereo field width.</p>
+
+    <!-- Adjust Stereo Width Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="adjustStereo" data-bs-target="#stereoModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-speaker display-5 option-icon mb-3 text-info"></i>
+          <h5 class="card-title fw-bold text-info">Adjust Stereo Width</h5>
+          <p class="card-text small">Control stereo field width.</p>
+          <span class="badge bg-info text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Generate Waveform Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="generateWaveform"
-         data-bs-target="#waveformModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-bar-chart-steps display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Generate Waveform</h5>
-        <p class="card-text">Create visual waveform image from audio.</p>
+
+    <!-- Generate Waveform Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="generateWaveform" data-bs-target="#waveformModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-bar-chart-steps display-5 option-icon mb-3 text-success"></i>
+          <h5 class="card-title fw-bold text-success">Generate Waveform</h5>
+          <p class="card-text small">Create visual waveform image from audio.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-eye me-1" aria-hidden="true"></i>Visualization
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Generate Spectrum Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="generateSpectrum"
-         data-bs-target="#spectrumModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-bar-chart-line display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Generate Spectrum</h5>
-        <p class="card-text">Create spectrum analyzer visualization.</p>
+
+    <!-- Generate Spectrum Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="generateSpectrum" data-bs-target="#spectrumModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-bar-chart-line display-5 option-icon mb-3 text-primary" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-primary">Generate Spectrum</h5>
+          <p class="card-text small">Create spectrum analyzer visualization.</p>
+          <span class="badge bg-primary text-white small mt-2">
+            <i class="bi bi-eye me-1" aria-hidden="true"></i>Visualization
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Crossfade Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="crossfadeAudio"
-         data-bs-target="#crossfadeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-diagram-2 display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Crossfade Audio</h5>
-        <p class="card-text">Create smooth transitions between tracks.</p>
+
+    <!-- Crossfade Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="crossfadeAudio" data-bs-target="#crossfadeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-diagram-2 display-5 option-icon mb-3 text-success" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-success">Crossfade Audio</h5>
+          <p class="card-text small">Create smooth transitions between tracks.</p>
+          <span class="badge bg-success text-white small mt-2">
+            <i class="bi bi-gear-fill me-1" aria-hidden="true"></i>Processing
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Analyze Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="analyzeAudio"
-         data-bs-target="#analyzeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-graph-up display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Analyze Audio</h5>
-        <p class="card-text">Get detailed audio quality metrics.</p>
+
+    <!-- Analyze Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="analyzeAudio" data-bs-target="#analyzeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-graph-up display-5 option-icon mb-3 text-warning" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-warning">Analyze Audio</h5>
+          <p class="card-text small">Get detailed audio quality metrics.</p>
+          <span class="badge bg-warning text-dark small mt-2">
+            <i class="bi bi-bar-chart me-1" aria-hidden="true"></i>Analysis
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Transcribe Audio Card -->
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100" data-bs-toggle="modal" id="transcribeAudio"
-         data-bs-target="#transcribeModal">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-file-text display-3 option-icon mb-3"></i>
-        <h5 class="card-title">Transcribe Audio</h5>
-        <p class="card-text">Convert speech to text using Whisper AI.</p>
+
+    <!-- Transcribe Audio Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card option-card text-center border-0 shadow-sm h-100 cursor-pointer" data-bs-toggle="modal"
+           id="transcribeAudio" data-bs-target="#transcribeModal" role="button" tabindex="0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+          <i class="bi bi-file-text display-5 option-icon mb-3 text-danger" aria-hidden="true"></i>
+          <h5 class="card-title fw-bold text-danger">Transcribe Audio</h5>
+          <p class="card-text small">Convert speech to text using Whisper AI.</p>
+          <span class="badge bg-danger text-white small mt-2">
+            <i class="bi bi-bar-chart me-1" aria-hidden="true"></i>Analysis
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -2610,17 +2745,21 @@
             title: "Audio Analyzed",
             html: html,
             confirmButtonColor: "#3085d6",
-            width: '600px'
+            width: '37.5rem'
           });
         },
         error: function (xhr) {
           Swal.fire({
-            icon: "error", title: "Error",
-            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to analyze audio"), confirmButtonColor: "#d33"
+            icon: "error",
+            title: "Error",
+            text: (xhr.responseJSON ? xhr.responseJSON.error : "Failed to analyze audio"),
+            confirmButtonColor: "#d33"
           });
         },
         complete: function () {
-          submitButton.prop("disabled", false).removeClass("disabled").text("Analyze Audio");
+          submitButton.prop("disabled", false);
+          submitButton.removeClass("disabled");
+          submitButton.text("Analyze Audio");
         }
       });
     });
@@ -2644,9 +2783,9 @@
           Swal.fire({
             icon: "success",
             title: "Audio Transcribed",
-            html: '<div class="text-start"><h6>Transcription:</h6><pre style="max-height:400px;overflow-y:auto;background:#f5f5f5;padding:10px;border-radius:5px;">' + text + '</pre></div>',
+            html: '<div class="text-start"><h6>Transcription:</h6><pre style="max-height:25rem;overflow-y:auto;background:#f5f5f5;padding:0.625rem;border-radius:0.3125rem;">' + text + '</pre></div>',
             confirmButtonColor: "#3085d6",
-            width: '800px'
+            width: '50rem'
           });
         },
         error: function (xhr) {

@@ -8,7 +8,7 @@
 # Permissions and Citation: Refer to the README file.
 '''
 
-import os, json, time, hashlib, asyncio, logging
+import os, json, time, hashlib, asyncio, logging, shutil, glob
 from flask import Blueprint, jsonify, current_app, request, send_file
 from WebHelpers import *
 from TextToSpeechHelper import TextToSpeechHelper
@@ -22,7 +22,27 @@ logger = logging.getLogger(__name__)
 
 @apiBp.route("/api/v1/status", methods=["GET"])
 def GetServerStatus():
-  return jsonify({"status": "Server is running"}), 200
+  # Enhanced server status with environment checks.
+  storePath = current_app.config["STORE_PATH"]
+  ffPath = FFMPEGHelper().DetectFFmpegPath()
+  ffAvailable = (ffPath is not None)
+  storeWritable = False
+  try:
+    # Attempt to create and delete a tiny temp file to test writability.
+    testFile = os.path.join(storePath, "__writetest.tmp")
+    with open(testFile, "w") as f:
+      f.write("ok")
+    os.remove(testFile)
+    storeWritable = True
+  except Exception:
+    storeWritable = False
+  return jsonify({
+    "status"         : "Server is running",
+    "ffmpegAvailable": ffAvailable,
+    "ffmpegPath"     : ffPath,
+    "storeWritable"  : storeWritable,
+    "storePath"      : storePath,
+  }), 200
 
 
 @apiBp.route("/api/v1/ready", methods=["GET"])
@@ -74,6 +94,19 @@ def GetAllJobs():
   JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
   STORE_PATH = current_app.config["STORE_PATH"]
   configs = current_app.config["configs"]
+  # Pagination params.
+  try:
+    page = int(request.args.get("page", 1))
+  except Exception:
+    page = 1
+  try:
+    pageSize = int(request.args.get("pageSize", 20))
+  except Exception:
+    pageSize = 20
+  if (page <= 0):
+    page = 1
+  if (pageSize <= 0 or pageSize > 200):
+    pageSize = 20
   jobsList = []
   for jobId, status in JOB_HISTORY_OBJ.items():
     jobDir = os.path.join(STORE_PATH, jobId)
@@ -96,7 +129,11 @@ def GetAllJobs():
         })
       except Exception:
         pass
-  return jsonify({"jobs": jobsList}), 200
+  total = len(jobsList)
+  startIdx = (page - 1) * pageSize
+  endIdx = startIdx + pageSize
+  pagedJobs = jobsList[startIdx:endIdx]
+  return jsonify({"total": total, "page": page, "pageSize": pageSize, "jobs": pagedJobs}), 200
 
 
 @apiBp.route("/api/v1/jobs", methods=["POST"])
@@ -255,10 +292,17 @@ def GetProcessedVideo(jobId):
     return jsonify({"error": "Job not completed yet"}), 400
 
   videoFormat = configs["ffmpeg"].get("videoFormat", "mp4")
+  # Primary expected location is inside the job directory
   outputVideoPath = os.path.join(jobDir, f"{jobId}_Final.{videoFormat}")
+
   if (not os.path.exists(outputVideoPath)):
-    logger.error(f"Processed video not found for job {jobId}: {outputVideoPath}")
-    return jsonify({"error": "Processed video not found"}), 404
+    # Fallback: search for any matching final video file in the job directory
+    matchingFiles = glob.glob(os.path.join(jobDir, f"{jobId}_Final.*"))
+    if (matchingFiles):
+      outputVideoPath = matchingFiles[0]
+    else:
+      logger.error(f"Processed video file not found for job {jobId}: {outputVideoPath}")
+      return jsonify({"error": "Processed video file not found"}), 404
 
   if (not os.access(outputVideoPath, os.R_OK)):
     logger.error(f"Processed video file is not readable for job {jobId}: {outputVideoPath}")
@@ -1659,3 +1703,83 @@ def downloadFile(filename):
   except Exception as e:
     current_app.logger.error(f"Error sending file: {str(e)}")
     return jsonify({"error": "Error sending file"}), 500
+
+
+@apiBp.route("/api/v1/jobs/<jobId>/cancel", methods=["DELETE"])
+def CancelJob(jobId):
+  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
+  STORE_PATH = current_app.config["STORE_PATH"]
+  if (jobId not in JOB_HISTORY_OBJ.keys()):
+    return jsonify({"error": "Job not found"}), 404
+  status = JOB_HISTORY_OBJ.get(jobId, "unknown")
+  jobDir = os.path.join(STORE_PATH, jobId)
+  jobFilePath = os.path.join(jobDir, "job.json")
+  if (not os.path.exists(jobFilePath)):
+    return jsonify({"error": "Job data not found"}), 404
+  try:
+    with open(jobFilePath, "r") as f:
+      jobData = json.load(f)
+  except Exception:
+    return jsonify({"error": "Invalid job data"}), 500
+  # Mark cancelRequested flag.
+  jobData["cancelRequested"] = True
+  with open(jobFilePath, "w") as f:
+    json.dump(jobData, f)
+  # If job is queued, cancel immediately.
+  if (status == "queued"):
+    JOB_HISTORY_OBJ.updateStatus(jobId, "canceled")
+    return jsonify({"message": "Job canceled"}), 200
+  # If processing, ProcessJob will honor cancel flag at checkpoints.
+  return jsonify({"message": "Cancellation requested"}), 202
+
+
+@apiBp.route("/api/v1/jobs/<jobId>/retry", methods=["POST"])
+def RetryJob(jobId):
+  QUEUE_WATCHER = current_app.config["QUEUE_WATCHER"]
+  JOB_HISTORY_OBJ = current_app.config["JOB_HISTORY_OBJ"]
+  STORE_PATH = current_app.config["STORE_PATH"]
+  configs = current_app.config["configs"]
+  MAX_JOBS = current_app.config.get("MAX_JOBS", 1)
+  MAX_TIMEOUT = current_app.config.get("MAX_TIMEOUT", 10)
+  if (jobId not in JOB_HISTORY_OBJ.keys()):
+    return jsonify({"error": "Job not found"}), 404
+  status = JOB_HISTORY_OBJ.get(jobId, "unknown")
+  if (status == "completed"):
+    return jsonify({"error": "Cannot retry a completed job"}), 400
+  jobDir = os.path.join(STORE_PATH, jobId)
+  jobFilePath = os.path.join(jobDir, "job.json")
+  if (not os.path.exists(jobFilePath)):
+    return jsonify({"error": "Job data not found"}), 404
+  try:
+    with open(jobFilePath, "r") as f:
+      jobData = json.load(f)
+  except Exception:
+    return jsonify({"error": "Invalid job data"}), 500
+  retries = int(jobData.get("retries", 0)) + 1
+  jobData["retries"] = retries
+  jobData["status"] = "queued"
+  jobData.pop("cancelRequested", None)
+  with open(jobFilePath, "w") as f:
+    json.dump(jobData, f)
+  JOB_HISTORY_OBJ.updateStatus(jobId, "queued")
+  # Ensure watcher is running
+  if (QUEUE_WATCHER and not QUEUE_WATCHER.is_alive()):
+    QUEUE_WATCHER = QueueWatcher(current_app.config["ProcessJob"], maxJobs=MAX_JOBS, maxTimeout=MAX_TIMEOUT)
+    QUEUE_WATCHER.jobHistoryObj = JOB_HISTORY_OBJ
+    current_app.config["QUEUE_WATCHER"] = QUEUE_WATCHER
+    QUEUE_WATCHER.start()
+  return jsonify({"message": "Job re-queued", "retries": retries}), 200
+
+
+@apiBp.route("/api/v1/jobs/<jobId>/metadata", methods=["GET"])
+def DownloadJobMetadata(jobId):
+  STORE_PATH = current_app.config["STORE_PATH"]
+  jobDir = os.path.join(STORE_PATH, jobId)
+  jobFilePath = os.path.join(jobDir, "job.json")
+  if (not os.path.exists(jobFilePath)):
+    return jsonify({"error": "Job data not found"}), 404
+  try:
+    return send_file(jobFilePath, as_attachment=True), 200
+  except Exception as e:
+    current_app.logger.error(f"Error sending job metadata: {str(e)}")
+    return jsonify({"error": "Error sending job metadata"}), 500

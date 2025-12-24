@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="Audio Captioned Automated Transcription Video Generation Suite">
+  <meta name="description" content="Text to Video Generation Suite - Create professional videos from text with AI">
   <meta name="author" content="Hossam Magdy Balaha">
+  <meta name="theme-color" content="#2a5298">
   <link rel="icon" href="/static/favicon.ico">
-  <title>Audio Captioned Automated Transcription Video Generation Suite</title>
+  <title>T2V Suite - Text to Video Generation</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -15,30 +16,57 @@
   {% block styles %}{% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-sm" role="navigation">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/static/favicon.ico" alt="Logo" style="height:32px;width:32px;margin-right:10px;">
-      <span class="fw-bold" style="font-size:1.3rem;letter-spacing:2px;">HMB</span>
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="/" title="Go to T2V Suite home">
+      <img src="/static/favicon.ico" alt="Logo" style="height:2rem;width:2rem;">
+      <span style="font-size:1.2rem;letter-spacing:0.0625rem;">T2V Suite</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link" href="/" title="Go to home page"><i class="bi bi-house-fill me-1"></i> Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/text2Video">Text to Video (T2V)</a>
+          <a class="nav-link" href="/text2Video" title="Create new video from text"><i class="bi bi-film me-1"></i>
+            Create Video</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/jobs">Current T2V Jobs</a>
+          <a class="nav-link" href="/jobs" title="View and manage jobs"><i class="bi bi-briefcase-fill me-1"></i>
+            Jobs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/audioTools">Audio Tools</a>
+          <a class="nav-link" href="/audioTools" title="Audio processing tools"><i
+              class="bi bi-music-note-beamed me-1"></i> Audio Tools</a>
         </li>
       </ul>
+
+      <!-- Font size presets control -->
+      <div class="d-flex align-items-center ms-3" role="toolbar" aria-label="Font size presets">
+        <div class="btn-group">
+          <button id="fontPresetBtn" class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                  aria-expanded="false" title="Font size">
+            <!-- Use Font Awesome text-height as a reliable fallback (Bootstrap icon bi-text-size may not exist in this BI version) -->
+            <i class="fas fa-text-height" aria-hidden="true"></i>
+            <span class="visually-hidden">Font size presets</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="fontPresetBtn">
+            <li>
+              <button class="dropdown-item" type="button" data-preset="compact">Compact</button>
+            </li>
+            <li>
+              <button class="dropdown-item" type="button" data-preset="normal">Normal</button>
+            </li>
+            <li>
+              <button class="dropdown-item" type="button" data-preset="large">Large</button>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -47,27 +75,37 @@
   {% block content %}{% endblock %}
 </div>
 
-<footer class="footer mt-5 py-3 bg-light border-top">
-  <div class="container text-center">
-    <span class="text-muted">
-      Designed & programmed by <strong>Hossam Magdy Balaha</strong> |
-      <a href="https://hossambalaha.github.io/" target="_blank">
-        <i class="fas fa-globe"></i> Portfolio
-      </a> |
-      <a href="https://github.com/HossamBalaha" target="_blank">
-        <i class="fab fa-github"></i> GitHub
-      </a> |
-      <a href="https://coff.ee/hossammbalaha" target="_blank">☕ Buy Me a Coffee</a>
-    </span>
+<footer class="footer mt-auto py-4 bg-gradient-dark border-top shadow-sm" role="contentinfo">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-6 mb-2 mb-md-0">
+        <p class="mb-2 text-light">
+          <strong>T2V Suite</strong> - Text to Video Generation Platform
+        </p>
+        <p class="text-muted small">Created by <strong>Hossam Magdy Balaha</strong></p>
+      </div>
+      <div class="col-md-6">
+        <p class="mb-0">
+          <a href="https://hossambalaha.github.io/" target="_blank" rel="noopener noreferrer" class="text-light me-3"
+             title="Visit portfolio">
+            <i class="fas fa-globe" aria-hidden="true"></i> Portfolio
+          </a>
+          <a href="https://github.com/HossamBalaha" target="_blank" rel="noopener noreferrer" class="text-light me-3"
+             title="Visit GitHub">
+            <i class="fab fa-github" aria-hidden="true"></i> GitHub
+          </a>
+          <a href="https://coff.ee/hossammbalaha" target="_blank" rel="noopener noreferrer" class="text-light"
+             title="Support the project">
+            ☕ Support
+          </a>
+        </p>
+      </div>
+    </div>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
-        integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>

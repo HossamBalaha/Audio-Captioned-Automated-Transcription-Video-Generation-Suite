@@ -5,6 +5,7 @@ __pycache__
 **/*.py[cod]
 **/*.pyo
 Jobs/*
+Logs/*.log
 Assets/Audios/*.mp3
 Assets/Videos/*.mp4
 Assets/Videos/Horizontal Videos/*.mp4

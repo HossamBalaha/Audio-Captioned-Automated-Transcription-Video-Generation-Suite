@@ -65,6 +65,11 @@ def Test_ServerStatusAndReady(client):
   rv = client.get("/api/v1/status")
   # Assert status is OK.
   assert (rv.status_code == 200)
+  # Parse JSON response.
+  statusData = rv.get_json()
+  # Assert ffmpeg availability and store writability fields exist.
+  assert ("ffmpegAvailable" in statusData)
+  assert ("storeWritable" in statusData)
   # Request server readiness.
   rv = client.get("/api/v1/ready")
   # Assert readiness returns 200 or 503.

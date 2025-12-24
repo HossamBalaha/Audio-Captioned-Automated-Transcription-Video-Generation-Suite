@@ -1,64 +1,199 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-film display-3 option-icon mb-3"></i>
-        <h4 class="card-title mb-2">Text to Video</h4>
-        <p class="card-text">Convert your text into a fully captioned video with audio.</p>
-        <a href="/text2Video" class="btn btn-primary mt-auto">Go to Text to Video</a>
+<div class="row justify-content-center mt-5 mb-5">
+  <div class="col-lg-11">
+    <!-- System Status Bar -->
+    <div class="mb-5">
+      <div class="alert d-flex align-items-center justify-content-between flex-wrap gap-3 p-4 shadow-sm" id="systemStatusBar"
+           role="alert" aria-role="alert">
+        <div class="d-flex align-items-center flex-wrap gap-3">
+          <i class="bi bi-lightning-fill text-warning icon-1-25rem" aria-hidden="true"></i>
+          <span id="readinessText" class="fw-semibold">Checking system status...</span>
+        </div>
+        <span id="ffmpegIndicator" class="badge bg-secondary px-3 py-2 fs-0-9375rem">
+          <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i> FFmpeg: Checking...
+        </span>
+      </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="card mb-5 border-0 shadow-lg">
+      <div class="card-header bg-gradient-primary py-4 px-4">
+        <h2 class="mb-0 text-white fs-1-5rem">
+          <i class="bi bi-camera-reels me-3 text-warning icon-2rem" aria-hidden="true"></i> Welcome to T2V Suite
+        </h2>
+      </div>
+      <div class="card-body p-5">
+        <p class="lead mb-4 fs-1-0625rem">
+          <i class="bi bi-stars text-primary me-2 icon-1-25rem" aria-hidden="true"></i>
+          Transform your text into professional videos with AI-powered captions, speech synthesis, and video
+          composition.
+        </p>
+        <p class="text-muted mb-0 fs-0-9375rem">
+          <i class="bi bi-arrow-right-circle text-primary me-2 icon-1-0625rem" aria-hidden="true"></i>
+          Choose a service below to get started, or manage your existing jobs.
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Feature Cards -->
+    <div class="row g-4 mb-5">
+      <!-- Create Video Card -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card option-card text-center h-100 border-0 interactive-element shadow">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center p-5">
+            <i class="bi bi-film option-icon mb-4 text-primary icon-3rem" aria-hidden="true"></i>
+            <h5 class="card-title fw-bold mb-3 text-primary fs-1-25rem">Create New Video</h5>
+            <p class="card-text mb-4 fs-0-9375rem" style="line-height:1.6;">
+              Convert any text into a professional video with synchronized audio and captions. Perfect for content
+              creators and educators.
+            </p>
+            <a href="/text2Video" class="btn btn-primary btn-lg mt-auto w-100 py-3 fs-1-0625rem" title="Navigate to video creation tool">
+              <i class="bi bi-play-circle-fill me-2" aria-hidden="true"></i> Start Creating
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs Management Card -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card option-card text-center h-100 border-0 interactive-element shadow">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center p-5">
+            <i class="bi bi-briefcase-fill option-icon mb-4 text-success icon-3rem" aria-hidden="true"></i>
+            <h5 class="card-title fw-bold mb-3 text-success fs-1-25rem">Manage Jobs</h5>
+            <p class="card-text mb-4 fs-0-9375rem" style="line-height:1.6;">
+              View your job queue, track progress, retry failed jobs, and download finished videos all in one place.
+            </p>
+            <a href="/jobs" class="btn btn-success btn-lg mt-auto w-100 py-3 fs-1-0625rem" title="Navigate to jobs management page">
+              <i class="bi bi-list-check me-2" aria-hidden="true"></i> View Jobs
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Tools Card -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card option-card text-center h-100 border-0 interactive-element shadow">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center p-5">
+            <i class="bi bi-music-note-beamed option-icon mb-4 text-info icon-3rem" aria-hidden="true"></i>
+            <h5 class="card-title fw-bold mb-3 text-info fs-1-25rem">Audio Tools</h5>
+            <p class="card-text mb-4 fs-0-9375rem" style="line-height:1.6;">
+              Advanced audio processing tools including conversion, normalization, effects, and analysis.
+            </p>
+            <a href="/audioTools" class="btn btn-info btn-lg mt-auto w-100 py-3 fs-1-0625rem" title="Navigate to audio tools">
+              <i class="bi bi-music-note-beamed me-2" aria-hidden="true"></i> Audio Tools
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats (Optional) -->
+    <div class="row g-4 mb-5">
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center border-0 bg-light shadow-sm">
+          <div class="card-body py-4 px-3">
+            <i class="bi bi-globe-americas text-primary mb-3 icon-2-5rem" aria-hidden="true"></i>
+            <h6 class="text-muted mb-2 text-uppercase fs-0-75rem">Supported Languages</h6>
+            <p class="mb-0 fw-bold text-primary fs-1-875rem">50+</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center border-0 bg-light shadow-sm">
+          <div class="card-body py-4 px-3">
+            <i class="bi bi-badge-hd text-success mb-3 icon-2-5rem" aria-hidden="true"></i>
+            <h6 class="text-muted mb-2 text-uppercase fs-0-75rem">Processing Quality</h6>
+            <p class="mb-0 fw-bold text-success fs-1-875rem">HD-4K</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center border-0 bg-light shadow-sm">
+          <div class="card-body py-4 px-3">
+            <i class="bi bi-aspect-ratio text-info mb-3 icon-2-5rem" aria-hidden="true"></i>
+            <h6 class="text-muted mb-2 text-uppercase fs-0-75rem">Video Types</h6>
+            <p class="mb-0 fw-bold text-info fs-1-875rem">Horiz/Vert</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="card text-center border-0 bg-light shadow-sm">
+          <div class="card-body py-4 px-3">
+            <i class="bi bi-badge-cc text-warning mb-3 icon-2-5rem" aria-hidden="true"></i>
+            <h6 class="text-muted mb-2 text-uppercase fs-0-75rem">Caption Support</h6>
+            <p class="mb-0 fw-bold text-warning fs-1-875rem">Included</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-list-task display-3 option-icon mb-3"></i>
-        <h4 class="card-title mb-2">Current Text to Video Jobs</h4>
-        <p class="card-text">View, manage, and download your current and completed jobs.</p>
-        <a href="/jobs" class="btn btn-primary mt-auto">Go to Jobs</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4 mb-4">
-    <div class="card option-card text-center shadow-sm h-100">
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <i class="bi bi-music-note-beamed display-3 option-icon mb-3"></i>
-        <h4 class="card-title mb-2">Audio Tools</h4>
-        <p class="card-text">Upload, process, and convert audio files with advanced options.</p>
-        <a href="/audioTools" class="btn btn-primary mt-auto">Go to Audio Tools</a>
-      </div>
-    </div>
-  </div>
-
-
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
   $(document).ready(function () {
-    $('.option-card').hover(
+    // Hover animation for option cards.
+    $(".option-card").hover(
         function () {
-          anime({
-            targets: $(this).find('.option-icon')[0],
-            scale: 1.25,
-            duration: 100,
-            easing: 'easeOutExpo'
-          });
+          anime({targets: $(this).find(".option-icon")[0], scale: 1.25, duration: 100, easing: "easeOutExpo"});
         },
         function () {
-          anime({
-            targets: $(this).find('.option-icon')[0],
-            scale: 1.0,
-            duration: 100,
-            easing: 'easeOutExpo'
-          });
+          anime({targets: $(this).find(".option-icon")[0], scale: 1.0, duration: 100, easing: "easeOutExpo"});
         }
     );
+
+    function UpdateReadinessBadge(isReady) {
+      // Update badge color and text based on readiness.
+      const bar = $("#systemStatusBar");
+      const text = $("#readinessText");
+      if (isReady) {
+        bar.removeClass("alert-danger alert-warning").addClass("alert-success");
+        text.html("<i class='bi bi-check-circle me-2'></i> System is ready to accept new jobs.");
+      } else {
+        bar.removeClass("alert-success alert-warning").addClass("alert-danger");
+        text.html("<i class='bi bi-exclamation-triangle me-2'></i> System is busy. Please wait or manage jobs.");
+      }
+    }
+
+    function PollReadiness() {
+      // Poll the readiness endpoint periodically.
+      $.get("/api/v1/ready", function (data) {
+        const isReady = !!data.ready;
+        UpdateReadinessBadge(isReady);
+      }).fail(function () {
+        const bar = $("#systemStatusBar");
+        const text = $("#readinessText");
+        bar.removeClass("alert-success alert-danger").addClass("alert-warning");
+        text.html("<i class='bi bi-question-circle me-2'></i> Unable to determine system readiness.");
+      });
+    }
+
+    function UpdateFfmpegIndicator() {
+      // Poll status for ffmpeg availability.
+      $.get("/api/v1/status", function (data) {
+        const badge = $("#ffmpegIndicator");
+        if (data && data.ffmpegAvailable) {
+          badge.removeClass("bg-secondary bg-danger").addClass("bg-success");
+          badge.html(`<i class='bi bi-check-circle me-1'></i> FFmpeg: Ready`);
+        } else {
+          badge.removeClass("bg-secondary bg-success").addClass("bg-danger");
+          badge.html(`<i class='bi bi-x-circle me-1'></i> FFmpeg: Not Found`);
+        }
+      }).fail(function () {
+        const badge = $("#ffmpegIndicator");
+        badge.removeClass("bg-success bg-secondary").addClass("bg-danger");
+        badge.html(`<i class='bi bi-exclamation-circle me-1'></i> FFmpeg: Error`);
+      });
+    }
+
+    // Initial polls and set intervals.
+    PollReadiness();
+    UpdateFfmpegIndicator();
+    setInterval(PollReadiness, 5000);
+    setInterval(UpdateFfmpegIndicator, 5000);
   });
 </script>
 {% endblock %}
